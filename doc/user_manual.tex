@@ -1,0 +1,360 @@
+\documentclass[11pt,a4paper,twoside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{latexsym,amsmath,amssymb,amsthm}
+\usepackage{makeidx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[unicode=true,colorlinks=true,linkcolor=RoyalBlue,citecolor=RoyalBlue]{hyperref}
+\usepackage{natbib}
+\usepackage{lipsum}
+
+% C++ formatting
+\usepackage{listings}  % for code formatting
+\usepackage{color}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+    backgroundcolor=\color{lbcolor},
+    tabsize=4,
+  language=C++,
+  captionpos=b,
+  tabsize=3,
+  frame=lines,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=5pt,
+  breaklines=true,
+  showstringspaces=false,
+  basicstyle=\footnotesize,
+  identifierstyle=\color{magenta},
+  keywordstyle=\color[rgb]{0,0,1},
+  commentstyle=\color{OliveGreen},
+  stringstyle=\color{red}
+  }
+  
+  
+  
+  
+
+\title{The VMC++ Library}
+\author{Francesco Calcavecchia}
+
+\makeindex
+
+
+
+\begin{document}
+\maketitle
+
+VMC++ (Variational Monte Carlo Plus Plus) is a C++ library which allows with few simple commands for the implementation of a Variational Monte Carlo calculation.
+It provides the tools for describing a trial wave function and an Hamiltonian, and it uses this information to find the optimal values of the variational parameters embedded in the trial wave function, and therefore find the best approximation of the ground state.
+
+The code has been developed using the standard C++11, and requires the MCI++ (https://github.com/francesco086/MCIntegratorPlusPlus) and NoisyFunMin (https://github.com/francesco086/NoisyFunMin) libraries.
+
+In the following we will present the classes made available by the library.
+At the beginning we will report the necessary \verb+#include+ call and the prototype of the class.
+The comment \verb+TO DO+ indicates that the method needs to be implemented (as in the case of a pure virtual class).
+
+First, we will present the virtual classes that should be instantiated for describing the trial wave function and the Hamiltonian.
+Then, we will introduce the class that performs the whole Variational Monte Carlo calculation.
+
+
+\section{WaveFunction} % (fold)
+\label{sec:wave_function}
+
+\begin{lstlisting}
+// #import "WaveFunction.hpp"
+class WaveFunction: public MCISamplingFunctionInterface
+{
+   public:
+      // Constructor and destructor
+      WaveFunction(const int &nspacedim, const int &npart, 
+            const int &ncomp, const int &nvp);
+      virtual ~WaveFunction();
+      
+      // Getters
+      int getNSpaceDim();
+      int getNPart();
+      int getNVP();
+      
+      // Manage the variational parameters
+      virtual void setVP(const double *vp) = 0;  // TO DO
+      virtual void getVP(double *vp) = 0;  // TO DO
+      
+      // // Heritage from MCISamplingFunctionInterface, 
+      // // which must be implemented
+      // void samplingFunction(const double *in, 
+            double *out) = 0;  // TO DO
+      // double getAcceptance() = 0;  // TO DO
+      
+      // Derivatives of the trial wave function
+      virtual double d1(const int &i, 
+            const double *in) = 0;  // TO DO
+      virtual double d2(const int &i, const int &j, 
+            const double *in) = 0;  // TO DO
+      virtual double vd1(const int &i, 
+            const double *in) = 0;  // TO DO
+      
+}
+\end{lstlisting}
+
+The class \verb+WaveFunction+ is a pure virtual class introduced for representing the trial wave function.
+The first thing that should be noticed, is that it is a child class of the MCI++ class \verb+MCISamplingFunctionInterface+.
+Please refer to the user manual of MCI++ to see the details of this class.
+The user must be able to correctly implement its methods \verb+samplingFunction+ and \verb+getAcceptance+.
+
+Let us now see in details the methods of the class \verb+WaveFunction+:
+\begin{itemize}
+   \item \verb+WaveFunction+: The constructor. It is necessary to specify the number of dimensions of the space in which it is used (\verb+nspacedim+, typically $3$ dimensions), the number of particles that the wave function describes (\verb+npart+), the number of components of the wave function (\verb+ncomp+, which corresponds to \verb+nproto+ of the class \verb+MCISamplingFunctionInterface+), and the number of variational parameters used (\verb+nvp+);
+   \item \verb+getNSpaceDim+: Returns \verb+nspacedim+;
+   \item \verb+getNPart+: Returns \verb+npart+;
+   \item \verb+getNVP+: Returns \verb+nvp+
+   \item \verb+setVP+: Set the variational parameters according to the provided \verb+nvp+-dimensional array \verb+vp+. Must be implemented by the user;
+   \item \verb+getVP+: Store in the \verb+nvp+-dimensional array \verb+vp+ the values of the variational parameters; Must be implemented by the user;
+   \item \verb+d1+: Returns the value of $\frac{\partial \psi(x)}{\partial x_{i}}$, computed in $x$ equal to the array given in \verb+in+. Here $\psi$ is the wave function, and \verb+i+ the coordinate's index. For example, in a system with \verb+npart=2+ and \verb+nspacedim=3+, $x_0, x_1, x_2$ are the $x,y,z$ coordinates of the first particle, and $x_3,x_4,x_5$ the coordinates of the second particle. Must be implemented by the user;
+   \item \verb+d2+: Returns the value of $\frac{\partial^2 \psi(x)}{\partial x_{i} \partial x_j}$. Must be implemented by the user;
+   \item \verb+vd1+: Returns the value of $\frac{\partial \psi(x)}{\partial \alpha_{i}}$, where $\alpha_i$ is the \verb+i+-th variational parameter of $\psi$. Must be implemented by the user.
+\end{itemize}
+
+As example, we report the implementation of a trial wave function for $1$ particle in a one-dimensional space, that uses $2$ variational parameters, and has only one component.
+The functional form is:
+\begin{equation}
+   \psi(x) = e^{- b(x-a)^2}
+\end{equation}
+where $a$ and $b$ are the two variational parameters.
+
+\begin{lstlisting}
+class QuadrExponential1D1POrbital: public WaveFunction
+{
+   protected:
+      double _a, _b;
+
+   public:
+      QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1,1,1,2) {_a=a; _b=b;}
+
+      void setVP(const double *in)
+      {
+         _a=in[0];
+         //if (_a<0.01) _a=0.01;
+         _b=in[1];
+         //if (_b<0.01) _b=0.01;
+         using namespace std;
+         //cout << "change a and b! " << _a << "   " << _b << endl;
+      }
+      void getVP(double *out)
+      {
+         out[0]=_a; out[1]=_b;
+      }
+
+      void samplingFunction(const double *in, double *out)
+      {
+         *out = -2.*(_b*(in[0]-_a)*(in[0]-_a));
+      }
+
+      double getAcceptance()
+      {
+         return exp(getProtoNew(0)-getProtoOld(0));
+      }
+
+      double d1(const int &i, const double *in)
+      {
+         return (-2.*_b*(in[0]-_a) );
+      }
+
+      double d2(const int &i, const int &j, const double *in)
+      {
+         return ( -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)) ) ;
+      }
+
+      double vd1(const int &i, const double *in)
+      {
+         if (i==0)
+         {
+            return (2.*_b*(in[0]-_a));
+         } else if (i==1)
+         {
+            return (-(in[0]-_a)*(in[0]-_a));
+         } else
+         {
+            using namespace std;
+            cout << "ERROR vd1 QuadrExponential! " << endl;
+            return 0.;
+         }
+      }
+};   
+\end{lstlisting}
+
+% section wave_function (end)
+
+
+
+\section{Hamiltonian} % (fold)
+\label{sec:hamiltonian}
+
+\begin{lstlisting}
+// import "Hamiltonian.hpp"
+class Hamiltonian: public MCIObservableFunctionInterface
+{
+   public:
+      // Constructor and destructor
+      Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf):     
+         MCIObservableFunctionInterface(nspacedim*npart,4)
+      virtual ~Hamiltonian(){}
+
+      // Getters
+      int getNSpaceDim();
+      int getNPart();
+      
+      // Kinetic energy
+      double localPBKineticEnergy(const double *in);
+      double localJFKineticEnergy(const double *in);
+      
+      // Potential energy
+      virtual double localPotentialEnergy(const double *in) = 0;  // TO DO
+      
+      // Heritage from MCIObservableFunctionInterface
+      // already implemented
+      void observableFunction(const double * in, double *out)
+};
+\end{lstlisting}
+
+This pure virtual class is used to define the Hamiltonian of the system.
+The user must take care of implementing only the \verb+localPotentialEnergy+ method, while all the rest is already provided.
+
+\begin{itemize}
+   \item \verb+Hamiltonian+: The constructor. It requires the spacial number of dimensions (\verb+nspacedim+), the number of particles (\verb+npart+), and a pointer to an implementation of a \verb+WaveFunction+. Notice that the constructor inform the constructor of \verb+MCIObservableFunctionInterface+ that the Monte Carlo integral will be performed in a \verb+nspacedime+ $\times$ \verb+npart+ space, and that there will be $4$ observables, corresponding to the total, potential, kinetic, and Jackson-Feenberg kinetic energies, respectively. All the energies are computed as \emph{energy unit per particle};
+   \item \verb+getNSpaceDim+: Returns \verb+nspacedim+;
+   \item \verb+getNPart+: Returns \verb+getNPart+;
+   \item \verb+localPBKineticEnergy+: Returns the standard (Pandharipande-Bethe) local kinetic energy, in units of energy per particle. It requires the particle positions, provided through the array \verb+in+;
+   \item \verb+localJFKineticEnergy+: Returns the Jackson-Feenberg local kinetic energy;
+   \item \verb+localPotentialEnergy+: Returns the local potential energy. Must be implemented by the user;
+   \item \verb+observableFunction+: Returns the $4$ observables for the particle coordinates contained in the array \verb+in+. The observables will be contained in the array \verb+out+, and are the local total, potential, kinetic, and Jackson-Feenberg kinetic energies.
+\end{itemize}
+
+As example, we report the Hamiltonian for a one-dimensional, one-particle, harmonic oscillator:
+\begin{equation}
+   H = - \frac{\partial^2 \psi}{\partial x^2} + \frac{1}{2} \omega^2 x^2
+\end{equation}
+
+\begin{lstlisting}
+class HarmonicOscialltor1D1P: public Hamiltonian
+{
+   protected:
+      double _w;
+      
+   public:
+      HarmonicOscialltor1D1P(const double w, WaveFunction * wf): 
+            Hamiltonian(1, 1, wf) {_w=w;}
+            
+      double localPotentialEnergy(const double *r)
+      {
+         return (0.5*_w*_w*(*r)*(*r));
+      }
+};
+\end{lstlisting}
+
+% section hamiltonian (end)
+
+
+
+\section{VMC} % (fold)
+\label{sec:vmc}
+
+\begin{lstlisting}
+// #include "VMC.hpp"
+class VMC: public NoisyFunctionWithGradient
+{
+   public:
+      VMC(WaveFunction * wf, Hamiltonian * H, 
+            const int &ENmc, const int &GNmc): 
+            NoisyFunctionWithGradient(wf->getNVP());
+      ~VMC();
+
+      // Getters
+      MCI * getEnergyMCI();
+
+      // Conjugate Gradient minimization
+      void conjugateGradientOptimization();
+
+      // Computation of the energy
+      void computeEnergy(const long & Nmc, 
+            double * E, double * dE);
+
+      // Computation of the energy gradient
+      void computeEnergyGradient(const long & Nmc, 
+            double * gradE, double * dgradE);
+
+};
+\end{lstlisting}
+
+The Variational Monte Carlo (VMC) method is a method that uses a minimisation method in order to find the variational parameters $\alpha$ of a trial wave function $\psi_{\alpha}$ such that the variational energy
+\begin{equation}
+   E(\psi_{\alpha}) = \frac{\int dR \, \psi_{\alpha}(R) H \psi_{\alpha}(R)}{\int dR \, \psi_{\alpha}(R) \psi_{\alpha}(R)}  \label{eq:variational_energy}
+\end{equation}
+is minimised.
+In Eq. \eqref{eq:variational_energy} $H$ is the Hamiltonian, and we have assumed that both the Hamiltonian and the wave functions are real, as it is done by this library.
+The minimisation is done by using a conjugate gradient algorithm.
+
+\begin{itemize}
+   \item \verb+VMC+: The constructor. It requires a wave function, a Hamiltonian, and the number of sampling points to use for computing the energy (\verb+ENmc+) and the energy gradient (\verb+GNmc+) during the optimisation process. Notice that the constructor inform the constructor of \verb+NoisyFunctionWithGradient+ about the number of the number of variational parameters used by the wave function;
+   \item \verb+getEnergyMCI+: Returns a pointer to the \verb+MCIntegrator+ used to compute the variational energy;
+   \item \verb+conjugateGradientOptimization+: Perform the optimisation of the wave function. At the end of the process, the wave function will be set to have the optimal variational parameters;
+   \item \verb+computeEnergy+: Compute the total, kinetic, and potential energies for the given wave function;
+   \item \verb+computeEnergyGradient+: Compute the gradient of the energy (in respect to the variational parameters).
+\end{itemize}
+
+As example, we will demonstrate how to use the wave function and Hamiltonian of the examples in the previous sections for performing a VMC simulation, with some prints to demonstrate its effectiveness:
+
+\begin{lstlisting}
+int main(){
+   const long NMC = 10000l;
+   
+   QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0,1.1);
+   HarmonicOscialltor1D1P * harm_osc = new HarmonicOscialltor1D1P(1.,qexp);
+   
+   double * a = new double[2];
+   qexp->getVP(a);
+   cout << "Wave Function a     = " << a[0] << endl;
+   cout << "Wave Function b     = " << a[1] << endl;
+   
+   double * energy = new double[4];
+   double * d_energy = new double[4];
+   vmc2->computeEnergy(NMC,energy,d_energy);
+   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   
+   VMC * vmc = new VMC(qexp,harm_osc,NMC,10l*NMC);
+   vmc->conjugateGradientOptimization();
+   
+   qexp->getVP(a);
+   cout << "Wave Function a     = " << a[0] << endl;
+   cout << "Wave Function b     = " << a[1] << endl;
+   
+   vmc2->computeEnergy(NMC,energy,d_energy);
+   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   
+   delete[] a;
+   delete[] energy;
+   delete[] d_energy;
+   delete vmc;
+   delete harm_osc;
+   delete qexp;
+}
+\end{lstlisting}
+
+% section vmc (end)
+
+
+
+
+\printindex
+
+\end{document}
