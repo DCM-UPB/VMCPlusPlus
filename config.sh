@@ -13,13 +13,13 @@ FLAGS="-std=c++11 -Wall -Werror"
 OPTFLAGS="-O3"
 
 # MCIntegrator++ Library
-MCI_FOLDER="/home/kenzo/Dropbox/myLibraries/MCIntegrator++"
+MCI_FOLDER="/Users/francesco086/Code/MCIntegrator++"
 IMCI="-I${MCI_FOLDER}/src/"
 LMCI="-L${MCI_FOLDER}"
 LIBMCI="-lmci"
 
 #NoisyFunctionMinimization Library
-NFM_FOLDER="/home/kenzo/Dropbox/myLibraries/NoisyFunOpt"
+NFM_FOLDER="/Users/francesco086/Code/NoisyFunOpt"
 INFM="-I${NFM_FOLDER}/src/"
 LNFM="-L${NFM_FOLDER}"
 LIBNFM="-lnfm"

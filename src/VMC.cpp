@@ -8,7 +8,7 @@
 void VMC::conjugateGradientOptimization()
 {
    // declare the Conjugate Gradient object
-   ConjGrad cjgrad(_wf->getNVP(), this);
+   ConjGrad cjgrad(this);
    // allocate an array that will contain the wave function variational parameters
    double * wfpar = new double[_wf->getNVP()];
    // get the variational parameters
