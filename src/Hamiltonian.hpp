@@ -14,7 +14,7 @@ class Hamiltonian: public MCIObservableFunctionInterface
       WaveFunction * _wf;
 
    public:
-      Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf): MCIObservableFunctionInterface(nspacedim*npart,4)
+      Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf): MCIObservableFunctionInterface(nspacedim*npart, 4)
       {
          _nspacedim=nspacedim; _npart=npart; _wf=wf;
       }

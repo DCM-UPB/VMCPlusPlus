@@ -28,7 +28,7 @@ class VMC: public NoisyFunctionWithGradient
       
          if (wf->getNDim() != H->getNDim())
          {
-            cout << "ERROR VMC::VMC() : ndim different netween wf and H" << endl;
+            cout << "ERROR VMC::VMC() : ndim different between wf and H" << endl;
             exit(1);
          }
          _wf=wf; 
