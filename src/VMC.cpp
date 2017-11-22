@@ -40,9 +40,6 @@ void VMC::f(const double * in, double &f, double &df)
 
    f=E[0]; df=dE[0];
 
-   //using namespace std;
-   //cout << "E = " << E[0] << " +- " << dE[0] << endl;
-
    delete[] E;
    delete[] dE;
 }
