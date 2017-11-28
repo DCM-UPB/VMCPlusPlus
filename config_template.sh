@@ -4,7 +4,7 @@
 LIBNAME="vmc"
 
 # C++ compiler
-CC="g++"
+CC="g++-mp-6"
 
 # C++ flags (std=c++11 is necessary)
 FLAGS="-std=c++11 -Wall"
@@ -16,20 +16,20 @@ OPTFLAGS="-O3"
 DEBUGFLAGS="-g -O0"
 
 # MCIntegrator++ Library
-MCI_FOLDER="/......../MCIntegratorPlusPlus"
+MCI_FOLDER="/...../MCIntegratorPlusPlus"
 IMCI="-I${MCI_FOLDER}/src/"
 LMCI="-L${MCI_FOLDER}"
 LIBMCI="-lmci"
 
 #NoisyFunctionMinimization Library
-NFM_FOLDER="/......../NoisyFunMin"
+NFM_FOLDER="/...../NoisyFunMin"
 INFM="-I${NFM_FOLDER}/src/"
 LNFM="-L${NFM_FOLDER}"
 LIBNFM="-lnfm"
 
 #FFNN Library (used in ex3)
-FFNN_FOLDER="/......../FeedForwardNeuralNetwork"
-INFM="-IFFNN_FOLDER/src/"
-LNFM="-LFFNN_FOLDER"
+FFNN_FOLDER="/...../FeedForwardNeuralNetwork"
+IFFNN="-I${FFNN_FOLDER}/src/"
+LFFNN="-L${FFNN_FOLDER}"
 LIBNAMEFFNN="ffnn"
-LIBNFM="-lffnn"
+LIBFFNN="-lffnn"
