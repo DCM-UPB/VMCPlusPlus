@@ -152,7 +152,7 @@ class NeuralWaveFunction: public WaveFunction{
 
 int main(){
    using namespace std;
-   
+
    // Declare some trial wave functions
    NeuralWaveFunction * psi = new NeuralWaveFunction(2, 5);
    

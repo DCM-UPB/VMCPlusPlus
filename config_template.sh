@@ -16,19 +16,19 @@ OPTFLAGS="-O3"
 DEBUGFLAGS="-g -O0"
 
 # MCIntegrator++ Library
-MCI_FOLDER="/Users/francesco086/Code/MCIntegrator++"
+MCI_FOLDER="/......../MCIntegratorPlusPlus"
 IMCI="-I${MCI_FOLDER}/src/"
 LMCI="-L${MCI_FOLDER}"
 LIBMCI="-lmci"
 
 #NoisyFunctionMinimization Library
-NFM_FOLDER="/Users/francesco086/Code/NoisyFunOpt"
+NFM_FOLDER="/......../NoisyFunMin"
 INFM="-I${NFM_FOLDER}/src/"
 LNFM="-L${NFM_FOLDER}"
 LIBNFM="-lnfm"
 
 #FFNN Library (used in ex3)
-FFNN_FOLDER="/Users/francesco086/Code/FFNN"
+FFNN_FOLDER="/......../FeedForwardNeuralNetwork"
 INFM="-IFFNN_FOLDER/src/"
 LNFM="-LFFNN_FOLDER"
 LIBNAMEFFNN="ffnn"

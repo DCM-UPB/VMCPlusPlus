@@ -1,11 +1,5 @@
 #!/bin/bash
 
-FFNN_FOLDER="/Users/francesco086/Code/FFNN"
-IFFNN="-I${FFNN_FOLDER}/src/"
-LFFNN="-L${FFNN_FOLDER}"
-LIBNAMEFFNN="ffnn"
-LIBFFNN="-lffnn"
-
 source ../../config.sh
 
 OS_NAME=$(uname)
