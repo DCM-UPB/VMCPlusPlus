@@ -51,5 +51,5 @@ echo ""
 
 
 # Run the debugging executable
-#valgrind --leak-check=full --track-origins=yes ./exe
- ./exe
+valgrind --leak-check=full --track-origins=yes ./exe
+#./exe
