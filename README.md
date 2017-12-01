@@ -3,6 +3,7 @@
 
 C++ Library for doing a Variational Monte Carlo simulation.
 It is built upon the MCI++ (https://github.com/francesco086/MCIntegratorPlusPlus) and NoisyFunMin (https://github.com/francesco086/NoisyFunMin) libraries.
+It also uses the GSL (GNU Scientific Library).
 
 In `doc/` there is a user manual in pdf.
 

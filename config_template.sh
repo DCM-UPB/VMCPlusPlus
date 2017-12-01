@@ -15,6 +15,10 @@ OPTFLAGS="-O3"
 # Debuggin flags
 DEBUGFLAGS="-g -O0"
 
+# GSL (GNU Scientific Library)
+LGSL="-L/usr/local/lib"
+LIBGSL="-lgsl -lgslcblas"
+
 # MCIntegrator++ Library
 MCI_FOLDER="/...../MCIntegratorPlusPlus"
 IMCI="-I${MCI_FOLDER}/src/"

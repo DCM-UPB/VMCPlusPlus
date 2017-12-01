@@ -2,6 +2,7 @@
 #define VMC_CLASS
 
 #include <iostream>
+#include <string>
 
 #include "MCIntegrator.hpp"
 #include "NoisyFunction.hpp"
@@ -9,17 +10,20 @@
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VariationalGradient.hpp"
+#include "SRMatrix.hpp"
 
 
 class VMC: public NoisyFunctionWithGradient
 {
    protected:
       long _ENmc;  // number of MC steps used to compute the energy
-      long _GNmc;  // number of MC steps used to compute the energy gradient 
+      long _GNmc;  // number of MC steps used to compute the energy's gradient 
       MCI * _mcenergy;
       WaveFunction * _wf;
       Hamiltonian * _H;
       VariationalGradient * _VG;
+      SRMatrix * _SRM;
+      std::string _grad_type;  // which grad should be used for the optimization? {gradE, SR}
 
    public:
       VMC(WaveFunction * wf, Hamiltonian * H, const int &ENmc, const int &GNmc): NoisyFunctionWithGradient(wf->getNVP())
@@ -39,13 +43,22 @@ class VMC: public NoisyFunctionWithGradient
          _mcenergy = new MCI(_H->getNDim());
          // Variational Gradient
          _VG = new VariationalGradient(_wf,_H);
+         // SR Matrix
+         _SRM = new SRMatrix(_wf);
+         // set the default choice for the grad to use for the optimization
+         _grad_type = "gradE";
       }
 
       ~VMC()
       {
          delete _mcenergy;
          delete _VG;
+         delete _SRM;
       }
+      
+      // Configuration
+      void configureOptimizationWithSR(){_grad_type = "SR";}
+      void configureOptimizationWithGradE(){_grad_type = "gradE";}
 
       // --- Getters
       MCI * getEnergyMCI(){return _mcenergy;}
@@ -60,8 +73,8 @@ class VMC: public NoisyFunctionWithGradient
       void computeEnergyGradient(const long & Nmc, double * gradE, double * dgradE);
 
       // Implementation of the NoisyFunctionWithGradient interface
-      void f(const double * in, double &f, double &df);
-      void grad(const double *in, double *g, double *dg);
+      void f(const double * in, double &f, double &df);  // compute the energy
+      void grad(const double *in, double *g, double *dg);  // compute the gradient of the energy
 
 };
 

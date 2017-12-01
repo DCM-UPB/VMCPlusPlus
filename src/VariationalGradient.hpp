@@ -5,19 +5,23 @@
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
 
-// VariationalGradient: obs[0 - wf->getNVP()] = Variational Derivative of the Wave Function   obs[ wf->getNVP() - 2*wf->getNVP()] = Local Energy times the the Variational Derivative of the Wave Function
+// VariationalGradient: 
+// obs[0 - wf->getNVP()] = Variational Derivative of the Wave Function   
+// obs[ wf->getNVP() - 2*wf->getNVP()] = Local Energy times the the Variational Derivative of the Wave Function
 class VariationalGradient: public MCIObservableFunctionInterface
 {
    protected:
       WaveFunction * _wf;
       Hamiltonian * _H;
    public:
-      VariationalGradient(WaveFunction * wf, Hamiltonian * H): MCIObservableFunctionInterface(H->getNDim(),2*wf->getNVP())
-      {
+      VariationalGradient(WaveFunction * wf, Hamiltonian * H):
+      MCIObservableFunctionInterface(H->getNDim(),2*wf->getNVP()){
          _wf = wf;
          _H = H;
       }
+      
       virtual ~VariationalGradient(){ }
+
 
       void observableFunction(const double * in, double *out)
       {

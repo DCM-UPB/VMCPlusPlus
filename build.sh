@@ -7,8 +7,8 @@ cd src/
    \rm -f *.o *.so
    echo "$CC $FLAGS $OPTFLAGS -fpic $IMCI $INFM -c *.cpp"
    $CC $FLAGS $OPTFLAGS -fpic $IMCI $INFM -c *.cpp
-   echo "$CC $FLAGS $OPTFLAGS -shared $LMCI $LNFM -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM"
-   $CC $FLAGS $OPTFLAGS -shared $LMCI $LNFM -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM
+   echo "$CC $FLAGS $OPTFLAGS -shared $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL"
+   $CC $FLAGS $OPTFLAGS -shared $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL
    mv lib${LIBNAME}.so ../
 cd ..
 
