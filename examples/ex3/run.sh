@@ -9,9 +9,9 @@ OS_NAME=$(uname)
 
 # project root directory
 ROOT_FOLDER=$(dirname $(dirname $(pwd)))
-
+echo ${ROOT_FOLDER}
 #runtime dynamic library path
-RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}"
+RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}:${FFNN_FOLDER}"
 
 # Build the debugging main executable
 echo "$CC $FLAGS $OPTFLAGS -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -c *.cpp"
