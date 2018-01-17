@@ -143,15 +143,12 @@ public:
     cout << endl << endl;
 
 
-
-    cout << "Set the input..." << endl;
+    cout << "Setting the input to 0..." << endl;
     cin.ignore();
 
     int ninput = 1;
     double * input = new double[ninput];
     input[0] = 0;
-    cout << "The input we want to set is: " << input[0];
-    cin.ignore();
 
     // NON I/O CODE
     _ffnn->setInput(ninput, input);
@@ -163,8 +160,6 @@ public:
 
     cin.ignore();
     cout << endl << endl;
-
-
 
     cout << "Propagating..." << endl;
     cin.ignore();
@@ -198,58 +193,131 @@ public:
 
   }
 
-      void setVP(const double *in){
-        // _x0=in[0];
-        // _v=in[1];
-      }
+  void setX(const double x){
+    using namespace std;
+    double *xarr = new double(1);
+    xarr[0] = x;
 
-      void getVP(double *out){
-        //out[0]=_x0; out[1]=_v;
-      }
+    //cout << "Setting the input to x..." << endl;
+    //cin.ignore();
 
-      void samplingFunction(const double *x, double *out){
-         /*
-         Compute the sampling function proto value, used in getAcceptance()
-         */
-        *out = 1;
-      }
+    cout << "The input we want to set is: " << xarr[0];
+    //cin.ignore();
 
-      double getAcceptance(){
-         /*
-         Compute the acceptance probability
-         */
-         return exp(getProtoNew(0)-getProtoOld(0));
-      }
+    // NON I/O CODE
+    _ffnn->setInput(1, xarr);
+    //
+    //cout << "Done! Now the NN values look like this:";
+    //cin.ignore();
 
-      double d1(const int &i, const double *x){
-         /*
-         Compute:    d/dx_i log(Psi(x))
-         */
-         return 0;
-      }
+    //printFFNNValues(_ffnn);
 
-      double d2(const int &i, const int &j, const double *x){
-         /*
-         Compute:    d^2/dx_i^2 log(Psi(x))
-         */
-         return 0;
-      }
+    //cin.ignore();
+    //cout << endl << endl;
 
-      double vd1(const int &i, const double *x){
-         /*
-         Compute:    d/dalpha_i log(Psi(x))
-         where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
-         */
-         if (i==0){
-            return 0;
-         } else if (i==1){
-            return 0;
-         } else{
-            using namespace std;
-            cout << "ERROR vd1 FFNNGaussian1D1P! " << endl;
-            return 0.;
-         }
-      }
+    //cout << "Propagating..." << endl;
+    //cin.ignore();
+
+    // NON I/O CODE
+    _ffnn->FFPropagate();
+    //
+
+    // cout << "Done! Now the NN values look like this:";
+    //cin.ignore();
+
+    //printFFNNValues(_ffnn);
+    //cout << endl;
+    //cin.ignore();
+  }
+
+  double Psi(const double x){
+    using namespace std;
+    double out;
+
+    setX(x);
+
+    out = _ffnn->getOutput(1);
+
+    cout << "The output value is " << out << endl;
+    //cin.ignore();
+
+    return out;
+  }
+
+  void setVP(const double *in){
+  }
+
+  void getVP(double *out){
+  }
+
+  void samplingFunction(const double *x, double *out){
+    /*
+      Compute the sampling function proto value, used in getAcceptance()
+    */
+    double psix = Psi(x[0]);
+    out[0] = log(psix*psix);
+  }
+
+  double getAcceptance(){
+    /*
+      Compute the acceptance probability
+    */
+    return exp(getProtoNew(0)-getProtoOld(0));
+  }
+
+  double d1(const int &i, const double *x){
+    using namespace std;
+    /*
+      Compute:    d/dx_i log(Psi(x))
+    */
+
+    double psix = Psi(x[0]);
+    double out = _ffnn->getFirstDerivative(1, 0) / psix;
+
+    //cout << "The first derivative with respect to the input value is:";
+    //cin.ignore();
+    //cout << "1st output (unit 2 of the output layer): " << out << endl;
+    //cin.ignore();
+
+    return out;
+  }
+
+  double d2(const int &i, const int &j, const double *x){
+    using namespace std;
+    /*
+      Compute:    d^2/dx_i^2 log(Psi(x))
+    */
+
+    double psix = Psi(x[0]);
+    double psix2 = psix*psix;
+    double psid1 = _ffnn->getFirstDerivative(1, 0);
+    double psid2 = _ffnn->getSecondDerivative(1, 0);
+    double out = (psid2*psix - psid1*psid1) / psix2;
+
+    //cout << "The second derivative with respect to the input value is:";
+    //cin.ignore();
+    //cout << "1st output (unit 2 of the output layer): " << out << endl;;
+    //cin.ignore();
+
+
+    return out;
+  }
+
+  double vd1(const int &i, const double *x){
+    /*
+      Compute:    d/dalpha_i log(Psi(x))
+      where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
+    */
+    if (i==0){
+      return 0;
+    } else if (i==1){
+      return 0;
+    } else{
+      using namespace std;
+      cout << "ERROR vd1 FFNNGaussian1D1P! " << endl;
+      return 0.;
+    }
+  }
 };
 
 
@@ -278,7 +346,10 @@ int main() {
     // NON I/O CODE
     FFNNGaussian1D1P * nnwf = new FFNNGaussian1D1P(0, 1, nh1, nh2);
     //
-
+    cout << "Psi(1):" << endl;
+    cout << nnwf->Psi(1) << endl;;
+    cout << "acceptance: " <<  nnwf->getAcceptance() << endl;
+    cin.ignore();
 
 
    // Declare some trial wave functions
@@ -286,23 +357,24 @@ int main() {
     Gaussian1D1POrbital * psi2 = new Gaussian1D1POrbital(0., 2);
     Gaussian1D1POrbital * psi3 = new Gaussian1D1POrbital(1., 1);
     Gaussian1D1POrbital * psi4 = new Gaussian1D1POrbital(1., 2.);
-   
+
    // Declare an Hamiltonian for each wave function (keep in mind that the kinetic energy is strictly bound to it)
    // We use the harmonic oscillator with w=1
    HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(1., psi1);
    HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(1., psi2);
    HarmonicOscillator1D1P * ham3 = new HarmonicOscillator1D1P(1., psi3);
    HarmonicOscillator1D1P * ham4 = new HarmonicOscillator1D1P(1., psi4);
-   
-   
-   
+
+   HarmonicOscillator1D1P * hamnn = new HarmonicOscillator1D1P(1., nnwf);
+
+
    cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
-   
+
    VMC * vmc; // VMC object we will resuse
    const long E_NMC = 100000l; // MC samplings to use for computing the energy
    double * energy = new double[4]; // energy
    double * d_energy = new double[4]; // energy error bar
-   
+
    // Case 1
    cout << "-> psi1: " << endl;
    vmc = new VMC(psi1, ham1, 0, 0); // ENMC and GNMC do not need to be set since we don't optimize the wave function
@@ -311,7 +383,7 @@ int main() {
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   
+
    // Case 2
    cout << "-> psi2: " << endl;
    delete vmc;
@@ -321,7 +393,7 @@ int main() {
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   
+
    // Case 3
    cout << "-> psi3: " << endl;
    delete vmc;
@@ -331,12 +403,22 @@ int main() {
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   
+
    // Case 4
    cout << "-> psi4: " << endl;
    delete vmc;
    vmc = new VMC(psi4, ham4, 0, 0);
    vmc->computeEnergy(E_NMC, energy, d_energy);
+   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+
+   // Case NN
+   cout << "-> psinn: " << endl;
+   delete vmc;
+   vmc = new VMC(nnwf, hamnn, 0, 0);
+   vmc->computeEnergy(2l, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -355,6 +437,7 @@ int main() {
    delete ham2;
    delete ham3;
    delete ham4;
+   delete hamnn;
 
    delete[] d_energy;
    delete[] energy;
