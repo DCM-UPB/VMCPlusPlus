@@ -90,7 +90,7 @@ class Gaussian1D1POrbital: public WaveFunction{
          if (i==0){
             return (-_niv*(x[0]-_x0));
          } else if (i==1){
-            return (-(x[0]-_x0)*(x[0]-_x0));
+            return (0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
          } else{
             using namespace std;
             cout << "ERROR vd1 Gaussian1D1POrbital! " << endl;
@@ -201,7 +201,7 @@ public:
     //cout << "Setting the input to x..." << endl;
     //cin.ignore();
 
-    cout << "The input we want to set is: " << xarr[0];
+    //cout << "The input we want to set is: " << xarr[0];
     //cin.ignore();
 
     // NON I/O CODE
@@ -238,7 +238,7 @@ public:
 
     out = _ffnn->getOutput(1);
 
-    cout << "The output value is " << out << endl;
+    //cout << "The output value is " << out << endl;
     //cin.ignore();
 
     return out;
@@ -332,7 +332,7 @@ int main() {
 
     cout << "How many units should the first hidden layer(s) have? ";
     cin >> nh1;
-    cout << "How many units should the first hidden layer(s) have? (<=1 for no second hidden layer)";
+    cout << "How many units should the second hidden layer(s) have? (<=1 for no second hidden layer)";
     cin >> nh2;
 
     nl = (nh2>1)? 4:3; 
