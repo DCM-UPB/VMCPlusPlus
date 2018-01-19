@@ -3,11 +3,169 @@
 #include <math.h>
 #include <fstream>
 
+#include "NoisyFunction.hpp"
+#include "ConjGrad.hpp"
+#include "MCIntegrator.hpp"
 #include "FeedForwardNeuralNetwork.hpp"
 #include "PrintUtilities.hpp"
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VMC.hpp"
+
+
+
+//1D Target Function
+class Function1D {
+public:
+  //Function1D(){}
+  virtual ~Function1D(){}
+
+  // Function evaluation
+  virtual double f(const double &) = 0;
+  //                    ^input
+};
+
+// exp(-a*(x-b)^2)
+class Gaussian: public Function1D{
+private:
+  double _a;
+  double _b;
+
+public:
+  Gaussian(const double &a, const double &b): Function1D(){
+    _a = a;
+    _b = b;
+  }
+
+  double f(const double &x){
+    return exp(-_a*pow(x-_b, 2));
+  }
+};
+
+// Quadratic distance between NN and 1D target function
+class NNFitDistance1D: public MCIObservableFunctionInterface{
+private:
+  FeedForwardNeuralNetwork * _ffnn;
+  Function1D * _ftarget;
+public:
+  NNFitDistance1D(FeedForwardNeuralNetwork * ffnn, Function1D * ftarget): MCIObservableFunctionInterface(1, 1) {_ffnn = ffnn; _ftarget = ftarget;}
+protected:
+    void observableFunction(const double * in, double * out){
+
+      _ffnn->setInput(1, &in[0]);
+      _ffnn->FFPropagate();
+      out[0] = pow(_ffnn->getOutput(1) - _ftarget->f(in[0]), 2);
+
+    }
+};
+
+// Gradient of Quadratic distance between NN and 1D target function
+class NNFitGradient1D: public MCIObservableFunctionInterface{
+private:
+  FeedForwardNeuralNetwork * _ffnn;
+  Function1D * _ftarget;
+public:
+  NNFitGradient1D(FeedForwardNeuralNetwork * ffnn, Function1D * ftarget): MCIObservableFunctionInterface(1, ffnn->getNBeta()) {_ffnn = ffnn; _ftarget = ftarget;}
+protected:
+  void observableFunction(const double * in, double * out){
+
+    _ffnn->setInput(1, &in[0]);
+    _ffnn->FFPropagate();
+
+    double nnout = _ffnn->getOutput(1);
+    double fx = _ftarget->f(in[0]);
+
+    for(int i=0; i<_nobs; ++i){
+        out[i] = 2.*(nnout - fx)*_ffnn->getVariationalFirstDerivative(1, i);
+      }
+  }
+};
+
+//
+class FitNN1D: public NoisyFunctionWithGradient{
+private:
+  FeedForwardNeuralNetwork * _ffnn;
+  Function1D * _ftarget;
+  MCI * _mcif, * _mcig;
+  long _nmc;
+  double _x0, _step0;
+
+public:
+  FitNN1D(FeedForwardNeuralNetwork * ffnn, Function1D * ftarget, const long &nmc, double * irange): NoisyFunctionWithGradient(ffnn->getNBeta()){
+    _ffnn = ffnn;
+    _ftarget = ftarget;
+    _nmc = nmc;
+
+    _x0 = 0.5*(irange[0] + irange[1]);
+    _step0 = 0.1*(irange[1] - irange[0]);
+
+    _mcif = new MCI(1);
+    _mcig = new MCI(1);
+
+    MCIObservableFunctionInterface * fobs = new NNFitDistance1D(_ffnn, _ftarget);
+    MCIObservableFunctionInterface * gobs = new NNFitGradient1D(_ffnn, _ftarget);
+
+    _mcif->addObservable(fobs);
+    _mcig->addObservable(gobs);
+
+    double ** intrange = new double*[1];
+    intrange[0] = irange;
+    _mcif->setIRange(intrange);
+    _mcig->setIRange(intrange);
+
+    double targetacceptrate = 0.5;
+    _mcif->setTargetAcceptanceRate(&targetacceptrate);
+    _mcig->setTargetAcceptanceRate(&targetacceptrate);
+
+  }
+
+  void f(const double * in, double &f, double &df){
+    int i;
+
+    //set new NN betas
+    for (i=0; i<_ffnn->getNBeta(); ++i){
+      _ffnn->setBeta(i, in[i]);
+    }
+
+    // initial walker position and step size
+    _mcif->setX(&_x0);
+    _mcif->setMRT2Step(&_step0);
+
+    // integrate
+    double * average = new double[_mcif->getNObsDim()];
+    double * error = new double[_mcif->getNObsDim()];
+    _mcif->integrate(_nmc, average, error);
+
+    // write out results
+    f = average[0];
+    df = error[0];
+  }
+
+  void grad(const double * in, double * g, double * dg){
+    int i, nbeta = _ffnn->getNBeta();
+
+    //set new NN betas
+    for (i=0; i<nbeta; ++i){
+      _ffnn->setBeta(i, in[i]);
+    }
+
+    // initial walker position and step size
+    _mcig->setX(&_x0);
+    _mcig->setMRT2Step(&_step0);
+
+    // integrate
+    double * average = new double[_mcig->getNObsDim()];
+    double * error = new double[_mcig->getNObsDim()];
+    _mcig->integrate(_nmc, average, error);
+
+    // write out results
+    for(i=0; i<nbeta; ++i){
+      g[i] = average[i];
+      dg[i] = error[i];
+    }
+  }
+
+};
 
 
 /*
@@ -98,7 +256,6 @@ class Gaussian1D1POrbital: public WaveFunction{
          }
       }
 };
-
 
 class FFNNGaussian1D1P: public WaveFunction{
 protected:
