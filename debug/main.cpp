@@ -129,7 +129,7 @@ class HarmonicOscillator1D1P: public Hamiltonian
 int main(){
    using namespace std;
 
-   const long NMC = 10000l;
+   const long NMC = 4000l;
    double ** irange = new double*[1];
    *irange = new double[2];
    irange[0][0] = -25.;
@@ -140,85 +140,67 @@ int main(){
    QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0,1.1);
    HarmonicOscillator1D1P * harm_osc2 = new HarmonicOscillator1D1P(1.,qexp);
 
-   MCI * mymci;
-   mymci = new MCI(3);
-   delete mymci;
-
    cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
    double * b1 = new double;
    gauss->getVP(b1);
    cout << "Wave Function b     = " << *b1 << endl;
-   VMC * vmc = new VMC(gauss, harm_osc, NMC, 10l*NMC);
-   vmc->getEnergyMCI()->setIRange(irange);
+   VMC * vmc = new VMC(gauss, harm_osc);
+   vmc->getMCI()->setIRange(irange);
    double * energy = new double[4];
    double * d_energy = new double[4];
-   double * gradE = new double[1];
-   double * dgradE = new double[1];
-   vmc->computeEnergy(NMC, energy, d_energy);
+   vmc->computeVariationalEnergy(NMC, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   vmc->computeEnergyGradient(10l*NMC,gradE,dgradE);
-   cout << "Energy Gradient     = " << gradE[0] <<  " +- " << dgradE[0] << endl << endl;
-
+   
    cout << endl << " - - - ONE-DIMENSIONAL MINIMIZATION - - - " << endl << endl;
    double * b = new double;
    gauss->getVP(b);
    cout << "Wave Function b     = " << *b << endl;
    cout << "Conjugate Gradient Minimization ... " << endl;
-   vmc->conjugateGradientOptimization();
+   vmc->conjugateGradientOptimization(NMC, 4*NMC);
    gauss->getVP(b);
    cout << "Wave Function b     = " << *b << endl << endl;
-   vmc->computeEnergy(NMC,energy,d_energy);
+   vmc->computeVariationalEnergy(NMC, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
    delete b;
    
-   cout << endl << " - - - MULTIDIMENSIONAL MINIMIZATION - - - " << endl << endl;
-   double * a1 = new double[2];
-   qexp->getVP(a1);
-   cout << "Wave Function a     = " << a1[0] << endl;
-   cout << "Wave Function b     = " << a1[1] << endl;
-   delete[] a1;
-   VMC * vmc2 = new VMC(qexp,harm_osc2,NMC,10l*NMC);
-   vmc2->getEnergyMCI()->setIRange(irange);
-   vmc2->computeEnergy(NMC,energy,d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   delete[] gradE; gradE = new double[2];
-   delete[] dgradE; dgradE = new double[2];
-   vmc2->computeEnergyGradient(10l*NMC,gradE,dgradE);
-   cout << "Energy Gradient 1   = " << gradE[0] <<  " +- " << dgradE[0] << endl;
-   cout << "Energy Gradient 2   = " << gradE[1] <<  " +- " << dgradE[1] << endl << endl;
-   double * a = new double[2];
-   qexp->getVP(a);
-   cout << "Wave Function a     = " << a[0] << endl;
-   cout << "Wave Function b     = " << a[1] << endl;
-   cout << "Conjugate Gradient Minimization ... " << endl;
-   vmc2->conjugateGradientOptimization();
-   qexp->getVP(a);
-   cout << "Wave Function a     = " << a[0] << endl;
-   cout << "Wave Function b     = " << a[1] << endl;
-   vmc2->computeEnergy(NMC,energy,d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   delete[] a;
-
-
-   delete vmc2;
-
-   delete[] gradE;
-   delete[] dgradE;
+   //cout << endl << " - - - MULTIDIMENSIONAL MINIMIZATION - - - " << endl << endl;
+   //double * a1 = new double[2];
+   //qexp->getVP(a1);
+   //cout << "Wave Function a     = " << a1[0] << endl;
+   //cout << "Wave Function b     = " << a1[1] << endl;
+   //delete[] a1;
+   //VMC * vmc2 = new VMC(qexp, harm_osc2);
+   //vmc2->computeVariationalEnergy(NMC, energy, d_energy);
+   //cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   //cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   //cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   //cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   //double * a = new double[2];
+   //qexp->getVP(a);
+   //cout << "Wave Function a     = " << a[0] << endl;
+   //cout << "Wave Function b     = " << a[1] << endl;
+   //cout << "Conjugate Gradient Minimization ... " << endl;
+   //vmc2->conjugateGradientOptimization(NMC, 4*NMC);
+   //qexp->getVP(a);
+   //cout << "Wave Function a     = " << a[0] << endl;
+   //cout << "Wave Function b     = " << a[1] << endl;
+   //vmc2->computeVariationalEnergy(NMC, energy, d_energy);
+   //cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   //cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   //cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   //cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   //delete[] a;
+   //delete vmc2;
+   
    delete[] energy;
    delete[] d_energy;
-
+   
    delete vmc;
    delete b1;
    
@@ -226,7 +208,7 @@ int main(){
    delete harm_osc2;
    delete gauss;
    delete qexp;
-
+   
    delete[] *irange;
    delete[] irange;
 

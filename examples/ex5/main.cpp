@@ -10,6 +10,8 @@
 #include "FeedForwardNeuralNetwork.hpp"
 #include "PrintUtilities.hpp"
 
+#include "LogNFM.hpp"
+
 
 
 /*
@@ -87,7 +89,6 @@ class NeuralWaveFunction: public WaveFunction{
       
       FeedForwardNeuralNetwork * getFFNN(){return _ffnn;}
       
-      
       void setVP(const double *in){
          for (int i=0; i<_ffnn->getNBeta(); ++i){
             _ffnn->setBeta(i, in[i]);
@@ -106,7 +107,7 @@ class NeuralWaveFunction: public WaveFunction{
          */
          _ffnn->setInput(1, x);
          _ffnn->FFPropagate();
-         out[0] = pow(_ffnn->getOutput(1), 2);
+         out[0] = _ffnn->getOutput(1);
       }
 
       double getAcceptance(){
@@ -158,18 +159,9 @@ int main(){
    using namespace std;
 
    // Declare some trial wave functions
-   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 7);
-   
-   // Store in a .txt file the values of the initial wf, so that it is possible to plot it
-   cout << "Writing the plot file of the initial wave function in plot_init_wf.txt" << endl << endl;
-   double * base_input = new double[psi->getFFNN()->getNInput()]; // no need to set it, since it is 1-dim
-   const int input_i = 0;
-   const int output_i = 1;
-   const double min = -7.5;
-   const double max = 7.5;
-   const int npoints = 500;
-   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt.txt");
-   
+   const int N_HID_LY = 1;
+   const int N_HID_UNITS = 14;
+   NeuralWaveFunction * psi = new NeuralWaveFunction(N_HID_LY, N_HID_UNITS);
    
    // Declare an Hamiltonian
    // We use the harmonic oscillator with w=1 and w=2
@@ -177,52 +169,75 @@ int main(){
    HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(w1, psi);
 
 
+   // output variables
+   NFMLogManager * log_manager = new NFMLogManager();
+   log_manager->setLoggingOn();
+   
+   double * base_input = new double[psi->getFFNN()->getNInput()]; // no need to set it, since it is 1-dim
+   const int input_i = 0;
+   const int output_i = 1;
+   const double min = -5;
+   const double max = 5;
+   const int npoints = 500;
    
    
    cout << endl << " - - - FFNN-WF FUNCTION OPTIMIZATION - - - " << endl << endl;
    
    VMC * vmc; // VMC object we will resuse
-   const long E_NMC = 10000l; // MC samplings to use for computing the energy
-   const long G_NMC = 40000l; // MC samplings to use for computing the energy gradient
+   const long E_NMC = 5000l; // MC samplings to use for computing the energy
+   const long G_NMC = 5000l; // MC samplings to use for computing the energy gradient
    double * energy = new double[4]; // energy
    double * d_energy = new double[4]; // energy error bar
    double * vp = new double[psi->getNVP()];
       
    
-   cout << "-> ham1:    w = " << w1 << endl << endl;
-   vmc = new VMC(psi, ham1);
+   cout << "-> ham:    w = " << w1 << endl << endl;
+   cout << "-> psi:    N_HID_LY = " << N_HID_LY << "     N_HID_UNITS = " << N_HID_UNITS << endl << endl;
+   
+   vmc = new VMC(psi, ham1, E_NMC, G_NMC); // ENMC and GNMC do not need to be set since we don't optimize the wave function
    
    // set an integration range, because the NN might be completely delocalized
    double ** irange = new double*[1];
    irange[0] = new double[2];
-   irange[0][0] = -7.5;
-   irange[0][1] = 7.5;
-   vmc->getMCI()->setIRange(irange);
+   irange[0][0] = -5.;
+   irange[0][1] = 5.;
+   vmc->getEnergyMCI()->setIRange(irange);
    
    
    cout << "   Starting energy:" << endl;
-   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+   vmc->computeEnergy(E_NMC, energy, d_energy);
    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
    
+   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "wf_begin.txt");
+   
    cout << "   Optimization . . ." << endl;
-   vmc->conjugateGradientOptimization(E_NMC, G_NMC);
+   
+   //vmc->configureOptimizationWithSR();
+   
+   //vmc->conjugateGradientOptimization();
+   //vmc->dynamicDescentOptimization();
+   vmc->simulatedAnnealingOptimization();
    cout << "   . . . Done!" << endl << endl;
    
    cout << "   Optimized energy:" << endl;
-   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+   vmc->computeEnergy(E_NMC, energy, d_energy);
    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl << endl;
    
-   
-   // store in a .txt file the values of the optimised wf, so that it is possible to plot it
-   cout << "Writing the plot file of the optimised wave function in plot_opt_wf.txt" << endl << endl;
-   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt.txt");
+   cout << endl << endl << "wf param = ";
+   psi->getVP(vp);
+   for (int i=0; i<psi->getNVP(); ++i){
+      cout << vp[i] << "   ";
+   }
+   cout << endl;
 
+  
+   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "wf_opt.txt");
    
    
    delete[] irange[0];

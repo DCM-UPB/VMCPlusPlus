@@ -16,7 +16,7 @@ class Hamiltonian: public MCIObservableFunctionInterface
    public:
       Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf): MCIObservableFunctionInterface(nspacedim*npart, 4)
       {
-         _nspacedim=nspacedim; _npart=npart; _wf=wf;
+         _nspacedim=nspacedim; _npart=npart; _wf = wf;
       }
       virtual ~Hamiltonian(){}
 
@@ -32,7 +32,7 @@ class Hamiltonian: public MCIObservableFunctionInterface
          double ekin=0.;
          for (int i=0; i<_ndim; ++i)
          {
-            ekin+=this->_wf->d2(i,i,r);
+            ekin += _wf->d2(i,i,r);
          }
          return (-0.5*ekin);
       }
@@ -43,8 +43,8 @@ class Hamiltonian: public MCIObservableFunctionInterface
          double foo;
          for (int i=0; i<_ndim; ++i)
          {
-            foo=this->_wf->d1(i,r);
-            ekin+=foo*foo;
+            foo = _wf->d1(i,r);
+            ekin += foo*foo;
          }
          return (0.5*ekin);
       }

@@ -128,7 +128,7 @@ int main(){
    
    // Case 1
    cout << "-> ham1:    w = " << w1 << endl << endl;
-   vmc = new VMC(psi, ham1, E_NMC, G_NMC); // ENMC and GNMC do not need to be set since we don't optimize the wave function
+   vmc = new VMC(psi, ham1);
    
    cout << "   Initial Wave Function parameters:" << endl;
    psi->getVP(vp);
@@ -136,14 +136,14 @@ int main(){
    cout << "       b = " << vp[1] << endl;
    
    cout << "   Starting energy:" << endl;
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
    
    cout << "   Optimization . . ." << endl;
-   vmc->conjugateGradientOptimization();
+   vmc->conjugateGradientOptimization(E_NMC, G_NMC);
    cout << "   . . . Done!" << endl << endl;
    
    cout << "   Optimized Wave Function parameters:" << endl;
@@ -152,7 +152,7 @@ int main(){
    cout << "       b = " << vp[1] << endl;
    
    cout << "   Optimized energy:" << endl;
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -162,7 +162,7 @@ int main(){
    
    // Case 2
    cout << "-> ham2:    w = " << w2 << endl << endl;
-   vmc = new VMC(psi, ham2, E_NMC, G_NMC); // ENMC and GNMC do not need to be set since we don't optimize the wave function
+   vmc = new VMC(psi, ham2);
    
    cout << "   Initial Wave Function parameters:" << endl;
    psi->getVP(vp);
@@ -170,14 +170,14 @@ int main(){
    cout << "       b = " << vp[1] << endl;
    
    cout << "   Starting energy:" << endl;
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
    
    cout << "   Optimization . . ." << endl;
-   vmc->conjugateGradientOptimization();
+   vmc->conjugateGradientOptimization(E_NMC, G_NMC);
    cout << "   . . . Done!" << endl << endl;
    
    cout << "   Optimized Wave Function parameters:" << endl;
@@ -186,7 +186,7 @@ int main(){
    cout << "       b = " << vp[1] << endl;
    
    cout << "   Optimized energy:" << endl;
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;

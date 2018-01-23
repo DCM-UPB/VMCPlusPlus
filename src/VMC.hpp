@@ -1,80 +1,60 @@
 #ifndef VMC_CLASS
 #define VMC_CLASS
 
-#include <iostream>
-#include <string>
-
-#include "MCIntegrator.hpp"
-#include "NoisyFunction.hpp"
-
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
-#include "VariationalGradient.hpp"
-#include "SRMatrix.hpp"
+#include "ConjugateGradientOptimization.hpp"
+#include "StochasticReconfigurationOptimization.hpp"
+
+#include "MCIntegrator.hpp"
+
+#include <stdexcept>
 
 
-class VMC: public NoisyFunctionWithGradient
-{
-   protected:
-      long _ENmc;  // number of MC steps used to compute the energy
-      long _GNmc;  // number of MC steps used to compute the energy's gradient 
-      MCI * _mcenergy;
-      WaveFunction * _wf;
-      Hamiltonian * _H;
-      VariationalGradient * _VG;
-      SRMatrix * _SRM;
-      std::string _grad_type;  // which grad should be used for the optimization? {gradE, SR}
-
-   public:
-      VMC(WaveFunction * wf, Hamiltonian * H, const int &ENmc, const int &GNmc): NoisyFunctionWithGradient(wf->getNVP())
-      {
-         using namespace std;
+class VMC{        
+protected:
+   WaveFunction * _wf;
+   Hamiltonian * _H;
+   MCI * _mci;
       
-         if (wf->getNDim() != H->getNDim())
-         {
-            cout << "ERROR VMC::VMC() : ndim different between wf and H" << endl;
-            exit(1);
-         }
-         _wf=wf; 
-         _H=H;
-         _ENmc=ENmc;
-         _GNmc=GNmc;
-         // MCI to compute the energy
-         _mcenergy = new MCI(_H->getNDim());
-         // Variational Gradient
-         _VG = new VariationalGradient(_wf,_H);
-         // SR Matrix
-         _SRM = new SRMatrix(_wf);
-         // set the default choice for the grad to use for the optimization
-         _grad_type = "gradE";
-      }
 
-      ~VMC()
-      {
-         delete _mcenergy;
-         delete _VG;
-         delete _SRM;
-      }
-      
-      // Configuration
-      void configureOptimizationWithSR(){_grad_type = "SR";}
-      void configureOptimizationWithGradE(){_grad_type = "gradE";}
+public:
+   VMC(WaveFunction * wf, Hamiltonian * H){
+      using namespace std;
+      if (wf->getNDim() != H->getNDim())
+         throw std::invalid_argument( "Error VMC: ndim different between wf and H" );
+      _wf=wf; 
+      _H=H;
+      _mci = new MCI(_H->getNDim());
+   }
 
-      // --- Getters
-      MCI * getEnergyMCI(){return _mcenergy;}
+   ~VMC(){
+      delete _mci;
+   }
+   
+   
+   // Monte Carlo Integral within VMC should be performed using the MCI object provided by VMC
+   MCI * getMCI(){return _mci;}
+   
+   
+   // Computation of the variational energy
+   void computeVariationalEnergy(const long & Nmc, double * E, double * dE);
+   
 
-      // Conjugate Gradient minimization
-      void conjugateGradientOptimization();
-
-      // Computation of the energy
-      void computeEnergy(const long & Nmc, double * E, double * dE);
-
-      // Computation of the energy gradient
-      void computeEnergyGradient(const long & Nmc, double * gradE, double * dgradE);
-
-      // Implementation of the NoisyFunctionWithGradient interface
-      void f(const double * in, double &f, double &df);  // compute the energy
-      void grad(const double *in, double *g, double *dg);  // compute the gradient of the energy
+   // Wave Function Optimization Methods
+   void conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc){
+      ConjugateGradientOptimization * opt = new ConjugateGradientOptimization(_wf, _H, E_Nmc, grad_E_Nmc, getMCI());
+      opt->optimizeWF();
+      delete opt;
+   };
+   
+   void stochasticReconfigurationOptimization(const long &Nmc){
+      StochasticReconfigurationOptimization * opt = new StochasticReconfigurationOptimization(_wf, _H, Nmc, getMCI());
+      opt->optimizeWF();
+      delete opt;
+   };
+   
+   //void simulatedAnnealingOptimization();
 
 };
 

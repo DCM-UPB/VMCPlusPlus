@@ -4,17 +4,31 @@
 
 ## Example 1
 
-`ex1/`: Energy evaluation for a 1 particle harmonic oscillator and some given trial wave function.
+`ex1/`: Evaluation of the variational energy for a 1-particle 1-dimension harmonic oscillator using four different trial wave functions.
 
 
 
 ## Example 2
 
-`ex2/`: Optimize some trial wave functions for a 1 particle harmonic oscillator.
+`ex2/`: Optimize a trial wave functions for -particle 1-dimension harmonic oscillator using the Conjugate Gradient method, setting the potential parameter w=1 and w=2.
 
 
 
 ## Example 3
 
-`ex3/`: Use a FFNN as wave function.
+`ex3/`: as `ex2`, but using a FFNN as wave function. It outputs some files that can be used to plot the wave function.
+WARNING: Sometimes the conjugate gradient method get stuck and fails. Not always the optimisation method find a good minimum, depending on the starting variational parameters of the NN. (One could use always the same NN, but it can be instructive to see what happens with different starting points)
 INFO: This example need the FFNN library.
+
+
+
+## Example 4
+
+`ex4/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
+
+
+
+
+## Example 5
+
+`ex5/`: as `ex3`, but using the SR optimization method instead of the conjugate gradient
