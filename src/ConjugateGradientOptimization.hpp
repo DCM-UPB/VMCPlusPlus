@@ -8,6 +8,8 @@
 #include "MCIntegrator.hpp"
 
 
+
+
 class ConjugateGradientOptimization: public WFOptimization{
    
 private:
@@ -17,12 +19,13 @@ private:
 
 public:
    ConjugateGradientOptimization(WaveFunction * wf, Hamiltonian * H, const long &E_Nmc, const long &grad_E_Nmc, MCI * mci): WFOptimization(wf, H, mci){
-      _E_Nmc = E_Nmc; _grad_E_Nmc = grad_E_Nmc;
+      _E_Nmc = E_Nmc;
+      _grad_E_Nmc = grad_E_Nmc;
    }
    virtual ~ConjugateGradientOptimization(){}
    
    // optimization
-   void optimizeWF(){
+   void optimizeWF(){      
       // create targetfunction
       ConjugateGradientTargetFunction * targetf = new ConjugateGradientTargetFunction(_wf, _H, _E_Nmc, _grad_E_Nmc, getMCI());
       // declare the Conjugate Gradient object
@@ -41,7 +44,7 @@ public:
       // free memory
       delete[] wfpar;
       delete cjgrad;
-      delete targetf;
+      delete targetf;            
    }
    
 };

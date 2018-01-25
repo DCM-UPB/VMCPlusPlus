@@ -158,7 +158,7 @@ int main(){
    using namespace std;
 
    // Declare some trial wave functions
-   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 7);
+   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 5);
    
    // Store in a .txt file the values of the initial wf, so that it is possible to plot it
    cout << "Writing the plot file of the initial wave function in plot_init_wf.txt" << endl << endl;
@@ -174,7 +174,7 @@ int main(){
    // Declare an Hamiltonian
    // We use the harmonic oscillator with w=1 and w=2
    const double w1 = 1.;
-   HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(w1, psi);
+   HarmonicOscillator1D1P * ham = new HarmonicOscillator1D1P(w1, psi);
 
 
    
@@ -182,15 +182,15 @@ int main(){
    cout << endl << " - - - FFNN-WF FUNCTION OPTIMIZATION - - - " << endl << endl;
    
    VMC * vmc; // VMC object we will resuse
-   const long E_NMC = 10000l; // MC samplings to use for computing the energy
-   const long G_NMC = 40000l; // MC samplings to use for computing the energy gradient
+   const long E_NMC = 5000l; // MC samplings to use for computing the energy
+   const long G_NMC = 10000l; // MC samplings to use for computing the energy gradient
    double * energy = new double[4]; // energy
    double * d_energy = new double[4]; // energy error bar
    double * vp = new double[psi->getNVP()];
       
    
    cout << "-> ham1:    w = " << w1 << endl << endl;
-   vmc = new VMC(psi, ham1);
+   vmc = new VMC(psi, ham);
    
    // set an integration range, because the NN might be completely delocalized
    double ** irange = new double*[1];
@@ -227,10 +227,12 @@ int main(){
    
    delete[] irange[0];
    delete[] irange;
+   delete vmc;
    delete[] vp;
    delete[] d_energy;
    delete[] energy;
-   delete vmc;
+   delete ham;
+   delete base_input;
    delete psi;
 
    
