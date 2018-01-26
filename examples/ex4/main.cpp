@@ -46,7 +46,10 @@ class QuadrExponential1D1POrbital: public WaveFunction{
       
       void setVP(const double *in){
          _a=in[0];
-         _b=in[1];
+         if (in[1] < 0.1)   // b cannot be negative, so set a threshold of 0.1
+            _b = 0.1;
+         else
+            _b=in[1];
       }
       
       void getVP(double *out){
@@ -113,24 +116,17 @@ int main(){
    HarmonicOscillator1D1P * ham = new HarmonicOscillator1D1P(w, psi);
    
    
-   NFMLogManager logManager = NFMLogManager();
-   logManager.setLoggingOn();
-   
-   
-   
    cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
    
-   VMC * vmc; // VMC object we will resuse
-   const long NMC = 1000l; // MC samplings to use for computing the energy
+   const long NMC = 5000l; // MC samplings to use for computing the energy
    double * energy = new double[4]; // energy
    double * d_energy = new double[4]; // energy error bar
    double * vp = new double[psi->getNVP()];
    
    
    
-   // Case 1
-   cout << "-> ham:    w = " << w << endl << endl;
-   vmc = new VMC(psi, ham); 
+   VMC * vmc = new VMC(psi, ham);
+   cout << "-> ham:    w = " << w << endl << endl; 
       
    cout << "   Initial Wave Function parameters:" << endl;
    psi->getVP(vp);

@@ -158,7 +158,7 @@ int main(){
    using namespace std;
 
    // Declare some trial wave functions
-   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 5);
+   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 30);
    
    // Store in a .txt file the values of the initial wf, so that it is possible to plot it
    cout << "Writing the plot file of the initial wave function in plot_init_wf.txt" << endl << endl;

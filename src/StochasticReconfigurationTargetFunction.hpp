@@ -38,9 +38,7 @@ class StochasticReconfigurationTargetFunction: public NoisyFunctionWithGradient
       
       
       // NoisyFunctionWithGradient implementation
-      void f(const double *vp, double &f, double &df){
-         std::cout << "   f    " << std::endl;
-         
+      void f(const double *vp, double &f, double &df){         
          // set the variational parameters given as input
          _wf->setVP(vp);
          // set up the MC integrator
@@ -49,10 +47,7 @@ class StochasticReconfigurationTargetFunction: public NoisyFunctionWithGradient
          // perform the integral and store the values
          double * obs = new double[4];
          double * dobs = new double[4];
-         std::cout << "vp = " << vp[0] << "   " << vp[1] << std::endl;
-         std::cout << "integrate " << _Nmc << "   " << _mci->getNSampF() << "   " << _mci->getNObs() << "   X = " << _mci->getX(0) <<  std::endl;
          _mci->integrate(_Nmc, obs, dobs);
-         std::cout << "end integrate" << std::endl;
          f = obs[0];
          df = dobs[0];
          // free resources
@@ -61,7 +56,6 @@ class StochasticReconfigurationTargetFunction: public NoisyFunctionWithGradient
       }
       
       void grad(const double *vp, double *grad_E, double *dgrad_E){
-         std::cout << "   grad    " << std::endl;
          
          // set the variational parameters given as input
          _wf->setVP(vp);
