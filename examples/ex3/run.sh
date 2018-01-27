@@ -11,9 +11,9 @@ FLAG_TO_USE="${OPTFLAGS}"
 
 # project root directory
 ROOT_FOLDER=$(dirname $(dirname $(pwd)))
-
+echo ${ROOT_FOLDER}
 #runtime dynamic library path
-RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}"
+RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}:${FFNN_FOLDER}"
 
 # Build the debugging main executable
 echo "$CC $FLAGS $FLAG_TO_USE $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp"
