@@ -265,27 +265,27 @@ class HarmonicOscialltor1D1P: public Hamiltonian
 
 \begin{lstlisting}
 // #include "VMC.hpp"
-class VMC: public NoisyFunctionWithGradient
-{
-   public:
-      VMC(WaveFunction * wf, Hamiltonian * H, 
-            const int &ENmc, const int &GNmc): 
-            NoisyFunctionWithGradient(wf->getNVP());
-      ~VMC();
+class VMC{        
 
-      // Getters
-      MCI * getEnergyMCI();
+public:
+   VMC(WaveFunction * wf, Hamiltonian * H);
+   ~VMC();
+   
+   
+   // Monte Carlo Integral within VMC should be performed using the MCI object provided by VMC
+   MCI * getMCI(){return _mci;}
+   
+   
+   // Computation of the variational energy
+   void computeVariationalEnergy(const long & Nmc, double * E, double * dE);
+   
 
-      // Conjugate Gradient minimization
-      void conjugateGradientOptimization();
-
-      // Computation of the energy
-      void computeEnergy(const long & Nmc, 
-            double * E, double * dE);
-
-      // Computation of the energy gradient
-      void computeEnergyGradient(const long & Nmc, 
-            double * gradE, double * dgradE);
+   // Wave Function Optimization Methods
+   void conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc);
+   
+   void stochasticReconfigurationOptimization(const long &Nmc);
+   
+   void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params);
 
 };
 \end{lstlisting}
@@ -296,59 +296,22 @@ The Variational Monte Carlo (VMC) method is a method that uses a minimisation me
 \end{equation}
 is minimised.
 In Eq. \eqref{eq:variational_energy} $H$ is the Hamiltonian, and we have assumed that both the Hamiltonian and the wave functions are real, as it is done by this library.
-The minimisation is done by using a conjugate gradient algorithm.
+The minimisation can be achieved by using several optimisation algorithms. At the end of the optimization process, the wave function will be set to have the optimal variational parameters
 
 \begin{itemize}
    \item \verb+VMC+: The constructor. It requires a wave function, a Hamiltonian, and the number of sampling points to use for computing the energy (\verb+ENmc+) and the energy gradient (\verb+GNmc+) during the optimisation process. Notice that the constructor inform the constructor of \verb+NoisyFunctionWithGradient+ about the number of the number of variational parameters used by the wave function;
-   \item \verb+getEnergyMCI+: Returns a pointer to the \verb+MCIntegrator+ used to compute the variational energy;
-   \item \verb+conjugateGradientOptimization+: Perform the optimisation of the wave function. At the end of the process, the wave function will be set to have the optimal variational parameters;
-   \item \verb+computeEnergy+: Compute the total, kinetic, and potential energies for the given wave function;
-   \item \verb+computeEnergyGradient+: Compute the gradient of the energy (in respect to the variational parameters).
+   \item \verb+getMCI+: Returns a pointer to the \verb+MCI+ object used to compute the variational energy and the wave function derivatives;
+   \item \verb+computeVariationalEnergy+: Compute the total, kinetic, and potential energies for the given wave function. In fact \verb+E+ is expected to be an array of size 4, where \verb+E[0]+ is the total energy, \verb+E[1]+ is is the potential energy, \verb+E[2]+ is the Pandharipande-Bethe kinetic energy (i.e. the "real" kinetic energy), and \verb+E[3]+ is the Jackson-Feenberg kinetic energy;
+   \item \verb+conjugateGradientOptimization+: Optimise the trial wave function using the conjugate gradient method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library. It requires the number of sampling points for computing the energy during the linear search, and the number of samplings to use for computing the energy gradient;
+   \item \verb+stochasticReconfigurationOptimization+: Optimise the trial wave function using the Dynamic Descent method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library using as direction the one obtained using the Stochastic Reconfiguration (SR) approach. It requires the number of sampling points for computing the SR direction;
+   \item \verb+simulatedAnnealingOptimization+: Optimise the trial wave function using the Simulated Annealing algorithm contained in the GSL library (read \href{https://www.gnu.org/software/gsl/doc/html/siman.html}{here}). The simulated annealing will try to minimise the target function
+   $$
+   \iota E + \kappa \sigma_E + \lambda \frac{\sqrt{ \sum_{i=1}^{N_{\alpha}} \alpha_i^2 }}{N_{\alpha}}
+   $$
+   where $E$ is the energy, $\sigma_E$ is the energy's standard deviation, and the last term represents a normalization factor, often used in Machine Learning. The weight of each term is controlled by the three parameters $\iota$ (\verb+iota+), $\kappa$ (\verb+kappa+), and $\lambda$ (\verb+lambda+), which must be provided to the method. Furthermore the method requires \verb+Nmc+, the number of sampling points for computing the target function integrals ($E$ and $\sigma_E$), and the GSL siman library parameters.
 \end{itemize}
 
-As example, we will demonstrate how to use the wave function and Hamiltonian of the examples in the previous sections for performing a VMC simulation, with some prints to demonstrate its effectiveness:
-
-\begin{lstlisting}
-int main(){
-   const long NMC = 10000l;
-   
-   QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0,1.1);
-   HarmonicOscialltor1D1P * harm_osc = new HarmonicOscialltor1D1P(1.,qexp);
-   
-   double * a = new double[2];
-   qexp->getVP(a);
-   cout << "Wave Function a     = " << a[0] << endl;
-   cout << "Wave Function b     = " << a[1] << endl;
-   
-   double * energy = new double[4];
-   double * d_energy = new double[4];
-   vmc2->computeEnergy(NMC,energy,d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   
-   VMC * vmc = new VMC(qexp,harm_osc,NMC,10l*NMC);
-   vmc->conjugateGradientOptimization();
-   
-   qexp->getVP(a);
-   cout << "Wave Function a     = " << a[0] << endl;
-   cout << "Wave Function b     = " << a[1] << endl;
-   
-   vmc2->computeEnergy(NMC,energy,d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   
-   delete[] a;
-   delete[] energy;
-   delete[] d_energy;
-   delete vmc;
-   delete harm_osc;
-   delete qexp;
-}
-\end{lstlisting}
+Examples can be found in the folder \verb+examples+.
 
 % section vmc (end)
 

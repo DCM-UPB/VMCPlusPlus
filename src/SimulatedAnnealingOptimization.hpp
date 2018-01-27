@@ -12,7 +12,7 @@ namespace vmc_siman{
    
    WaveFunction * wf;
    Hamiltonian * H;
-   long E_Nmc;
+   long Nmc;
    MCI * mci;
    
    // Simulated Annealing target function parameters
@@ -34,7 +34,7 @@ namespace vmc_siman{
       double * d_energy = new double[4]; // energy error bar
       mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
       mci->clearObservables(); mci->addObservable(H);
-      mci->integrate(E_Nmc, energy, d_energy);
+      mci->integrate(Nmc, energy, d_energy);
    
       // compute the normalization
       double norm = 0.;
@@ -97,10 +97,10 @@ private:
    gsl_siman_params_t _params; // = {N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL, MU_T, T_MIN};
 
 public:
-   SimulatedAnnealingOptimization(WaveFunction * wf, Hamiltonian * H, const long &E_Nmc, MCI * mci, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params): WFOptimization(wf, H, mci){
+   SimulatedAnnealingOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params): WFOptimization(wf, H, mci){
       vmc_siman::wf = wf;
       vmc_siman::H = H;
-      vmc_siman::E_Nmc = E_Nmc;
+      vmc_siman::Nmc = Nmc;
       vmc_siman::mci = mci;
       vmc_siman::iota = iota;
       vmc_siman::kappa = kappa;

@@ -56,8 +56,8 @@ public:
       delete opt;
    };
    
-   void simulatedAnnealingOptimization(const long &E_Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params){
-      SimulatedAnnealingOptimization * opt = new SimulatedAnnealingOptimization(_wf, _H, E_Nmc, getMCI(), iota, kappa, lambda, params);
+   void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params){
+      SimulatedAnnealingOptimization * opt = new SimulatedAnnealingOptimization(_wf, _H, Nmc, getMCI(), iota, kappa, lambda, params);
       opt->optimizeWF();
       delete opt;
    };
