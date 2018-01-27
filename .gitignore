@@ -58,6 +58,9 @@ xcuserdata
 DerivedData
 *.xcuserstate
 
+# --- Mac OS files
+exe.dSYM/
+
 # -- project specific ignores --
 lib*
 config.sh
