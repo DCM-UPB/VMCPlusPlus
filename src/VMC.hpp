@@ -44,23 +44,11 @@ public:
    
 
    // Wave Function Optimization Methods
-   void conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc){
-      ConjugateGradientOptimization * opt = new ConjugateGradientOptimization(_wf, _H, E_Nmc, grad_E_Nmc, getMCI());
-      opt->optimizeWF();
-      delete opt;
-   };
+   void conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc);
    
-   void stochasticReconfigurationOptimization(const long &Nmc){
-      StochasticReconfigurationOptimization * opt = new StochasticReconfigurationOptimization(_wf, _H, Nmc, getMCI());
-      opt->optimizeWF();
-      delete opt;
-   };
+   void stochasticReconfigurationOptimization(const long &Nmc);
    
-   void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params){
-      SimulatedAnnealingOptimization * opt = new SimulatedAnnealingOptimization(_wf, _H, Nmc, getMCI(), iota, kappa, lambda, params);
-      opt->optimizeWF();
-      delete opt;
-   };
+   void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params);
 
 };
 
