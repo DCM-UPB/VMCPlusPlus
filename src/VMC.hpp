@@ -5,10 +5,12 @@
 #include "Hamiltonian.hpp"
 #include "ConjugateGradientOptimization.hpp"
 #include "StochasticReconfigurationOptimization.hpp"
+#include "SimulatedAnnealingOptimization.hpp"
 
 #include "MCIntegrator.hpp"
 
 #include <stdexcept>
+#include <gsl/gsl_siman.h>
 
 
 class VMC{        
@@ -54,7 +56,11 @@ public:
       delete opt;
    };
    
-   //void simulatedAnnealingOptimization();
+   void simulatedAnnealingOptimization(const long &E_Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params){
+      SimulatedAnnealingOptimization * opt = new SimulatedAnnealingOptimization(_wf, _H, E_Nmc, getMCI(), iota, kappa, lambda, params);
+      opt->optimizeWF();
+      delete opt;
+   };
 
 };
 
