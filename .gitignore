@@ -72,6 +72,7 @@ debug/exe
 
 examples/*/exe
 examples/*/*.o
+examples/*/*.txt
 
 doc/*.aux
 doc/*.dvi
