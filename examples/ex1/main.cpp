@@ -20,6 +20,7 @@ protected:
 public:
    HarmonicOscillator1D1P(const double w, WaveFunction * wf): 
       Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
+   virtual ~HarmonicOscillator1D1P(){}
    
    // potential energy
    double localPotentialEnergy(const double *r)
@@ -171,8 +172,8 @@ int main(){
    
    // Case 1
    cout << "-> psi1: " << endl;
-   vmc = new VMC(psi1, ham1, 0, 0); // ENMC and GNMC do not need to be set since we don't optimize the wave function
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc = new VMC(psi1, ham1); 
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -181,8 +182,8 @@ int main(){
    // Case 2
    cout << "-> psi2: " << endl;
    delete vmc;
-   vmc = new VMC(psi2, ham2, 0, 0);
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc = new VMC(psi2, ham2);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -191,8 +192,8 @@ int main(){
    // Case 3
    cout << "-> psi3: " << endl;
    delete vmc;
-   vmc = new VMC(psi3, ham3, 0, 0);
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc = new VMC(psi3, ham3);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -201,8 +202,8 @@ int main(){
    // Case 4
    cout << "-> psi4: " << endl;
    delete vmc;
-   vmc = new VMC(psi4, ham4, 0, 0);
-   vmc->computeEnergy(E_NMC, energy, d_energy);
+   vmc = new VMC(psi4, ham4);
+   vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -212,6 +213,17 @@ int main(){
    delete[] d_energy;
    delete[] energy;
    delete vmc;
+   
+   
+   delete ham4;
+   delete ham3;
+   delete ham2;
+   delete ham1;
+   
+   delete psi4;
+   delete psi3;
+   delete psi2;
+   delete psi1;
 
    
 
