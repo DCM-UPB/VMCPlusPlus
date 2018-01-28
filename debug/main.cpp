@@ -4,7 +4,6 @@
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VMC.hpp"
-#include "ConjGrad.hpp"
 
 
 class QuadrExponential1D1POrbital: public WaveFunction

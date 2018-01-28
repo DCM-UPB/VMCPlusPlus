@@ -158,7 +158,7 @@ int main(){
    using namespace std;
 
    // Declare some trial wave functions
-   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 30);
+   NeuralWaveFunction * psi = new NeuralWaveFunction(1, 10);
    
    // Store in a .txt file the values of the initial wf, so that it is possible to plot it
    cout << "Writing the plot file of the initial wave function in plot_init_wf.txt" << endl << endl;
@@ -195,8 +195,8 @@ int main(){
    // set an integration range, because the NN might be completely delocalized
    double ** irange = new double*[1];
    irange[0] = new double[2];
-   irange[0][0] = -7.5;
-   irange[0][1] = 7.5;
+   irange[0][0] = -5.0;
+   irange[0][1] = 5.0;
    vmc->getMCI()->setIRange(irange);
    
    
