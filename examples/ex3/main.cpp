@@ -168,7 +168,7 @@ int main(){
    const double min = -7.5;
    const double max = 7.5;
    const int npoints = 500;
-   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt.txt");
+   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt");
    
    
    // Declare an Hamiltonian
@@ -221,7 +221,7 @@ int main(){
    
    // store in a .txt file the values of the optimised wf, so that it is possible to plot it
    cout << "Writing the plot file of the optimised wave function in plot_opt_wf.txt" << endl << endl;
-   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt.txt");
+   writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt");
 
    
    

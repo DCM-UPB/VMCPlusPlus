@@ -1,4 +1,4 @@
-# -- Mac OS files (from github's Global/OSX.gitignore) --
+<# -- Mac OS files (from github's Global/OSX.gitignore) --
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -58,9 +58,6 @@ xcuserdata
 DerivedData
 *.xcuserstate
 
-# --- Mac OS files
-exe.dSYM/
-
 # -- project specific ignores --
 lib*
 config.sh
@@ -68,10 +65,11 @@ config.sh
 src/*.o
 
 debug/*.o
-debug/exe
+debug/exe*
 
-examples/*/exe
+examples/*/exe*
 examples/*/*.o
+examples/*/*.txt
 
 doc/*.aux
 doc/*.dvi
