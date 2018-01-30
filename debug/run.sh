@@ -33,9 +33,6 @@ case ${OS_NAME} in
    "Darwin")
       echo "$CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL"
       $CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL
-      
-      echo "install_name_tool -change lib${LIBNAME}.so $(pwd)/../lib${LIBNAME}.so exe"
-      install_name_tool -change lib${LIBNAME}.so $(pwd)/../lib${LIBNAME}.so exe
       ;;
    "Linux")
       echo "$CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src -L$(pwd)/.. -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME}" $LIBMCI $LIBNFM $LIBGSL

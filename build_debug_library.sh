@@ -5,10 +5,21 @@ source config.sh
 \rm -f *.so
 cd src/
    \rm -f *.o *.so
-   echo "$CC $FLAGS $DEBUGFLAGS -fpic $IMCI $INFM  -c *.cpp"
-   $CC $FLAGS $DEBUGFLAGS -fpic $IMCI $INFM  -c *.cpp
-   echo "$CC $FLAGS $DEBUGFLAGS -shared $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL"
-   $CC $FLAGS $DEBUGFLAGS -shared $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL
+   echo "$CC $FLAGS $DEBUGFLAGS -fpic $IMCI $INFM -c *.cpp"
+   $CC $FLAGS $DEBUGFLAGS -fpic $IMCI $INFM -c *.cpp
+
+   case ${OS_NAME} in
+       "Darwin")
+       ROOT_FOLDER=$(dirname $(pwd))
+       echo "$CC $FLAGS $DEBUGFLAGS -shared -install_name ${ROOT_FOLDER}/lib${LIBNAME}.so $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL"
+       $CC $FLAGS $DEBUGFLAGS -shared -install_name ${ROOT_FOLDER}/lib${LIBNAME}.so $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL
+       ;;
+       "Linux")
+       echo "$CC $FLAGS $DEBUGFLAGS -shared $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL"
+       $CC $FLAGS $DEBUGFLAGS -shared $LMCI $LNFM $LGSL -o lib${LIBNAME}.so *.o $LIBMCI $LIBNFM $LIBGSL
+       ;;
+   esac
+
    mv lib${LIBNAME}.so ../
 cd ..
 
