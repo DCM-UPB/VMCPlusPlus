@@ -66,6 +66,9 @@ src/*.o
 
 debug/*.o
 debug/exe*
+debug/unittest/ut*/exe
+debug/unittest/ut*/*.o
+debug/unittest/ut*/run_single_unittest.sh
 
 examples/*/exe*
 examples/*/*.o

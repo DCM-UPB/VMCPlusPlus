@@ -46,7 +46,7 @@ double FFNNWaveFunction::getAcceptance(){
 double FFNNWaveFunction::d1(const int &i, const double *in){
     _ffnn->setInput(_ffnn->getNInput(), in);
     _ffnn->FFPropagate();
-    return _ffnn->getFirstDerivative(1, i);
+    return _ffnn->getFirstDerivative(1, i)/_ffnn->getOutput(1);
 }
 
 
@@ -56,14 +56,14 @@ double FFNNWaveFunction::d2(const int &i, const int &j, const double *in){
 
     _ffnn->setInput(_ffnn->getNInput(), in);
     _ffnn->FFPropagate();
-    return _ffnn->getSecondDerivative(1, i);
+    return _ffnn->getSecondDerivative(1, i)/_ffnn->getOutput(1);
 }
 
 
 double FFNNWaveFunction::vd1(const int &i, const double *in){
     _ffnn->setInput(_ffnn->getNInput(), in);
     _ffnn->FFPropagate();
-    return _ffnn->getVariationalFirstDerivative(1, i);
+    return _ffnn->getVariationalFirstDerivative(1, i)/_ffnn->getOutput(1);
 }
 
 
