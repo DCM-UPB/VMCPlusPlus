@@ -68,20 +68,22 @@ double FFNNWaveFunction::vd1(const int &i, const double *in){
 
 
 
+// -- Constructor and destructor
 
-// FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn)
-//     :WaveFunction(nspacedim, npart, 1, ffnn->getNBeta()){
-//     if (ffnn->getNInput() != nspacedim*npart)
-//         throw std::invalid_argument( "FFNN number of inputs does not fit the nspacedime and npart" );
-//
-//     if (ffnn->getNOutput() != 1)
-//         throw std::invalid_argument( "FFNN number of output does not fit the wave function requirement (only one value)" );
-//
-//     _ffnn = ffnn;
-// }
-//
-//
-//
-// FFNNWaveFunction::~FFNNWaveFunction(){
-//     _ffnn = 0;
-// }
+
+FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn)
+    :WaveFunction(nspacedim, npart, 1, ffnn->getNBeta()){
+    if (ffnn->getNInput() != nspacedim*npart)
+        throw std::invalid_argument( "FFNN number of inputs does not fit the nspacedime and npart" );
+
+    if (ffnn->getNOutput() != 1)
+        throw std::invalid_argument( "FFNN number of output does not fit the wave function requirement (only one value)" );
+
+    _ffnn = ffnn;
+}
+
+
+
+FFNNWaveFunction::~FFNNWaveFunction(){
+    _ffnn = 0;
+}
