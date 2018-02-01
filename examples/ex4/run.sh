@@ -16,7 +16,7 @@ ROOT_FOLDER=$(dirname $(dirname $(pwd)))
 RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}:${FFNN_FOLDER}"
 
 # Build the debugging main executable
-echo "$CC $FLAGS $FLAG_TO_USE $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp"
+echo "$CC $FLAGS $FLAG_TO_USE -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp"
 $CC $FLAGS $FLAG_TO_USE -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp
 
 # For Mac OS, the install name is wrong and must be corrected
