@@ -43,7 +43,7 @@ class QuadrExponential1D1POrbital: public WaveFunction
          return (-2.*_b*(in[0]-_a) );
       }
 
-      double d2(const int &i, const int &j, const double *in)
+      double d2(const int &i, const double *in)
       {
          return ( -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)) ) ;
       }
@@ -100,7 +100,7 @@ class Gaussian1D1POrbital: public WaveFunction
          return -2.*_b*(*in);
       }
 
-      double d2(const int &i, const int &j, const double *in)
+      double d2(const int &i, const double *in)
       {
          if (_b<0.) return -1.;
          return -2.*_b+4.*_b*_b*(*in)*(*in);
@@ -133,7 +133,7 @@ int main(){
    *irange = new double[2];
    irange[0][0] = -25.;
    irange[0][1] = 25.;
-   
+
    Gaussian1D1POrbital * gauss = new Gaussian1D1POrbital(1.2);
    HarmonicOscillator1D1P * harm_osc = new HarmonicOscillator1D1P(1.,gauss);
    QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0,1.1);
@@ -152,7 +152,7 @@ int main(){
    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-   
+
    cout << endl << " - - - ONE-DIMENSIONAL MINIMIZATION - - - " << endl << endl;
    double * b = new double;
    gauss->getVP(b);
@@ -167,7 +167,7 @@ int main(){
    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
    delete b;
-   
+
    //cout << endl << " - - - MULTIDIMENSIONAL MINIMIZATION - - - " << endl << endl;
    //double * a1 = new double[2];
    //qexp->getVP(a1);
@@ -196,22 +196,20 @@ int main(){
    //cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
    //delete[] a;
    //delete vmc2;
-   
+
    delete[] energy;
    delete[] d_energy;
-   
+
    delete vmc;
    delete b1;
-   
+
    delete harm_osc;
    delete harm_osc2;
    delete gauss;
    delete qexp;
-   
+
    delete[] *irange;
    delete[] irange;
 
    return 0;
 }
-
-

@@ -50,10 +50,7 @@ double FFNNWaveFunction::d1(const int &i, const double *in){
 }
 
 
-double FFNNWaveFunction::d2(const int &i, const int &j, const double *in){
-    if (i != j)
-        throw std::invalid_argument( "in FFNNWaveFunction.d2() i and j must be the same!" );
-
+double FFNNWaveFunction::d2(const int &i, const double *in){
     _ffnn->setInput(_ffnn->getNInput(), in);
     _ffnn->FFPropagate();
     return _ffnn->getSecondDerivative(1, i)/_ffnn->getOutput(1);

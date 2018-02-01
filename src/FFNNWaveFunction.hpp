@@ -39,7 +39,7 @@ public:
     // first derivative divided by the wf
     double d1(const int &, const double * ); // 0 <= i <= _ndim
     // second derivative divided by the wf
-    double d2(const int &, const int &, const double *);  // 0 <= i <= _ndim  ,  0 <= j <= _ndim
+    double d2(const int &, const double *);  // 0 <= i <= _ndim  ,  0 <= j <= _ndim
     // variational derivative divided by the wf
     double vd1(const int &, const double *);  // 0 <= i <= _npv
 };

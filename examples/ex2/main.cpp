@@ -74,7 +74,7 @@ class QuadrExponential1D1POrbital: public WaveFunction{
          return (-2.*_b*(x[0]-_a) );
       }
 
-      double d2(const int &i, const int &j, const double *x){
+      double d2(const int &i, const double *x){
          /*
          Compute:    d^2/dx_i^2 log(Psi(x))
          */
