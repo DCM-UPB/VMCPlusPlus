@@ -1,171 +1,16 @@
 #include <iostream>
 #include <cmath>
-#include <math.h>
-#include <fstream>
+#include <gsl/gsl_siman.h>
+#include <stdexcept>
 
-#include "NoisyFunction.hpp"
-#include "ConjGrad.hpp"
-#include "MCIntegrator.hpp"
 #include "FeedForwardNeuralNetwork.hpp"
-#include "PrintUtilities.hpp"
 #include "WaveFunction.hpp"
+#include "FFNNWaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VMC.hpp"
+#include "ConjGrad.hpp"
+#include "LogNFM.hpp"
 
-
-
-//1D Target Function
-class Function1D {
-public:
-  //Function1D(){}
-  virtual ~Function1D(){}
-
-  // Function evaluation
-  virtual double f(const double &) = 0;
-  //                    ^input
-};
-
-// exp(-a*(x-b)^2)
-class Gaussian: public Function1D{
-private:
-  double _a;
-  double _b;
-
-public:
-  Gaussian(const double &a, const double &b): Function1D(){
-    _a = a;
-    _b = b;
-  }
-
-  double f(const double &x){
-    return exp(-_a*pow(x-_b, 2));
-  }
-};
-
-// Quadratic distance between NN and 1D target function
-class NNFitDistance1D: public MCIObservableFunctionInterface{
-private:
-  FeedForwardNeuralNetwork * _ffnn;
-  Function1D * _ftarget;
-public:
-  NNFitDistance1D(FeedForwardNeuralNetwork * ffnn, Function1D * ftarget): MCIObservableFunctionInterface(1, 1) {_ffnn = ffnn; _ftarget = ftarget;}
-protected:
-    void observableFunction(const double * in, double * out){
-
-      _ffnn->setInput(1, &in[0]);
-      _ffnn->FFPropagate();
-      out[0] = pow(_ffnn->getOutput(1) - _ftarget->f(in[0]), 2);
-
-    }
-};
-
-// Gradient of Quadratic distance between NN and 1D target function
-class NNFitGradient1D: public MCIObservableFunctionInterface{
-private:
-  FeedForwardNeuralNetwork * _ffnn;
-  Function1D * _ftarget;
-public:
-  NNFitGradient1D(FeedForwardNeuralNetwork * ffnn, Function1D * ftarget): MCIObservableFunctionInterface(1, ffnn->getNBeta()) {_ffnn = ffnn; _ftarget = ftarget;}
-protected:
-  void observableFunction(const double * in, double * out){
-
-    _ffnn->setInput(1, &in[0]);
-    _ffnn->FFPropagate();
-
-    double nnout = _ffnn->getOutput(1);
-    double fx = _ftarget->f(in[0]);
-
-    for(int i=0; i<_nobs; ++i){
-        out[i] = 2.*(nnout - fx)*_ffnn->getVariationalFirstDerivative(1, i);
-      }
-  }
-};
-
-//
-class FitNN1D: public NoisyFunctionWithGradient{
-private:
-  FeedForwardNeuralNetwork * _ffnn;
-  Function1D * _ftarget;
-  MCI * _mcif, * _mcig;
-  long _nmc;
-  double _x0, _step0;
-
-public:
-  FitNN1D(FeedForwardNeuralNetwork * ffnn, Function1D * ftarget, const long &nmc, double * irange): NoisyFunctionWithGradient(ffnn->getNBeta()){
-    _ffnn = ffnn;
-    _ftarget = ftarget;
-    _nmc = nmc;
-
-    _x0 = 0.5*(irange[0] + irange[1]);
-    _step0 = 0.1*(irange[1] - irange[0]);
-
-    _mcif = new MCI(1);
-    _mcig = new MCI(1);
-
-    MCIObservableFunctionInterface * fobs = new NNFitDistance1D(_ffnn, _ftarget);
-    MCIObservableFunctionInterface * gobs = new NNFitGradient1D(_ffnn, _ftarget);
-
-    _mcif->addObservable(fobs);
-    _mcig->addObservable(gobs);
-
-    double ** intrange = new double*[1];
-    intrange[0] = irange;
-    _mcif->setIRange(intrange);
-    _mcig->setIRange(intrange);
-
-    double targetacceptrate = 0.5;
-    _mcif->setTargetAcceptanceRate(&targetacceptrate);
-    _mcig->setTargetAcceptanceRate(&targetacceptrate);
-
-  }
-
-  void f(const double * in, double &f, double &df){
-    int i;
-
-    //set new NN betas
-    for (i=0; i<_ffnn->getNBeta(); ++i){
-      _ffnn->setBeta(i, in[i]);
-    }
-
-    // initial walker position and step size
-    _mcif->setX(&_x0);
-    _mcif->setMRT2Step(&_step0);
-
-    // integrate
-    double * average = new double[_mcif->getNObsDim()];
-    double * error = new double[_mcif->getNObsDim()];
-    _mcif->integrate(_nmc, average, error);
-
-    // write out results
-    f = average[0];
-    df = error[0];
-  }
-
-  void grad(const double * in, double * g, double * dg){
-    int i, nbeta = _ffnn->getNBeta();
-
-    //set new NN betas
-    for (i=0; i<nbeta; ++i){
-      _ffnn->setBeta(i, in[i]);
-    }
-
-    // initial walker position and step size
-    _mcig->setX(&_x0);
-    _mcig->setMRT2Step(&_step0);
-
-    // integrate
-    double * average = new double[_mcig->getNObsDim()];
-    double * error = new double[_mcig->getNObsDim()];
-    _mcig->integrate(_nmc, average, error);
-
-    // write out results
-    for(i=0; i<nbeta; ++i){
-      g[i] = average[i];
-      dg[i] = error[i];
-    }
-  }
-
-};
 
 
 /*
@@ -178,9 +23,9 @@ protected:
    double _w;
 
 public:
-   HarmonicOscillator1D1P(const double w, WaveFunction * wf): 
+   HarmonicOscillator1D1P(const double w, WaveFunction * wf):
       Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
-   
+
    // potential energy
    double localPotentialEnergy(const double *r)
    {
@@ -193,226 +38,37 @@ public:
 Gaussian Trial Wave Function for 1 particle in 1 dimension, that uses two variational parameters: x0 and v (variance).
 Psi  =  exp( -0.5*(x-x0)^2/v )
 Notice that the corresponding probability density (sampling function) is Psi^2.
+The parameter eps controls the minimal possible value for v
 */
 class Gaussian1D1POrbital: public WaveFunction{
    protected:
-  double _x0, _v, _niv;
+  double _x0, _v, _niv, _eps;
 
    public:
-      Gaussian1D1POrbital(const double x0, const double v): 
-        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_x0=x0; _v=v; _niv = -1./v;}
+  Gaussian1D1POrbital(const double &x0, const double &v, const double &eps): 
+    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_eps=eps; this->setVP(x0, v);}
 
-      void setVP(const double *in){
-         _x0=in[0];
-         _v=in[1];
-         _niv = -1./in[1];
-      }
-
-      void getVP(double *out){
-         out[0]=_x0; out[1]=_v;
-      }
-
-      void samplingFunction(const double *x, double *out){
-         /*
-         Compute the sampling function proto value, used in getAcceptance()
-         */
-        *out = _niv*(x[0]-_x0)*(x[0]-_x0);
-      }
-
-      double getAcceptance(){
-         /*
-         Compute the acceptance probability
-         */
-         return exp(getProtoNew(0)-getProtoOld(0));
-      }
-
-      double d1(const int &i, const double *x){
-         /*
-         Compute:    d/dx_i log(Psi(x))
-         */
-         return (_niv*(x[0]-_x0) );
-      }
-
-      double d2(const int &i, const int &j, const double *x){
-         /*
-         Compute:    d^2/dx_i^2 log(Psi(x))
-         */
-         return ( _niv + (_niv*(x[0]-_x0))*(_niv*(x[0]-_x0)) ) ;
-      }
-
-      double vd1(const int &i, const double *x){
-         /*
-         Compute:    d/dalpha_i log(Psi(x))
-         where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
-         */
-         if (i==0){
-            return (-_niv*(x[0]-_x0));
-         } else if (i==1){
-            return (0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
-         } else{
-            using namespace std;
-            cout << "ERROR vd1 Gaussian1D1POrbital! " << endl;
-            return 0.;
-         }
-      }
-};
-
-class FFNNGaussian1D1P: public WaveFunction{
-protected:
-  Gaussian1D1POrbital * _gauss;
-  FeedForwardNeuralNetwork * _ffnn;
-
-public:
-  FFNNGaussian1D1P(const double x0, const double v, const int nh1, const int nh2):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, nh1-1 + ((nh2>1)? nh2-1 : 0) /*num variational parameters*/) {
-    using namespace std;
-    _gauss = new Gaussian1D1POrbital(x0, v);
-    _ffnn = new FeedForwardNeuralNetwork(2, nh1, 2);
-    if (nh2>1) {_ffnn->pushHiddenLayer(nh2);}
-
-    cout << "Creating wavefunction based on a Feed Forward Artificial Neural Network (FFANN)" << endl;
-    cin.ignore();
-
-    cout << "Graphically it looks like this" << endl;
-    cin.ignore();
-    printFFNNStructure(_ffnn);
-    cout << endl << endl;
-    cin.ignore();
-
-    cout << "Connecting the FFNN..." << endl;
-    cin.ignore();
-
-    // NON I/O CODE
-    _ffnn->connectFFNN();
-    //
-
-    cout << endl << endl;
-
-
-    cout << "Adding derivatives substrates..." << endl;
-    cin.ignore();
-
-    // NON I/O CODE
-    _ffnn->addFirstDerivativeSubstrate();
-    _ffnn->addSecondDerivativeSubstrate();
-    //
-
-    cout << endl << endl;
-
-
-    cout << "Setting the input to 0..." << endl;
-    cin.ignore();
-
-    int ninput = 1;
-    double * input = new double[ninput];
-    input[0] = 0;
-
-    // NON I/O CODE
-    _ffnn->setInput(ninput, input);
-    //
-    cout << "Done! Now the NN values look like this:";
-    cin.ignore();
-
-    printFFNNValues(_ffnn);
-
-    cin.ignore();
-    cout << endl << endl;
-
-    cout << "Propagating..." << endl;
-    cin.ignore();
-
-    // NON I/O CODE
-    _ffnn->FFPropagate();
-    //
-
-    cout << "Done! Now the NN values look like this:";
-    cin.ignore();
-
-    printFFNNValues(_ffnn);
-    cout << endl;
-    cin.ignore();
-
-    cout << "The output values are ";
-    cout << _ffnn->getOutput(1) << endl;
-    cin.ignore();
-
-    cout << "The first derivative with respect to the input value is:";
-    cin.ignore();
-    cout << "1st output (unit 2 of the output layer): " << _ffnn->getFirstDerivative(1, 0) << endl;
-    cin.ignore();
-
-    cout << "The second derivative with respect to the input value is:";
-    cin.ignore();
-    cout << "1st output (unit 2 of the output layer): " << _ffnn->getSecondDerivative(1, 0);
-    cin.ignore();
-
-    cout << endl << endl;
-
-  }
-
-  void setX(const double x){
-    using namespace std;
-    double *xarr = new double(1);
-    xarr[0] = x;
-
-    //cout << "Setting the input to x..." << endl;
-    //cin.ignore();
-
-    //cout << "The input we want to set is: " << xarr[0];
-    //cin.ignore();
-
-    // NON I/O CODE
-    _ffnn->setInput(1, xarr);
-    //
-    //cout << "Done! Now the NN values look like this:";
-    //cin.ignore();
-
-    //printFFNNValues(_ffnn);
-
-    //cin.ignore();
-    //cout << endl << endl;
-
-    //cout << "Propagating..." << endl;
-    //cin.ignore();
-
-    // NON I/O CODE
-    _ffnn->FFPropagate();
-    //
-
-    // cout << "Done! Now the NN values look like this:";
-    //cin.ignore();
-
-    //printFFNNValues(_ffnn);
-    //cout << endl;
-    //cin.ignore();
-  }
-
-  double Psi(const double x){
-    using namespace std;
-    double out;
-
-    setX(x);
-
-    out = _ffnn->getOutput(1);
-
-    //cout << "The output value is " << out << endl;
-    //cin.ignore();
-
-    return out;
-  }
-
+  // overwrite the parent setVP
   void setVP(const double *in){
+    this->setVP(in[0], in[1]);
+  }
+
+  //add another own setVP for convenience
+  void setVP(const double &x0, const double &v) {
+  _x0=x0;
+  _v=(v<_eps)? _eps:v;
+  _niv = -1./_v;
   }
 
   void getVP(double *out){
+    out[0]=_x0; out[1]=_v;
   }
 
   void samplingFunction(const double *x, double *out){
     /*
       Compute the sampling function proto value, used in getAcceptance()
     */
-    double psix = Psi(x[0]);
-    out[0] = log(psix*psix);
+    *out = _niv*(x[0]-_x0)*(x[0]-_x0);
   }
 
   double getAcceptance(){
@@ -423,41 +79,17 @@ public:
   }
 
   double d1(const int &i, const double *x){
-    using namespace std;
     /*
       Compute:    d/dx_i log(Psi(x))
     */
-
-    double psix = Psi(x[0]);
-    double out = _ffnn->getFirstDerivative(1, 0) / psix;
-
-    //cout << "The first derivative with respect to the input value is:";
-    //cin.ignore();
-    //cout << "1st output (unit 2 of the output layer): " << out << endl;
-    //cin.ignore();
-
-    return out;
+    return (_niv*(x[0]-_x0) );
   }
 
-  double d2(const int &i, const int &j, const double *x){
-    using namespace std;
+  double d2(const int &i, const double *x){
     /*
       Compute:    d^2/dx_i^2 log(Psi(x))
     */
-
-    double psix = Psi(x[0]);
-    double psix2 = psix*psix;
-    double psid1 = _ffnn->getFirstDerivative(1, 0);
-    double psid2 = _ffnn->getSecondDerivative(1, 0);
-    double out = (psid2*psix - psid1*psid1) / psix2;
-
-    //cout << "The second derivative with respect to the input value is:";
-    //cin.ignore();
-    //cout << "1st output (unit 2 of the output layer): " << out << endl;;
-    //cin.ignore();
-
-
-    return out;
+    return ( _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0) ) ;
   }
 
   double vd1(const int &i, const double *x){
@@ -466,139 +98,92 @@ public:
       where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
     */
     if (i==0){
-      return 0;
+      return (-_niv*(x[0]-_x0));
     } else if (i==1){
-      return 0;
+      return (0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
     } else{
-      using namespace std;
-      cout << "ERROR vd1 FFNNGaussian1D1P! " << endl;
-      return 0.;
+      throw std::range_error( " the index i for Gaussian1D1POrbital.vd1() can be only 0 or 1" );
     }
   }
 };
 
 
-int main() {
-    using namespace std;
-
-    int nl, nh1, nh2;
-
-    cout << "Let's start by creating a Feed Forward Artificial Neural Netowrk (FFANN)" << endl;
-    cout << "========================================================================" << endl;
-    cin.ignore();
-
-    cout << "How many units should the first hidden layer(s) have? ";
-    cin >> nh1;
-    cout << "How many units should the second hidden layer(s) have? (<=1 for no second hidden layer)";
-    cin >> nh2;
-
-    nl = (nh2>1)? 4:3; 
-    cout << "We generate a FFANN with " << nl << " layers and 2, " << nh1;
-    if (nh2>1) { cout << ", " << nh2;}
-    cout << ", 2 units respectively" << endl;
-    cout << "========================================================================" << endl << endl;
-    cin.ignore();
-
-
-    // NON I/O CODE
-    FFNNGaussian1D1P * nnwf = new FFNNGaussian1D1P(0, 1, nh1, nh2);
-    //
-    cout << "Psi(1):" << endl;
-    cout << nnwf->Psi(1) << endl;;
-    cout << "acceptance: " <<  nnwf->getAcceptance() << endl;
-    cin.ignore();
-
+int main(){
+   using namespace std;
 
    // Declare some trial wave functions
-    Gaussian1D1POrbital * psi1 = new Gaussian1D1POrbital(0., 1);
-    Gaussian1D1POrbital * psi2 = new Gaussian1D1POrbital(0., 2);
-    Gaussian1D1POrbital * psi3 = new Gaussian1D1POrbital(1., 1);
-    Gaussian1D1POrbital * psi4 = new Gaussian1D1POrbital(1., 2.);
+   Gaussian1D1POrbital * psig = new Gaussian1D1POrbital(1.0, 2.0, 0.1);
 
-   // Declare an Hamiltonian for each wave function (keep in mind that the kinetic energy is strictly bound to it)
-   // We use the harmonic oscillator with w=1
-   HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(1., psi1);
-   HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(1., psi2);
-   HarmonicOscillator1D1P * ham3 = new HarmonicOscillator1D1P(1., psi3);
-   HarmonicOscillator1D1P * ham4 = new HarmonicOscillator1D1P(1., psi4);
+   const int HIDDENLAYERSIZE = 15;
+   const int NHIDDENLAYERS = 1;
+   FeedForwardNeuralNetwork * ffnn = new FeedForwardNeuralNetwork(2, HIDDENLAYERSIZE, 2);
+   for (int i=0; i<NHIDDENLAYERS-1; ++i){
+     ffnn->pushHiddenLayer(HIDDENLAYERSIZE);
+   }
+   ffnn->connectFFNN();
+   ffnn->addFirstDerivativeSubstrate();
+   ffnn->addSecondDerivativeSubstrate();
+   ffnn->addVariationalFirstDerivativeSubstrate();
 
-   HarmonicOscillator1D1P * hamnn = new HarmonicOscillator1D1P(1., nnwf);
+   // Declare the trial wave functions
+   FFNNWaveFunction * psin = new FFNNWaveFunction(1, 1, ffnn);
 
+   // Declare an Hamiltonian
+   // We use the harmonic oscillator with w=1 and w=2
+   const double w = 1.;
+   HarmonicOscillator1D1P * hamg = new HarmonicOscillator1D1P(w, psig);
+   HarmonicOscillator1D1P * hamn = new HarmonicOscillator1D1P(w, psin);
 
-   cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
+   VMC * vmcg = new VMC(psig, hamg);
+   VMC * vmcn = new VMC(psin, hamn);
 
-   VMC * vmc; // VMC object we will resuse
-   const long E_NMC = 100000l; // MC samplings to use for computing the energy
+   cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
+
+   const long NMC = 4000l; // MC samplings to use for computing the energy
    double * energy = new double[4]; // energy
    double * d_energy = new double[4]; // energy error bar
-
-   // Case 1
-   cout << "-> psi1: " << endl;
-   vmc = new VMC(psi1, ham1, 0, 0); // ENMC and GNMC do not need to be set since we don't optimize the wave function
-   vmc->computeEnergy(E_NMC, energy, d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-
-   // Case 2
-   cout << "-> psi2: " << endl;
-   delete vmc;
-   vmc = new VMC(psi2, ham2, 0, 0);
-   vmc->computeEnergy(E_NMC, energy, d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-
-   // Case 3
-   cout << "-> psi3: " << endl;
-   delete vmc;
-   vmc = new VMC(psi3, ham3, 0, 0);
-   vmc->computeEnergy(E_NMC, energy, d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-
-   // Case 4
-   cout << "-> psi4: " << endl;
-   delete vmc;
-   vmc = new VMC(psi4, ham4, 0, 0);
-   vmc->computeEnergy(E_NMC, energy, d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-
-   // Case NN
-   cout << "-> psinn: " << endl;
-   delete vmc;
-   vmc = new VMC(nnwf, hamnn, 0, 0);
-   vmc->computeEnergy(2l, energy, d_energy);
-   cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   double * vpg = new double[psig->getNVP()];
+   double * vpn = new double[psin->getNVP()];
 
 
-   //deallocate everything
-   delete vmc;
+   cout << "-> ham:    w = " << w << endl << endl;
 
-   delete psi1;
-   delete psi2;
-   delete psi3;
-   delete psi4;
+   psig->getVP(vpg);
+   psin->getVP(vpn);
+   cout << "   Initial Wave Function parameters:" << endl;
+   cout << "Gaussian:" << endl;
+   cout << "       x0 = " << vpg[0] << endl;
+   cout << "       v  = " << vpg[1] << endl;
+   cout << endl;
+   cout << "Neural Network:" << endl;
+   for (int i=0; i<psin->getNVP(); ++i) cout << "       b" << i << " = " << vpn[i] << endl;
 
-   delete ham1;
-   delete ham2;
-   delete ham3;
-   delete ham4;
-   delete hamnn;
+   vmcg->computeVariationalEnergy(NMC, energy, d_energy);
+   cout << "   Gaussian energies:" << endl;
+   cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
+   vmcn->computeVariationalEnergy(NMC, energy, d_energy);
+   cout << "   Neural Network energies:" << endl;
+   cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+
+
+   delete[] vpg;
+   delete[] vpn;
    delete[] d_energy;
    delete[] energy;
+   delete vmcg;
+   delete vmcn;
+   delete hamg;
+   delete hamn;
+   delete psig;
+   delete psin;
 
-    // end
-    return 0;
+
+   return 0;
 }
