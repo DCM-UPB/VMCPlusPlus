@@ -34,10 +34,10 @@
   commentstyle=\color{OliveGreen},
   stringstyle=\color{red}
   }
-  
-  
-  
-  
+
+
+
+
 
 \title{The VMC++ Library}
 \author{Francesco Calcavecchia}
@@ -71,33 +71,33 @@ class WaveFunction: public MCISamplingFunctionInterface
 {
    public:
       // Constructor and destructor
-      WaveFunction(const int &nspacedim, const int &npart, 
+      WaveFunction(const int &nspacedim, const int &npart,
             const int &ncomp, const int &nvp);
       virtual ~WaveFunction();
-      
+
       // Getters
       int getNSpaceDim();
       int getNPart();
       int getNVP();
-      
+
       // Manage the variational parameters
       virtual void setVP(const double *vp) = 0;  // TO DO
       virtual void getVP(double *vp) = 0;  // TO DO
-      
-      // // Heritage from MCISamplingFunctionInterface, 
+
+      // // Heritage from MCISamplingFunctionInterface,
       // // which must be implemented
-      // void samplingFunction(const double *in, 
+      // void samplingFunction(const double *in,
             double *out) = 0;  // TO DO
       // double getAcceptance() = 0;  // TO DO
-      
+
       // Derivatives of the trial wave function
-      virtual double d1(const int &i, 
+      virtual double d1(const int &i,
             const double *in) = 0;  // TO DO
-      virtual double d2(const int &i, const int &j, 
+      virtual double d2(const int &i, const int &j,
             const double *in) = 0;  // TO DO
-      virtual double vd1(const int &i, 
+      virtual double vd1(const int &i,
             const double *in) = 0;  // TO DO
-      
+
 }
 \end{lstlisting}
 
@@ -184,8 +184,44 @@ class QuadrExponential1D1POrbital: public WaveFunction
             return 0.;
          }
       }
+};
+\end{lstlisting}
+
+
+
+
+\subsection{FFNNWaveFunction} % (fold)
+\label{sub:ffnnwavefunction}
+
+In case you want to use a Neural Network as Wave Function, there is an already prepared WaveFunction.
+One needs to provide only the number of spacial dimensions (\verb+nspacedim+) and number of particles (\verb+npart+), and a FeedFowardNeuralNetwork (see the \href{https://github.com/francesco086/FeedForwardNeuralNetwork}{library}) that has \verb+nspacedim+ $\times$ \verb+npart+ inputs and only one input.
+The FFNN must support first, second, and variational derivatives.
+
+Of course, it inherits all the methods from the WaveFunction class, and we do not report it in the following.
+
+\begin{lstlisting}
+class FFNNWaveFunction: public WaveFunction{
+
+private:
+    FeedForwardNeuralNetwork * _ffnn;
+
+public:
+    // --- Constructor
+    // IMPORTANT: The provided ffnn should be ready to use (connected) and have the first, second and variational derivatives substrates
+    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn);
+
+
+    // --- Getters
+    FeedForwardNeuralNetwork * getFFNN();
+
 };   
 \end{lstlisting}
+
+
+
+% subsection ffnnwavefunction (end)
+
+
 
 % section wave_function (end)
 
@@ -200,21 +236,21 @@ class Hamiltonian: public MCIObservableFunctionInterface
 {
    public:
       // Constructor and destructor
-      Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf):     
+      Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf):
          MCIObservableFunctionInterface(nspacedim*npart,4)
       virtual ~Hamiltonian(){}
 
       // Getters
       int getNSpaceDim();
       int getNPart();
-      
+
       // Kinetic energy
       double localPBKineticEnergy(const double *in);
       double localJFKineticEnergy(const double *in);
-      
+
       // Potential energy
       virtual double localPotentialEnergy(const double *in) = 0;  // TO DO
-      
+
       // Heritage from MCIObservableFunctionInterface
       // already implemented
       void observableFunction(const double * in, double *out)
@@ -244,11 +280,11 @@ class HarmonicOscialltor1D1P: public Hamiltonian
 {
    protected:
       double _w;
-      
+
    public:
-      HarmonicOscialltor1D1P(const double w, WaveFunction * wf): 
+      HarmonicOscialltor1D1P(const double w, WaveFunction * wf):
             Hamiltonian(1, 1, wf) {_w=w;}
-            
+
       double localPotentialEnergy(const double *r)
       {
          return (0.5*_w*_w*(*r)*(*r));
@@ -265,26 +301,26 @@ class HarmonicOscialltor1D1P: public Hamiltonian
 
 \begin{lstlisting}
 // #include "VMC.hpp"
-class VMC{        
+class VMC{
 
 public:
    VMC(WaveFunction * wf, Hamiltonian * H);
    ~VMC();
-   
-   
+
+
    // Monte Carlo Integral within VMC should be performed using the MCI object provided by VMC
    MCI * getMCI(){return _mci;}
-   
-   
+
+
    // Computation of the variational energy
    void computeVariationalEnergy(const long & Nmc, double * E, double * dE);
-   
+
 
    // Wave Function Optimization Methods
    void conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc);
-   
+
    void stochasticReconfigurationOptimization(const long &Nmc);
-   
+
    void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params);
 
 };

@@ -14,21 +14,11 @@ private:
     FeedForwardNeuralNetwork * _ffnn;
 
 public:
-    // --- Constructor
+    // --- Constructor and destructor
     // IMPORTANT: The provided ffnn should be ready to use (connected) and have the first, second and variational derivatives substrates
-    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn):WaveFunction(nspacedim, npart, 1, ffnn->getNBeta()){
-        if (ffnn->getNInput() != nspacedim*npart)
-        throw std::invalid_argument( "FFNN number of inputs does not fit the nspacedime and npart" );
+    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn);
+    ~FFNNWaveFunction();
 
-        if (ffnn->getNOutput() != 1)
-        throw std::invalid_argument( "FFNN number of output does not fit the wave function requirement (only one value)" );
-
-        _ffnn = ffnn;
-    }
-    // --- Destructor
-    ~FFNNWaveFunction(){
-        _ffnn = 0;
-    }
 
 
     // --- Getters
@@ -40,9 +30,9 @@ public:
     void getVP(double *vp);
 
     // --- methods herited from MCISamplingFunctionInterface
-    // wave function values that will be used to compute the acceptance  --- MUST BE IMPLEMENTED
+    // wave function values that will be used to compute the acceptance
     void samplingFunction(const double * in, double * out);
-    // MCI acceptance starting from the new and old sampling functions  --- MUST BE IMPLEMENTED
+    // MCI acceptance starting from the new and old sampling functions
     double getAcceptance();
 
     // --- wf derivatives
