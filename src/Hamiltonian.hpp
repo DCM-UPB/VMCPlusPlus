@@ -32,7 +32,7 @@ class Hamiltonian: public MCIObservableFunctionInterface
          double ekin=0.;
          for (int i=0; i<_ndim; ++i)
          {
-            ekin += _wf->d2(i,i,r);
+            ekin += _wf->d2(i,r);
          }
          return (-0.5*ekin);
       }

@@ -39,7 +39,7 @@ class WaveFunction: public MCISamplingFunctionInterface
       // first derivative divided by the wf  --- MUST BE IMPLEMENTED
       virtual double d1(const int &, const double * ) = 0; // 0 <= i <= _ndim
       // second derivative divided by the wf  --- MUST BE IMPLEMENTED
-      virtual double d2(const int &, const int &, const double *) = 0;  // 0 <= i <= _ndim  ,  0 <= j <= _ndim
+      virtual double d2(const int &, const double *) = 0;  // 0 <= i <= _ndim
       // variational derivative divided by the wf  --- MUST BE IMPLEMENTED
       virtual double vd1(const int &, const double *) = 0;  // 0 <= i <= _npv
 };
