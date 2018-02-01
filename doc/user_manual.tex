@@ -93,7 +93,7 @@ class WaveFunction: public MCISamplingFunctionInterface
       // Derivatives of the trial wave function
       virtual double d1(const int &i,
             const double *in) = 0;  // TO DO
-      virtual double d2(const int &i, const int &j,
+      virtual double d2(const int &i,
             const double *in) = 0;  // TO DO
       virtual double vd1(const int &i,
             const double *in) = 0;  // TO DO
@@ -115,7 +115,7 @@ Let us now see in details the methods of the class \verb+WaveFunction+:
    \item \verb+setVP+: Set the variational parameters according to the provided \verb+nvp+-dimensional array \verb+vp+. Must be implemented by the user;
    \item \verb+getVP+: Store in the \verb+nvp+-dimensional array \verb+vp+ the values of the variational parameters; Must be implemented by the user;
    \item \verb+d1+: Returns the value of $\frac{\partial \psi(x)}{\partial x_{i}}$, computed in $x$ equal to the array given in \verb+in+. Here $\psi$ is the wave function, and \verb+i+ the coordinate's index. For example, in a system with \verb+npart=2+ and \verb+nspacedim=3+, $x_0, x_1, x_2$ are the $x,y,z$ coordinates of the first particle, and $x_3,x_4,x_5$ the coordinates of the second particle. Must be implemented by the user;
-   \item \verb+d2+: Returns the value of $\frac{\partial^2 \psi(x)}{\partial x_{i} \partial x_j}$. Must be implemented by the user;
+   \item \verb+d2+: Returns the value of $\frac{\partial^2 \psi(x)}{\partial x_{i}^2}$. Must be implemented by the user;
    \item \verb+vd1+: Returns the value of $\frac{\partial \psi(x)}{\partial \alpha_{i}}$, where $\alpha_i$ is the \verb+i+-th variational parameter of $\psi$. Must be implemented by the user.
 \end{itemize}
 
@@ -164,7 +164,7 @@ class QuadrExponential1D1POrbital: public WaveFunction
          return (-2.*_b*(in[0]-_a) );
       }
 
-      double d2(const int &i, const int &j, const double *in)
+      double d2(const int &i, const double *in)
       {
          return ( -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)) ) ;
       }
