@@ -10,6 +10,7 @@
 #include <iostream>
 #include <assert.h>
 #include <math.h>
+#include <stdexcept>
 
 
 /*
@@ -140,9 +141,7 @@ class QuadrExponential1D1POrbital: public WaveFunction{
          } else if (i==1){
             return (-(x[0]-_a)*(x[0]-_a));
          } else{
-            using namespace std;
-            cout << "ERRORE vd1 QuadrExponential! " << endl;
-            return 0.;
+            throw std::range_error( " the index i for QuadrExponential1D1POrbital.vd1() can be only 0 or 1" );
          }
       }
 };
