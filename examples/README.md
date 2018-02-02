@@ -30,3 +30,7 @@ INFO: This example need the FFNN library.
 ## Example 5
 
 `ex5/`: as `ex2`, but using the Simulated Annealing method instead of the conjugate gradient
+
+## Example 6
+
+Compute the variatonal energy of Gaussian vs. NN fitted to Gaussian, for 1D1P harmonic oscillator

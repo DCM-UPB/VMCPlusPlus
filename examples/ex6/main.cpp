@@ -1,15 +1,14 @@
 #include <iostream>
 #include <cmath>
-#include <gsl/gsl_siman.h>
 #include <stdexcept>
 
 #include "FeedForwardNeuralNetwork.hpp"
+#include "PrintUtilities.hpp"
+#include "ReadUtilities.hpp"
 #include "WaveFunction.hpp"
 #include "FFNNWaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VMC.hpp"
-#include "ConjGrad.hpp"
-#include "LogNFM.hpp"
 
 
 
@@ -78,7 +77,7 @@ class Gaussian1D1POrbital: public WaveFunction{
     return exp(getProtoNew(0)-getProtoOld(0));
   }
 
-  double d1(const int &i, const double *x){
+  double d1(const int &i, const double * x){
     /*
       Compute:    d/dx_i log(Psi(x))
     */
@@ -89,7 +88,7 @@ class Gaussian1D1POrbital: public WaveFunction{
     /*
       Compute:    d^2/dx_i^2 log(Psi(x))
     */
-    return ( _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0) ) ;
+    return ( _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0) );
   }
 
   double vd1(const int &i, const double *x){
@@ -112,15 +111,15 @@ int main(){
    using namespace std;
 
    // Declare some trial wave functions
-   Gaussian1D1POrbital * psig = new Gaussian1D1POrbital(1.0, 2.0, 0.1);
+   Gaussian1D1POrbital * psig = new Gaussian1D1POrbital(1.0, 1.0, 0.1);
 
-   const int HIDDENLAYERSIZE = 15;
-   const int NHIDDENLAYERS = 1;
-   FeedForwardNeuralNetwork * ffnn = new FeedForwardNeuralNetwork(2, HIDDENLAYERSIZE, 2);
-   for (int i=0; i<NHIDDENLAYERS-1; ++i){
-     ffnn->pushHiddenLayer(HIDDENLAYERSIZE);
-   }
-   ffnn->connectFFNN();
+   //   vector<vector<string>> actf;
+   //readFFNNStructure("nn.txt", actf);
+
+   FeedForwardNeuralNetwork * ffnn = new FeedForwardNeuralNetwork("nn.in");
+
+   printFFNNStructure(ffnn);
+
    ffnn->addFirstDerivativeSubstrate();
    ffnn->addSecondDerivativeSubstrate();
    ffnn->addVariationalFirstDerivativeSubstrate();
@@ -139,7 +138,7 @@ int main(){
 
    cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-   const long NMC = 4000l; // MC samplings to use for computing the energy
+   const long NMC = 40000l; // MC samplings to use for computing the energy
    double * energy = new double[4]; // energy
    double * d_energy = new double[4]; // energy error bar
    double * vpg = new double[psig->getNVP()];
@@ -150,27 +149,29 @@ int main(){
 
    psig->getVP(vpg);
    psin->getVP(vpn);
-   cout << "   Initial Wave Function parameters:" << endl;
+   cout << "Initial Wave Function parameters:" << endl;
+   cout << endl;
    cout << "Gaussian:" << endl;
-   cout << "       x0 = " << vpg[0] << endl;
-   cout << "       v  = " << vpg[1] << endl;
+   cout << "    x0 = " << vpg[0] << endl;
+   cout << "    v  = " << vpg[1] << endl;
    cout << endl;
    cout << "Neural Network:" << endl;
    for (int i=0; i<psin->getNVP(); ++i) cout << "       b" << i << " = " << vpn[i] << endl;
+   cout << endl;
 
    vmcg->computeVariationalEnergy(NMC, energy, d_energy);
-   cout << "   Gaussian energies:" << endl;
-   cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   cout << "Gaussian energies:" << endl;
+   cout << "    Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "    Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "    Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "    Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
    vmcn->computeVariationalEnergy(NMC, energy, d_energy);
-   cout << "   Neural Network energies:" << endl;
-   cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-   cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-   cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-   cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+   cout << "Neural Network energies:" << endl;
+   cout << "    Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+   cout << "    Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+   cout << "    Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+   cout << "    Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
 
    delete[] vpg;
@@ -183,6 +184,7 @@ int main(){
    delete hamn;
    delete psig;
    delete psin;
+   delete ffnn;
 
 
    return 0;
