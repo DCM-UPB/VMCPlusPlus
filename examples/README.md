@@ -34,7 +34,13 @@ INFO: This example need the FFNN library.
 
 
 
+## Example 6
+
+`ex6/`: Compute the variatonal energy of Gaussian vs. NN fitted to Gaussian, for 1D1P harmonic oscillator
+
+
+
 ## Example 7
 
 `ex7/`: solve the 1 dimension 1 particle harmonic oscillator using a Neural Network Wave Function. The optimization is achieved with the Simulated Annealing algorithm.
-INOF: a report folder with a collection of runs is stored inside this folder. For a quick overview on the results, just look at the file collage.jpg
+INFO: a report folder with a collection of runs is stored inside this folder. For a quick overview on the results, just look at the file collage.jpg
