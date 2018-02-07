@@ -1,0 +1,44 @@
+g++-mp-7 -std=c++11 -Wall -O3 -I/Users/francesco086/Code/MCIntegratorPlusPlus/src/ -I/Users/francesco086/Code/NoisyFunMin/src/ -I/Users/francesco086/Code/FeedForwardNeuralNetwork/src/ -I/Users/francesco086/Code/VMCPlusPlus/src/ -I/usr/local/include -c *.cpp
+g++-mp-7 -std=c++11 -Wall -O3 -L/Users/francesco086/Code/VMCPlusPlus -L/Users/francesco086/Code/MCIntegratorPlusPlus -L/Users/francesco086/Code/NoisyFunMin -L/Users/francesco086/Code/FeedForwardNeuralNetwork -L/opt/local/lib -o exe *.o -lvmc -lmci -lnfm -lffnn -lgsl -lgslcblas
+Rebuilt the executable file
+
+
+Ready to run!
+
+--------------------------------------------------------------------------
+
+
+
+Created FFNN with 1 hidden layer(s) of 2 units each.
+
+Writing the plot file of the initial wave function in (plot_)init_wf.txt
+
+
+ - - - FFNN-WF FUNCTION OPTIMIZATION - - - 
+
+E_NMC = 4000
+
+-> ham1:    w = 1
+
+Integration range: -5   <->   5
+
+   Starting energy:
+       Total Energy        = 4.16057 +- 0.054518
+       Potential Energy    = 4.16049 +- 0.0545191
+       Kinetic (PB) Energy = 7.08733e-05 +- 1.47251e-05
+       Kinetic (JF) Energy = 1.72315e-05 +- 2.51131e-07
+
+Simulated Annealing parameters:    N_TRIES=0    ITERS_FIXED_T=10    STEP_SIZE=0.5    K=1    T_INITIAL=0.5    MU_T=1.01    T_MIN=0.001
+
+   Optimization . . .
+   . . . Done!
+
+   Optimized energy:
+       Total Energy        = 4.12234 +- 0.0556881
+       Potential Energy    = 4.12227 +- 0.0556892
+       Kinetic (PB) Energy = 7.0073e-05 +- 2.07676e-06
+       Kinetic (JF) Energy = 1.4976e-06 +- 1.80394e-08
+
+
+Writing the plot file of the optimised wave function in (plot_)opt_wf.txt
+

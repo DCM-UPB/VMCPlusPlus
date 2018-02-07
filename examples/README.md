@@ -27,6 +27,14 @@ INFO: This example need the FFNN library.
 `ex4/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
 
 
+
 ## Example 5
 
 `ex5/`: as `ex2`, but using the Simulated Annealing method instead of the conjugate gradient
+
+
+
+## Example 6
+
+`ex6/`: solve the 1 dimension 1 particle harmonic oscillator using a Neural Network Wave Function. The optimization is achieved with the Simulated Annealing algorithm.
+INOF: a report folder with a collection of runs is stored inside this folder. For a quick overview on the results, just look at the file collage.jpg
