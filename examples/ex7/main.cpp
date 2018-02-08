@@ -60,7 +60,7 @@ int main(){
    cout << "Writing the plot file of the initial wave function in (plot_)init_wf.txt" << endl << endl;
    double * base_input = new double[psi->getFFNN()->getNInput()]; // no need to set it, since it is 1-dim
    const int input_i = 0;
-   const int output_i = 1;
+   const int output_i = 0;
    const double min = -5.;
    const double max = 5.;
    const int npoints = 500;
