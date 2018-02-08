@@ -1,5 +1,0 @@
-set term png
-set output "foo.png"
-plot "plot_opt_wf.txt"
-set output "plot.png"
-plot "plot_opt_wf.txt" title "2l3u", GPVAL_DATA_Y_MAX*exp(-0.5*x*x) title "exact solution"
