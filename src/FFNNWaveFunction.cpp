@@ -22,9 +22,9 @@ void FFNNWaveFunction::getVP(double *vp){
 // --- methods herited from MCISamplingFunctionInterface
 
 void FFNNWaveFunction::samplingFunction(const double * in, double * out){
-    _ffnn->setInput(_ffnn->getNInput(), in);
+    _ffnn->setInput(in);
     _ffnn->FFPropagate();
-    out[0] = pow(_ffnn->getOutput(1), 2);
+    out[0] = pow(_ffnn->getOutput(0), 2);
 }
 
 
@@ -44,23 +44,23 @@ double FFNNWaveFunction::getAcceptance(){
 // --- wf derivatives
 
 double FFNNWaveFunction::d1(const int &i, const double *in){
-    _ffnn->setInput(_ffnn->getNInput(), in);
+    _ffnn->setInput(in);
     _ffnn->FFPropagate();
-    return _ffnn->getFirstDerivative(1, i)/_ffnn->getOutput(1);
+    return _ffnn->getFirstDerivative(0, i)/_ffnn->getOutput(0);
 }
 
 
 double FFNNWaveFunction::d2(const int &i, const double *in){
-    _ffnn->setInput(_ffnn->getNInput(), in);
+    _ffnn->setInput(in);
     _ffnn->FFPropagate();
-    return _ffnn->getSecondDerivative(1, i)/_ffnn->getOutput(1);
+    return _ffnn->getSecondDerivative(0, i)/_ffnn->getOutput(0);
 }
 
 
 double FFNNWaveFunction::vd1(const int &i, const double *in){
-    _ffnn->setInput(_ffnn->getNInput(), in);
+    _ffnn->setInput(in);
     _ffnn->FFPropagate();
-    return _ffnn->getVariationalFirstDerivative(1, i)/_ffnn->getOutput(1);
+    return _ffnn->getVariationalFirstDerivative(0, i)/_ffnn->getOutput(0);
 }
 
 
