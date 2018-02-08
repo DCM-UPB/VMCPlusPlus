@@ -10,7 +10,7 @@
 
 ## Example 2
 
-`ex2/`: Optimize a trial wave functions for -particle 1-dimension harmonic oscillator using the Conjugate Gradient method, setting the potential parameter w=1 and w=2.
+`ex2/`: Optimize a trial wave functions for 1-particle 1-dimension harmonic oscillator using the Conjugate Gradient method, setting the potential parameter w=1 and w=2.
 
 
 
@@ -36,4 +36,4 @@ INFO: This example need the FFNN library.
 
 ## Example 6
 
-`ex6/`: Compute the variatonal energy of Gaussian vs. NN fitted to Gaussian, for 1D1P harmonic oscillator
+`ex6/`: Compute the variational energy of Gaussian vs. NN fitted to Gaussian, for 1D1P harmonic oscillator
