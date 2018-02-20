@@ -15,8 +15,8 @@ echo "System detected: $OS_NAME"
 # Build the library using the debugging flags
 echo "Build the library using the debugging flags . . ."
 cd ..
-   LIBFOLDER=$(pwd)
-   ./build_debug_library.sh
+LIBFOLDER=$(pwd)
+./build_debug_library.sh
 cd debug
 echo "Rebuilt the library with the debugging flags"
 echo
@@ -30,14 +30,14 @@ $CC $FLAGS $DEBUGFLAGS -Wall $IMCI $INFM -I$LIBFOLDER/src/ -c *.cpp
 
 # For Mac OS, the install name is wrong and must be corrected
 case ${OS_NAME} in
-   "Darwin")
-      echo "$CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL"
-      $CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL
-      ;;
-   "Linux")
-      echo "$CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src -L$(pwd)/.. -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME}" $LIBMCI $LIBNFM $LIBGSL
-      $CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src/ -L$(pwd)/../ -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBGSL
-      ;;
+    "Darwin")
+        echo "$CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL"
+        $CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL
+        ;;
+    "Linux")
+        echo "$CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src -L$(pwd)/.. -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME}" $LIBMCI $LIBNFM $LIBGSL
+        $CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src/ -L$(pwd)/../ -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBGSL
+        ;;
 esac
 
 echo "Rebuilt the debugging executable"

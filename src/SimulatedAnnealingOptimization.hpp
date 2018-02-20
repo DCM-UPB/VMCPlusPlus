@@ -50,7 +50,7 @@ namespace vmc_siman{
         // compute the normalization
         double norm = 0.;
         for (int i=0; i<wf->getNVP(); ++i)
-        norm += x[i]*x[i];
+            norm += x[i]*x[i];
         norm = sqrt(norm)/wf->getNVP();
 
         // assemble the target function

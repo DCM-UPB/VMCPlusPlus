@@ -15,42 +15,42 @@
 
 /*
 
-In this unit test we test that the FFNNWaveFunction works as expected.
-In particular we want to be sure that all the derivatives are computed properly.
+  In this unit test we test that the FFNNWaveFunction works as expected.
+  In particular we want to be sure that all the derivatives are computed properly.
 
-To accomplish this, we are following this approach.
-We build a NN with the following structure:
+  To accomplish this, we are following this approach.
+  We build a NN with the following structure:
 
-    id_            id_            id_
+  id_            id_            id_
 
-    id_     p1     gss     +0.00  id_
-            p2             +1.00
+  id_     p1     gss     +0.00  id_
+  p2             +1.00
 
-where p1 nad p2 are two variational parameters.
-This means that the NN is the following function:
+  where p1 nad p2 are two variational parameters.
+  This means that the NN is the following function:
 
-    nn(x) = exp( - ( p1 + p2*x )^2 )
+  nn(x) = exp( - ( p1 + p2*x )^2 )
 
-i.e. a gaussian. We write a WaveFunction that has the same structure:
+  i.e. a gaussian. We write a WaveFunction that has the same structure:
 
-    gauss(x) = exp( - b ( x - a )^2 )
+  gauss(x) = exp( - b ( x - a )^2 )
 
-There is therefore the following mapping:
+  There is therefore the following mapping:
 
-    p1  = - sqrt(b) * a
-    p2 = sqrt(b)
+  p1  = - sqrt(b) * a
+  p2 = sqrt(b)
 
-Setting the parameters respecting the mapping, the two functions and therefore should give the same result.
-We then checked that the FFNNWaveFunction works as expected with two tests:
+  Setting the parameters respecting the mapping, the two functions and therefore should give the same result.
+  We then checked that the FFNNWaveFunction works as expected with two tests:
 
-1. Computing the variational energy with the two wave function must return the same result
+  1. Computing the variational energy with the two wave function must return the same result
 
-2. Computing the variational derivatives must result into the same results, asides for some costants.
-   In particular:
+  2. Computing the variational derivatives must result into the same results, asides for some costants.
+  In particular:
 
-      d(nn)/da = d(p1)/da * d(nn)/dp1 = -sqrt(b) * d(nn)/dp1
+  d(nn)/da = d(p1)/da * d(nn)/dp1 = -sqrt(b) * d(nn)/dp1
 
-      d(nn)/db = d(p1)/db * d(nn)/dp1 + d(p2)/db * d(nn)/dp2 = ( -a / (2 * sqrt(b)) ) * d(nn)/dp1 + ( 1 / (2 * sqrt(b)) ) * d(nn)/dp2
+  d(nn)/db = d(p1)/db * d(nn)/dp1 + d(p2)/db * d(nn)/dp2 = ( -a / (2 * sqrt(b)) ) * d(nn)/dp1 + ( 1 / (2 * sqrt(b)) ) * d(nn)/dp2
 
 
 */
@@ -60,90 +60,90 @@ We then checked that the FFNNWaveFunction works as expected with two tests:
 
 
 /*
-Hamiltonian describing a 1-particle harmonic oscillator:
-   H  =  p^2 / 2m  +  1/2 * w^2 * x^2
+  Hamiltonian describing a 1-particle harmonic oscillator:
+  H  =  p^2 / 2m  +  1/2 * w^2 * x^2
 */
 class HarmonicOscillator1D1P: public Hamiltonian{
 
 protected:
-   double _w;
+    double _w;
 
 public:
-   HarmonicOscillator1D1P(const double w, WaveFunction * wf):
-      Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
+    HarmonicOscillator1D1P(const double w, WaveFunction * wf):
+        Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
 
-   // potential energy
-   double localPotentialEnergy(const double *r)
-   {
-      return (0.5*_w*_w*(*r)*(*r));
-   }
+    // potential energy
+    double localPotentialEnergy(const double *r)
+    {
+        return (0.5*_w*_w*(*r)*(*r));
+    }
 };
 
 
 
 /*
-Trial Wave Function for 1 particle in 1 dimension, that uses two variational parameters: a and b.
-   Psi  =  exp( -b * (x-a)^2 )
-Notice that the corresponding probability density (sampling function) is Psi^2.
+  Trial Wave Function for 1 particle in 1 dimension, that uses two variational parameters: a and b.
+  Psi  =  exp( -b * (x-a)^2 )
+  Notice that the corresponding probability density (sampling function) is Psi^2.
 */
 class QuadrExponential1D1POrbital: public WaveFunction{
-   protected:
-      double _a, _b;
+protected:
+    double _a, _b;
 
-   public:
-      QuadrExponential1D1POrbital(const double a, const double b):
-         WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_a=a; _b=b;}
+public:
+    QuadrExponential1D1POrbital(const double a, const double b):
+        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_a=a; _b=b;}
 
-      void setVP(const double *in){
-         _a=in[0];
-         _b=in[1];
-      }
+    void setVP(const double *in){
+        _a=in[0];
+        _b=in[1];
+    }
 
-      void getVP(double *out){
-         out[0]=_a; out[1]=_b;
-      }
+    void getVP(double *out){
+        out[0]=_a; out[1]=_b;
+    }
 
-      void samplingFunction(const double *x, double *out){
-         /*
-         Compute the sampling function proto value, used in getAcceptance()
-         */
-         *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
-      }
+    void samplingFunction(const double *x, double *out){
+        /*
+          Compute the sampling function proto value, used in getAcceptance()
+        */
+        *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
+    }
 
-      double getAcceptance(){
-         /*
-         Compute the acceptance probability
-         */
-         return exp(getProtoNew(0)-getProtoOld(0));
-      }
+    double getAcceptance(){
+        /*
+          Compute the acceptance probability
+        */
+        return exp(getProtoNew(0)-getProtoOld(0));
+    }
 
-      double d1(const int &i, const double *x){
-         /*
-         Compute:    d/dx_i log(Psi(x))
-         */
-         return (-2.*_b*(x[0]-_a) );
-      }
+    double d1(const int &i, const double *x){
+        /*
+          Compute:    d/dx_i log(Psi(x))
+        */
+        return (-2.*_b*(x[0]-_a) );
+    }
 
-      double d2(const int &i, const double *x){
-         /*
-         Compute:    d^2/dx_i^2 log(Psi(x))
-         */
-         return ( -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)) ) ;
-      }
+    double d2(const int &i, const double *x){
+        /*
+          Compute:    d^2/dx_i^2 log(Psi(x))
+        */
+        return ( -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)) ) ;
+    }
 
-      double vd1(const int &i, const double *x){
-         /*
-         Compute:    d/dalpha_i log(Psi(x))
-         where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
-         */
-         if (i==0){
+    double vd1(const int &i, const double *x){
+        /*
+          Compute:    d/dalpha_i log(Psi(x))
+          where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
+        */
+        if (i==0){
             return (2.*_b*(x[0]-_a));
-         } else if (i==1){
+        } else if (i==1){
             return (-(x[0]-_a)*(x[0]-_a));
-         } else{
+        } else{
             throw std::range_error( " the index i for QuadrExponential1D1POrbital.vd1() can be only 0 or 1" );
-         }
-      }
+        }
+    }
 };
 
 

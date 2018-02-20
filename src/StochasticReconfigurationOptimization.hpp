@@ -10,39 +10,39 @@
 
 
 class StochasticReconfigurationOptimization: public WFOptimization{
-   
+
 private:
-   long _Nmc;
+    long _Nmc;
 
 public:
-   StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci): WFOptimization(wf, H, mci){
-      _Nmc = Nmc;
-   }
-   virtual ~StochasticReconfigurationOptimization(){}
-   
-   // optimization
-   void optimizeWF(){
-      // create targetfunction
-      StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, _Nmc, getMCI());
-      // declare the Dynamic Descent object
-      DynamicDescent * ddesc = new DynamicDescent(targetf);
-      // allocate an array that will contain the wave function variational parameters
-      double * wfpar = new double[_wf->getNVP()];
-      // get the variational parameters
-      _wf->getVP(wfpar);
-      // set the actual variational parameters as starting point for the Conjugate Gradient algorithm
-      ddesc->setX(wfpar);
-      // find the optimal parameters by minimizing the energy with the Conjugate Gradient algorithm
-      ddesc->findMin();
-      // set the found parameters in the wave function
-      ddesc->getX(wfpar);
-      _wf->setVP(wfpar);
-      // free memory
-      delete[] wfpar;
-      delete ddesc;
-      delete targetf;
-   }
-   
+    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci): WFOptimization(wf, H, mci){
+        _Nmc = Nmc;
+    }
+    virtual ~StochasticReconfigurationOptimization(){}
+
+    // optimization
+    void optimizeWF(){
+        // create targetfunction
+        StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, _Nmc, getMCI());
+        // declare the Dynamic Descent object
+        DynamicDescent * ddesc = new DynamicDescent(targetf);
+        // allocate an array that will contain the wave function variational parameters
+        double * wfpar = new double[_wf->getNVP()];
+        // get the variational parameters
+        _wf->getVP(wfpar);
+        // set the actual variational parameters as starting point for the Conjugate Gradient algorithm
+        ddesc->setX(wfpar);
+        // find the optimal parameters by minimizing the energy with the Conjugate Gradient algorithm
+        ddesc->findMin();
+        // set the found parameters in the wave function
+        ddesc->getX(wfpar);
+        _wf->setVP(wfpar);
+        // free memory
+        delete[] wfpar;
+        delete ddesc;
+        delete targetf;
+    }
+
 };
 
 
