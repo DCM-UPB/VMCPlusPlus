@@ -30,9 +30,9 @@ void FFNNWaveFunction::samplingFunction(const double * in, double * out){
 
 double FFNNWaveFunction::getAcceptance(){
     if ((getProtoOld(0) == 0.) && (getProtoNew(0) != 0.)){
-       return 1.;
+        return 1.;
     } else if ((getProtoOld(0) == 0.) && (getProtoNew(0) == 0.)) {
-       return 0.;
+        return 0.;
     }
 
     return getProtoNew(0)/getProtoOld(0);

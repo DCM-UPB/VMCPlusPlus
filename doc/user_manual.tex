@@ -17,8 +17,8 @@
 \definecolor{listinggray}{gray}{0.9}
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
 \lstset{
-    backgroundcolor=\color{lbcolor},
-    tabsize=4,
+  backgroundcolor=\color{lbcolor},
+  tabsize=4,
   language=C++,
   captionpos=b,
   tabsize=3,
@@ -33,7 +33,7 @@
   keywordstyle=\color[rgb]{0,0,1},
   commentstyle=\color{OliveGreen},
   stringstyle=\color{red}
-  }
+}
 
 
 
@@ -108,21 +108,21 @@ The user must be able to correctly implement its methods \verb+samplingFunction+
 
 Let us now see in details the methods of the class \verb+WaveFunction+:
 \begin{itemize}
-   \item \verb+WaveFunction+: The constructor. It is necessary to specify the number of dimensions of the space in which it is used (\verb+nspacedim+, typically $3$ dimensions), the number of particles that the wave function describes (\verb+npart+), the number of components of the wave function (\verb+ncomp+, which corresponds to \verb+nproto+ of the class \verb+MCISamplingFunctionInterface+), and the number of variational parameters used (\verb+nvp+);
-   \item \verb+getNSpaceDim+: Returns \verb+nspacedim+;
-   \item \verb+getNPart+: Returns \verb+npart+;
-   \item \verb+getNVP+: Returns \verb+nvp+
-   \item \verb+setVP+: Set the variational parameters according to the provided \verb+nvp+-dimensional array \verb+vp+. Must be implemented by the user;
-   \item \verb+getVP+: Store in the \verb+nvp+-dimensional array \verb+vp+ the values of the variational parameters; Must be implemented by the user;
-   \item \verb+d1+: Returns the value of $\frac{\partial \psi(x)}{\partial x_{i}}$, computed in $x$ equal to the array given in \verb+in+. Here $\psi$ is the wave function, and \verb+i+ the coordinate's index. For example, in a system with \verb+npart=2+ and \verb+nspacedim=3+, $x_0, x_1, x_2$ are the $x,y,z$ coordinates of the first particle, and $x_3,x_4,x_5$ the coordinates of the second particle. Must be implemented by the user;
-   \item \verb+d2+: Returns the value of $\frac{\partial^2 \psi(x)}{\partial x_{i}^2}$. Must be implemented by the user;
-   \item \verb+vd1+: Returns the value of $\frac{\partial \psi(x)}{\partial \alpha_{i}}$, where $\alpha_i$ is the \verb+i+-th variational parameter of $\psi$. Must be implemented by the user.
+\item \verb+WaveFunction+: The constructor. It is necessary to specify the number of dimensions of the space in which it is used (\verb+nspacedim+, typically $3$ dimensions), the number of particles that the wave function describes (\verb+npart+), the number of components of the wave function (\verb+ncomp+, which corresponds to \verb+nproto+ of the class \verb+MCISamplingFunctionInterface+), and the number of variational parameters used (\verb+nvp+);
+\item \verb+getNSpaceDim+: Returns \verb+nspacedim+;
+\item \verb+getNPart+: Returns \verb+npart+;
+\item \verb+getNVP+: Returns \verb+nvp+
+\item \verb+setVP+: Set the variational parameters according to the provided \verb+nvp+-dimensional array \verb+vp+. Must be implemented by the user;
+\item \verb+getVP+: Store in the \verb+nvp+-dimensional array \verb+vp+ the values of the variational parameters; Must be implemented by the user;
+\item \verb+d1+: Returns the value of $\frac{\partial \psi(x)}{\partial x_{i}}$, computed in $x$ equal to the array given in \verb+in+. Here $\psi$ is the wave function, and \verb+i+ the coordinate's index. For example, in a system with \verb+npart=2+ and \verb+nspacedim=3+, $x_0, x_1, x_2$ are the $x,y,z$ coordinates of the first particle, and $x_3,x_4,x_5$ the coordinates of the second particle. Must be implemented by the user;
+\item \verb+d2+: Returns the value of $\frac{\partial^2 \psi(x)}{\partial x_{i}^2}$. Must be implemented by the user;
+\item \verb+vd1+: Returns the value of $\frac{\partial \psi(x)}{\partial \alpha_{i}}$, where $\alpha_i$ is the \verb+i+-th variational parameter of $\psi$. Must be implemented by the user.
 \end{itemize}
 
 As example, we report the implementation of a trial wave function for $1$ particle in a one-dimensional space, that uses $2$ variational parameters, and has only one component.
 The functional form is:
 \begin{equation}
-   \psi(x) = e^{- b(x-a)^2}
+  \psi(x) = e^{- b(x-a)^2}
 \end{equation}
 where $a$ and $b$ are the two variational parameters.
 
@@ -214,7 +214,7 @@ public:
     // --- Getters
     FeedForwardNeuralNetwork * getFFNN();
 
-};   
+};
 \end{lstlisting}
 
 
@@ -261,18 +261,18 @@ This pure virtual class is used to define the Hamiltonian of the system.
 The user must take care of implementing only the \verb+localPotentialEnergy+ method, while all the rest is already provided.
 
 \begin{itemize}
-   \item \verb+Hamiltonian+: The constructor. It requires the spacial number of dimensions (\verb+nspacedim+), the number of particles (\verb+npart+), and a pointer to an implementation of a \verb+WaveFunction+. Notice that the constructor inform the constructor of \verb+MCIObservableFunctionInterface+ that the Monte Carlo integral will be performed in a \verb+nspacedime+ $\times$ \verb+npart+ space, and that there will be $4$ observables, corresponding to the total, potential, kinetic, and Jackson-Feenberg kinetic energies, respectively. All the energies are computed as \emph{energy unit per particle};
-   \item \verb+getNSpaceDim+: Returns \verb+nspacedim+;
-   \item \verb+getNPart+: Returns \verb+getNPart+;
-   \item \verb+localPBKineticEnergy+: Returns the standard (Pandharipande-Bethe) local kinetic energy, in units of energy per particle. It requires the particle positions, provided through the array \verb+in+;
-   \item \verb+localJFKineticEnergy+: Returns the Jackson-Feenberg local kinetic energy;
-   \item \verb+localPotentialEnergy+: Returns the local potential energy. Must be implemented by the user;
-   \item \verb+observableFunction+: Returns the $4$ observables for the particle coordinates contained in the array \verb+in+. The observables will be contained in the array \verb+out+, and are the local total, potential, kinetic, and Jackson-Feenberg kinetic energies.
+\item \verb+Hamiltonian+: The constructor. It requires the spacial number of dimensions (\verb+nspacedim+), the number of particles (\verb+npart+), and a pointer to an implementation of a \verb+WaveFunction+. Notice that the constructor inform the constructor of \verb+MCIObservableFunctionInterface+ that the Monte Carlo integral will be performed in a \verb+nspacedime+ $\times$ \verb+npart+ space, and that there will be $4$ observables, corresponding to the total, potential, kinetic, and Jackson-Feenberg kinetic energies, respectively. All the energies are computed as \emph{energy unit per particle};
+\item \verb+getNSpaceDim+: Returns \verb+nspacedim+;
+\item \verb+getNPart+: Returns \verb+getNPart+;
+\item \verb+localPBKineticEnergy+: Returns the standard (Pandharipande-Bethe) local kinetic energy, in units of energy per particle. It requires the particle positions, provided through the array \verb+in+;
+\item \verb+localJFKineticEnergy+: Returns the Jackson-Feenberg local kinetic energy;
+\item \verb+localPotentialEnergy+: Returns the local potential energy. Must be implemented by the user;
+\item \verb+observableFunction+: Returns the $4$ observables for the particle coordinates contained in the array \verb+in+. The observables will be contained in the array \verb+out+, and are the local total, potential, kinetic, and Jackson-Feenberg kinetic energies.
 \end{itemize}
 
 As example, we report the Hamiltonian for a one-dimensional, one-particle, harmonic oscillator:
 \begin{equation}
-   H = - \frac{\partial^2 \psi}{\partial x^2} + \frac{1}{2} \omega^2 x^2
+  H = - \frac{\partial^2 \psi}{\partial x^2} + \frac{1}{2} \omega^2 x^2
 \end{equation}
 
 \begin{lstlisting}
@@ -328,23 +328,23 @@ public:
 
 The Variational Monte Carlo (VMC) method is a method that uses a minimisation method in order to find the variational parameters $\alpha$ of a trial wave function $\psi_{\alpha}$ such that the variational energy
 \begin{equation}
-   E(\psi_{\alpha}) = \frac{\int dR \, \psi_{\alpha}(R) H \psi_{\alpha}(R)}{\int dR \, \psi_{\alpha}(R) \psi_{\alpha}(R)}  \label{eq:variational_energy}
+  E(\psi_{\alpha}) = \frac{\int dR \, \psi_{\alpha}(R) H \psi_{\alpha}(R)}{\int dR \, \psi_{\alpha}(R) \psi_{\alpha}(R)}  \label{eq:variational_energy}
 \end{equation}
 is minimised.
 In Eq. \eqref{eq:variational_energy} $H$ is the Hamiltonian, and we have assumed that both the Hamiltonian and the wave functions are real, as it is done by this library.
 The minimisation can be achieved by using several optimisation algorithms. At the end of the optimization process, the wave function will be set to have the optimal variational parameters
 
 \begin{itemize}
-   \item \verb+VMC+: The constructor. It requires a wave function, a Hamiltonian, and the number of sampling points to use for computing the energy (\verb+ENmc+) and the energy gradient (\verb+GNmc+) during the optimisation process. Notice that the constructor inform the constructor of \verb+NoisyFunctionWithGradient+ about the number of the number of variational parameters used by the wave function;
-   \item \verb+getMCI+: Returns a pointer to the \verb+MCI+ object used to compute the variational energy and the wave function derivatives;
-   \item \verb+computeVariationalEnergy+: Compute the total, kinetic, and potential energies for the given wave function. In fact \verb+E+ is expected to be an array of size 4, where \verb+E[0]+ is the total energy, \verb+E[1]+ is is the potential energy, \verb+E[2]+ is the Pandharipande-Bethe kinetic energy (i.e. the "real" kinetic energy), and \verb+E[3]+ is the Jackson-Feenberg kinetic energy;
-   \item \verb+conjugateGradientOptimization+: Optimise the trial wave function using the conjugate gradient method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library. It requires the number of sampling points for computing the energy during the linear search, and the number of samplings to use for computing the energy gradient;
-   \item \verb+stochasticReconfigurationOptimization+: Optimise the trial wave function using the Dynamic Descent method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library using as direction the one obtained using the Stochastic Reconfiguration (SR) approach. It requires the number of sampling points for computing the SR direction;
-   \item \verb+simulatedAnnealingOptimization+: Optimise the trial wave function using the Simulated Annealing algorithm contained in the GSL library (read \href{https://www.gnu.org/software/gsl/doc/html/siman.html}{here}). The simulated annealing will try to minimise the target function
-   $$
-   \iota E + \kappa \sigma_E + \lambda \frac{\sqrt{ \sum_{i=1}^{N_{\alpha}} \alpha_i^2 }}{N_{\alpha}}
-   $$
-   where $E$ is the energy, $\sigma_E$ is the energy's standard deviation, and the last term represents a normalization factor, often used in Machine Learning. The weight of each term is controlled by the three parameters $\iota$ (\verb+iota+), $\kappa$ (\verb+kappa+), and $\lambda$ (\verb+lambda+), which must be provided to the method. Furthermore the method requires \verb+Nmc+, the number of sampling points for computing the target function integrals ($E$ and $\sigma_E$), and the GSL siman library parameters.
+\item \verb+VMC+: The constructor. It requires a wave function, a Hamiltonian, and the number of sampling points to use for computing the energy (\verb+ENmc+) and the energy gradient (\verb+GNmc+) during the optimisation process. Notice that the constructor inform the constructor of \verb+NoisyFunctionWithGradient+ about the number of the number of variational parameters used by the wave function;
+\item \verb+getMCI+: Returns a pointer to the \verb+MCI+ object used to compute the variational energy and the wave function derivatives;
+\item \verb+computeVariationalEnergy+: Compute the total, kinetic, and potential energies for the given wave function. In fact \verb+E+ is expected to be an array of size 4, where \verb+E[0]+ is the total energy, \verb+E[1]+ is is the potential energy, \verb+E[2]+ is the Pandharipande-Bethe kinetic energy (i.e. the "real" kinetic energy), and \verb+E[3]+ is the Jackson-Feenberg kinetic energy;
+\item \verb+conjugateGradientOptimization+: Optimise the trial wave function using the conjugate gradient method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library. It requires the number of sampling points for computing the energy during the linear search, and the number of samplings to use for computing the energy gradient;
+\item \verb+stochasticReconfigurationOptimization+: Optimise the trial wave function using the Dynamic Descent method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library using as direction the one obtained using the Stochastic Reconfiguration (SR) approach. It requires the number of sampling points for computing the SR direction;
+\item \verb+simulatedAnnealingOptimization+: Optimise the trial wave function using the Simulated Annealing algorithm contained in the GSL library (read \href{https://www.gnu.org/software/gsl/doc/html/siman.html}{here}). The simulated annealing will try to minimise the target function
+  $$
+  \iota E + \kappa \sigma_E + \lambda \frac{\sqrt{ \sum_{i=1}^{N_{\alpha}} \alpha_i^2 }}{N_{\alpha}}
+  $$
+  where $E$ is the energy, $\sigma_E$ is the energy's standard deviation, and the last term represents a normalization factor, often used in Machine Learning. The weight of each term is controlled by the three parameters $\iota$ (\verb+iota+), $\kappa$ (\verb+kappa+), and $\lambda$ (\verb+lambda+), which must be provided to the method. Furthermore the method requires \verb+Nmc+, the number of sampling points for computing the target function integrals ($E$ and $\sigma_E$), and the GSL siman library parameters.
 \end{itemize}
 
 Examples can be found in the folder \verb+examples+.

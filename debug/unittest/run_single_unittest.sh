@@ -18,14 +18,14 @@ $CC $FLAGS $DEBUGFLAGS -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/loc
 
 case ${OS_NAME} in
     "Linux")
-    $CC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src/ -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
-    ;;
+        $CC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src/ -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
+        ;;
     "Darwin")
-    $CC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
-    ;;
+        $CC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
+        ;;
     *)
-    echo "The detected operating system is not between the known ones (Linux and Darwin)"
-    ;;
+        echo "The detected operating system is not between the known ones (Linux and Darwin)"
+        ;;
 esac
 
 # Run the debugging executable

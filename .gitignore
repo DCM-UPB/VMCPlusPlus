@@ -81,3 +81,8 @@ doc/*.log
 doc/*.out
 doc/*.ps
 doc/*.gz
+doc/*.fdb_latexmk
+doc/*.fls
+doc/*.ilg
+doc/*.ind
+doc/auto

@@ -6,24 +6,24 @@
 
 class WFOptimization{
 protected:
-   WaveFunction * _wf;
-   Hamiltonian * _H;
-   MCI * _mci;
-   
-public:
-   WFOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci){
-      _wf=wf; 
-      _H=H;
-      _mci = mci;
-   }
-   
-   ~WFOptimization(){}
+    WaveFunction * _wf;
+    Hamiltonian * _H;
+    MCI * _mci;
 
-   // getters
-   MCI * getMCI(){return _mci;};
-   
-   // optimize the wf
-   virtual void optimizeWF() = 0;
+public:
+    WFOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci){
+        _wf=wf;
+        _H=H;
+        _mci = mci;
+    }
+
+    ~WFOptimization(){}
+
+    // getters
+    MCI * getMCI(){return _mci;};
+
+    // optimize the wf
+    virtual void optimizeWF() = 0;
 
 };
 
