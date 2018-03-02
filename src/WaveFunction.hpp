@@ -24,9 +24,11 @@ public:
     int getNPart(){return _npart;}
     int getNVP(){return _nvp;}
 
+
     // --- interface for manipulating the variational parameters
-    virtual void setVP(const double *vp) = 0;
-    virtual void getVP(double *vp) = 0;
+    virtual void setVP(const double *vp) = 0;    // --- MUST BE IMPLEMENTED
+    virtual void getVP(double *vp) = 0;    // --- MUST BE IMPLEMENTED
+
 
     // --- methods herited from MCISamplingFunctionInterface
     //   // wave function values that will be used to compute the acceptance  --- MUST BE IMPLEMENTED
@@ -34,14 +36,21 @@ public:
     //   // MCI acceptance starting from the new and old sampling functions  --- MUST BE IMPLEMENTED
     //   virtual double getAcceptance() = 0;
 
-    //// value of the wf itself  --- MUST BE IMPLEMENTED
-    //virtual double wf(const double *) = 0;
+
+    // --- computation of the derivatives
+    // When called, this method computes all the internal values, such as the derivatives,
+    // and stored them internally, ready to be accessed with the getters methods. 
+    // It requires the positions as input
+    virtual void computeAllInternalValues(const double *) = 0;    // --- MUST BE IMPLEMENTED
+
+
+    // --- getters for the derivatives
     // first derivative divided by the wf  --- MUST BE IMPLEMENTED
-    virtual double d1(const int &, const double * ) = 0; // 0 <= i <= _ndim
+    virtual double getD1LogWF(const int &) = 0; // 0 <= i <= _ndim
     // second derivative divided by the wf  --- MUST BE IMPLEMENTED
-    virtual double d2(const int &, const double *) = 0;  // 0 <= i <= _ndim
+    virtual double getD2LogWF(const int &) = 0;  // 0 <= i <= _ndim
     // variational derivative divided by the wf  --- MUST BE IMPLEMENTED
-    virtual double vd1(const int &, const double *) = 0;  // 0 <= i <= _npv
+    virtual double getVD1LogWF(const int &) = 0;  // 0 <= i <= _npv
 };
 
 

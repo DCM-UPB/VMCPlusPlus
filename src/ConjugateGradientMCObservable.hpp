@@ -31,9 +31,10 @@ public:
         // obs[0 : wf->getNVP()-1] = Variational Derivative of the Wave Function
         // obs[ wf->getNVP() : 2*wf->getNVP()-1] = Local Energy times the Variational Derivative of the Wave Function
         double Hloc;
+
         Hloc = _H->localPBKineticEnergy(in) + _H->localPotentialEnergy(in);
         for (int i=0; i<_wf->getNVP(); ++i){
-            out[i] = _wf->vd1(i,in);
+            out[i] = _wf->getVD1LogWF(i);
             out[i+_wf->getNVP()] = out[i] * Hloc;
         }
     }

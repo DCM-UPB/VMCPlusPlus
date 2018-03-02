@@ -22,9 +22,8 @@ void FFNNWaveFunction::getVP(double *vp){
 // --- methods herited from MCISamplingFunctionInterface
 
 void FFNNWaveFunction::samplingFunction(const double * in, double * out){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    out[0] = pow(_ffnn->getOutput(0), 2);
+    computeAllInternalValues(in);
+    out[0] = pow(getWFValue(), 2);
 }
 
 
@@ -41,27 +40,25 @@ double FFNNWaveFunction::getAcceptance(){
 
 
 
-// --- wf derivatives
+// --- computation of the derivatives
 
-double FFNNWaveFunction::d1(const int &i, const double *in){
+void FFNNWaveFunction::computeAllInternalValues(const double *in){
     _ffnn->setInput(in);
     _ffnn->FFPropagate();
-    return _ffnn->getFirstDerivative(0, i)/_ffnn->getOutput(0);
+
+    _wf_value = _ffnn->getOutput(0);
+
+    _ffnn->getFirstDerivative(0, _d1_logwf);
+    for (int i=0; i<getNDim(); ++i) _d1_logwf[i] /= _wf_value;
+
+    _ffnn->getSecondDerivative(0, _d2_logwf);
+    for (int i=0; i<getNDim(); ++i) _d2_logwf[i] /= _wf_value;
+
+    _ffnn->getVariationalFirstDerivative(0, _vd1_logwf);
+    for (int i=0; i<getNVP(); ++i) _vd1_logwf[i] /= _wf_value;
+
 }
 
-
-double FFNNWaveFunction::d2(const int &i, const double *in){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    return _ffnn->getSecondDerivative(0, i)/_ffnn->getOutput(0);
-}
-
-
-double FFNNWaveFunction::vd1(const int &i, const double *in){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    return _ffnn->getVariationalFirstDerivative(0, i)/_ffnn->getOutput(0);
-}
 
 
 
@@ -76,11 +73,19 @@ FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedF
     if (ffnn->getNOutput() != 1)
         throw std::invalid_argument( "FFNN number of output does not fit the wave function requirement (only one value)" );
 
+    _d1_logwf = new double[getNDim()];
+    _d2_logwf = new double[getNDim()];
+    _vd1_logwf = new double[getNVP()];
+
     _ffnn = ffnn;
 }
 
 
 
 FFNNWaveFunction::~FFNNWaveFunction(){
+    delete[] _d1_logwf;
+    delete[] _d2_logwf;
+    delete[] _vd1_logwf;
+
     _ffnn = 0;
 }

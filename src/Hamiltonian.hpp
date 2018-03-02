@@ -32,7 +32,7 @@ public:
         double ekin=0.;
         for (int i=0; i<_ndim; ++i)
             {
-                ekin += _wf->d2(i,r);
+                ekin += _wf->getD2LogWF(i);
             }
         return (-0.5*ekin);
     }
@@ -43,7 +43,7 @@ public:
         double foo;
         for (int i=0; i<_ndim; ++i)
             {
-                foo = _wf->d1(i,r);
+                foo = _wf->getD1LogWF(i);
                 ekin += foo*foo;
             }
         return (0.5*ekin);
