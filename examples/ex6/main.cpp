@@ -114,6 +114,14 @@ int main(){
     VMC * vmcg = new VMC(psig, hamg);
     VMC * vmcn = new VMC(psin, hamn);
 
+    double ** irange = new double*[1];
+    irange[0] = new double[2];
+    irange[0][0] = -5.;
+    irange[0][1] = 5.;
+    cout << "Integration range: " << irange[0][0] << "   <->   " << irange[0][1] << endl << endl;
+    vmcg->getMCI()->setIRange(irange);
+    vmcn->getMCI()->setIRange(irange);
+
 
     const long NMC = 200000l; // MC samplings to use for computing the energy
     double * energy = new double[4]; // energy
