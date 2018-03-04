@@ -34,7 +34,7 @@ public:
 
         Hloc = _H->localPBKineticEnergy(in) + _H->localPotentialEnergy(in);
         for (int i=0; i<_wf->getNVP(); ++i){
-            out[i] = _wf->getVD1LogWF(i);
+            out[i] = _wf->getVD1DivByWF(i);
             out[i+_wf->getNVP()] = out[i] * Hloc;
         }
     }

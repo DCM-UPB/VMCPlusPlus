@@ -28,6 +28,7 @@ public:
         _wf=wf;
         _H=H;
         _mci = new MCI(_H->getTotalNDim());
+        _mci->addCallBackOnAcceptance(_wf);
     }
 
     ~VMC(){

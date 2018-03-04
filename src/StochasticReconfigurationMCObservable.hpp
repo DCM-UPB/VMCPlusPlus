@@ -38,7 +38,7 @@ public:
         // variational derivatives
         double * vd1 = new double[nvp];
         for (int i=0; i<nvp; ++i){
-            vd1[i] = _wf->getVD1LogWF(i);
+            vd1[i] = _wf->getVD1DivByWF(i);
         }
         // store the elements Oi and HOi
         for (int i=0; i<nvp; ++i){

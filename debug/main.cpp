@@ -28,7 +28,8 @@ public:
     }
     void getVP(double *out)
     {
-        out[0]=_a; out[1]=_b;
+        out[0]=_a;
+        out[1]=_b;
     }
 
     void samplingFunction(const double *in, double *out)
@@ -42,10 +43,12 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        setD1LogWF(0, -2.*_b*(in[0]-_a));
-        setD2LogWF(0, -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)));
-        setVD1LogWF(0, 2.*_b*(in[0]-_a));
-        setVD1LogWF(1, -(in[0]-_a)*(in[0]-_a));
+        setD1DivByWF(0, -2.*_b*(in[0]-_a));
+        setD2DivByWF(0, -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)));
+        if (hasVD1()){
+            setVD1DivByWF(0, 2.*_b*(in[0]-_a));
+            setVD1DivByWF(1, -(in[0]-_a)*(in[0]-_a));
+        }
     }
 };
 
@@ -57,7 +60,10 @@ protected:
     double _b;
 
 public:
-    Gaussian1D1POrbital(const double b): WaveFunction(1, 1, 1, 1, true, false, false) {_b=b;}
+    Gaussian1D1POrbital(const double b):
+    WaveFunction(1, 1, 1, 1, false, false, false){
+        _b=b;
+    }
 
     void setVP(const double *in)
     {
@@ -82,13 +88,11 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        setD1LogWF(0, -2.*_b*(*in));
-        if (_b<0.){
-            setD2LogWF(0, -1.);
-        } else {
-            setD2LogWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
+        setD1DivByWF(0, -2.*_b*(*in));
+        setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
+        if (hasVD1()){
+            setVD1DivByWF(0, (-(*in)*(*in)));
         }
-        setVD1LogWF(0, (-(*in)*(*in)));
     }
 };
 
@@ -117,9 +121,9 @@ int main(){
     irange[0][1] = 25.;
 
     Gaussian1D1POrbital * gauss = new Gaussian1D1POrbital(1.2);
-    HarmonicOscillator1D1P * harm_osc = new HarmonicOscillator1D1P(1.,gauss);
-    QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0,1.1);
-    HarmonicOscillator1D1P * harm_osc2 = new HarmonicOscillator1D1P(1.,qexp);
+    HarmonicOscillator1D1P * harm_osc = new HarmonicOscillator1D1P(1., gauss);
+    // QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0, 1.1);
+    // HarmonicOscillator1D1P * harm_osc2 = new HarmonicOscillator1D1P(1., qexp);
 
     cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
     double * b1 = new double;
@@ -186,9 +190,9 @@ int main(){
     delete b1;
 
     delete harm_osc;
-    delete harm_osc2;
+    // delete harm_osc2;
     delete gauss;
-    delete qexp;
+    // delete qexp;
 
     delete[] *irange;
     delete[] irange;
