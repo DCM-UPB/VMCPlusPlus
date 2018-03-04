@@ -9,6 +9,12 @@
 /*
 IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
 
+    - void setVP(const double *vp)
+            set the variational parameters
+
+    - void getVP(double *vp)
+            get the variational parameters
+
     - void samplingFunction(const double * in, double * out)
             heritage from MCISamplingFunctionInterface, uses Psi^2
 
@@ -35,7 +41,7 @@ protected:
 
 public:
     WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
-    MCISamplingFunctionInterface(nspacedim*npart,ncomp),
+    MCISamplingFunctionInterface(nspacedim*npart, ncomp),
     MCICallBackOnAcceptanceInterface(nspacedim*npart){
         _nspacedim=nspacedim;
         _npart=npart;

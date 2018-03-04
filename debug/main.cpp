@@ -6,6 +6,8 @@
 #include "VMC.hpp"
 
 
+
+
 class QuadrExponential1D1POrbital: public WaveFunction
 {
 protected:
@@ -13,7 +15,7 @@ protected:
     double _wf_exp, _d1, _d2, _vd1_a, _vd1_b;
 
 public:
-    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1,1,1,2) {_a=a; _b=b;}
+    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false) {_a=a; _b=b;}
 
     void setVP(const double *in)
     {
@@ -39,36 +41,15 @@ public:
         return exp(getProtoNew(0)-getProtoOld(0));
     }
 
-    void computeAllInternalValues(const double *in){
-        _wf_exp =
-        _d1 = -2.*_b*(in[0]-_a) ;
-        _d2 = -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)) ;
-        _vd1_a = 2.*_b*(in[0]-_a);
-        _vd1_b = -(in[0]-_a)*(in[0]-_a);
-    }
-
-    double d1(const int &i, const double *in)
-    {
-        return _d1;
-    }
-
-    double d2(const int &i, const double *in)
-    {
-        return _d2;
-    }
-
-    double vd1(const int &i, const double *in)
-    {
-        if (i==0) {
-                return _vd1_a;
-            } else if (i==1){
-                return _vd1_b;
-            } else {
-                std::cout << "ERRORE vd1 QuadrExponential! " << std::endl;
-                return 0.;
-            }
+    void computeAllDerivatives(const double *in){
+        setD1LogWF(0, -2.*_b*(in[0]-_a));
+        setD2LogWF(0, -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)));
+        setVD1LogWF(0, 2.*_b*(in[0]-_a));
+        setVD1LogWF(1, -(in[0]-_a)*(in[0]-_a));
     }
 };
+
+
 
 class Gaussian1D1POrbital: public WaveFunction
 {
@@ -76,7 +57,7 @@ protected:
     double _b;
 
 public:
-    Gaussian1D1POrbital(const double b): WaveFunction(1,1,1,1) {_b=b;}
+    Gaussian1D1POrbital(const double b): WaveFunction(1, 1, 1, 1, true, false, false) {_b=b;}
 
     void setVP(const double *in)
     {
@@ -100,22 +81,18 @@ public:
         return exp(getProtoNew(0)-getProtoOld(0));
     }
 
-    double d1(const int &i, const double *in)
-    {
-        return -2.*_b*(*in);
-    }
-
-    double d2(const int &i, const double *in)
-    {
-        if (_b<0.) return -1.;
-        return -2.*_b+4.*_b*_b*(*in)*(*in);
-    }
-
-    double vd1(const int &i, const double *in)
-    {
-        return (-(*in)*(*in));
+    void computeAllDerivatives(const double *in){
+        setD1LogWF(0, -2.*_b*(*in));
+        if (_b<0.){
+            setD2LogWF(0, -1.);
+        } else {
+            setD2LogWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
+        }
+        setVD1LogWF(0, (-(*in)*(*in)));
     }
 };
+
+
 
 class HarmonicOscillator1D1P: public Hamiltonian
 {
@@ -158,20 +135,20 @@ int main(){
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
-    cout << endl << " - - - ONE-DIMENSIONAL MINIMIZATION - - - " << endl << endl;
-    double * b = new double;
-    gauss->getVP(b);
-    cout << "Wave Function b     = " << *b << endl;
-    cout << "Conjugate Gradient Minimization ... " << endl;
-    vmc->conjugateGradientOptimization(NMC, 4*NMC);
-    gauss->getVP(b);
-    cout << "Wave Function b     = " << *b << endl << endl;
-    vmc->computeVariationalEnergy(NMC, energy, d_energy);
-    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-    delete b;
+    // cout << endl << " - - - ONE-DIMENSIONAL MINIMIZATION - - - " << endl << endl;
+    // double * b = new double;
+    // gauss->getVP(b);
+    // cout << "Wave Function b     = " << *b << endl;
+    // cout << "Conjugate Gradient Minimization ... " << endl;
+    // vmc->conjugateGradientOptimization(NMC, 4*NMC);
+    // gauss->getVP(b);
+    // cout << "Wave Function b     = " << *b << endl << endl;
+    // vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    // cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+    // cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+    // cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+    // cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    // delete b;
 
     //cout << endl << " - - - MULTIDIMENSIONAL MINIMIZATION - - - " << endl << endl;
     //double * a1 = new double[2];
