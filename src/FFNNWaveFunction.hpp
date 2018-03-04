@@ -11,23 +11,21 @@
 class FFNNWaveFunction: public WaveFunction{
 
 private:
-    FeedForwardNeuralNetwork * _ffnn;
-
-    double _wf_value;
-    double * _d1_logwf;
-    double * _d2_logwf;
-    double * _vd1_logwf;
+    FeedForwardNeuralNetwork * _bare_ffnn;   // FFNN without derivatives, used for sampling
+    FeedForwardNeuralNetwork * _deriv_ffnn;   // FFNN with derivatives, used for computing all the derivatives
 
 public:
     // --- Constructor and destructor
-    // IMPORTANT: The provided ffnn should be ready to use (connected) and have the first, second and variational derivatives substrates
-    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn);
+    // IMPORTANT: The provided ffnn should be ready to use (connected), but should not contain any substrate,
+    // as they will inside this class depending on the needs
+    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
     ~FFNNWaveFunction();
 
 
 
     // --- Getters
-    FeedForwardNeuralNetwork * getFFNN(){return _ffnn;}
+    FeedForwardNeuralNetwork * getBareFFNN(){return _bare_ffnn;}
+    FeedForwardNeuralNetwork * getDerivFFNN(){return _deriv_ffnn;}
 
 
     // --- interface for manipulating the variational parameters
@@ -41,13 +39,7 @@ public:
     double getAcceptance();
 
     // --- computation of the derivatives
-    void computeAllInternalValues(const double *in);
-
-    // --- wf derivatives and other internal values
-    double getD1LogWF(const int &id1){return _d1_logwf[id1];}
-    double getD2LogWF(const int &id2){return _d2_logwf[id2];}
-    double getVD1LogWF(const int &ivd1){return _vd1_logwf[ivd1];}
-    double getWFValue(){return _wf_value;}
+    void computeAllDerivatives(const double *in);
 
 };
 

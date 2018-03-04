@@ -17,7 +17,7 @@ protected:
 
 public:
     ConjugateGradientMCObservable(WaveFunction * wf, Hamiltonian * H):
-        MCIObservableFunctionInterface(H->getNDim(), 2*wf->getNVP()){
+        MCIObservableFunctionInterface(H->getTotalNDim(), 2*wf->getNVP()){
         _wf = wf;
         _H = H;
     }

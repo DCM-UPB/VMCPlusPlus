@@ -21,6 +21,7 @@ public:
     virtual ~Hamiltonian(){}
 
     int getNSpaceDim(){return _nspacedim;}
+    int getTotalNDim(){return getNDim();}
     int getNPart(){return _npart;}
 
     // Potential energy --- MUST BE IMPLEMENTED

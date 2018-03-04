@@ -23,11 +23,11 @@ protected:
 public:
     VMC(WaveFunction * wf, Hamiltonian * H){
         using namespace std;
-        if (wf->getNDim() != H->getNDim())
+        if (wf->getTotalNDim() != H->getTotalNDim())
             throw std::invalid_argument( "Error VMC: ndim different between wf and H" );
         _wf=wf;
         _H=H;
-        _mci = new MCI(_H->getNDim());
+        _mci = new MCI(_H->getTotalNDim());
     }
 
     ~VMC(){

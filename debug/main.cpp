@@ -10,6 +10,7 @@ class QuadrExponential1D1POrbital: public WaveFunction
 {
 protected:
     double _a, _b;
+    double _wf_exp, _d1, _d2, _vd1_a, _vd1_b;
 
 public:
     QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1,1,1,2) {_a=a; _b=b;}
@@ -38,28 +39,32 @@ public:
         return exp(getProtoNew(0)-getProtoOld(0));
     }
 
+    void computeAllInternalValues(const double *in){
+        _wf_exp =
+        _d1 = -2.*_b*(in[0]-_a) ;
+        _d2 = -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)) ;
+        _vd1_a = 2.*_b*(in[0]-_a);
+        _vd1_b = -(in[0]-_a)*(in[0]-_a);
+    }
+
     double d1(const int &i, const double *in)
     {
-        return (-2.*_b*(in[0]-_a) );
+        return _d1;
     }
 
     double d2(const int &i, const double *in)
     {
-        return ( -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)) ) ;
+        return _d2;
     }
 
     double vd1(const int &i, const double *in)
     {
-        if (i==0)
-            {
-                return (2.*_b*(in[0]-_a));
-            } else if (i==1)
-            {
-                return (-(in[0]-_a)*(in[0]-_a));
-            } else
-            {
-                using namespace std;
-                cout << "ERRORE vd1 QuadrExponential! " << endl;
+        if (i==0) {
+                return _vd1_a;
+            } else if (i==1){
+                return _vd1_b;
+            } else {
+                std::cout << "ERRORE vd1 QuadrExponential! " << std::endl;
                 return 0.;
             }
     }
