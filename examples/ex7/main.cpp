@@ -49,23 +49,21 @@ int main(){
     }
     ffnn->connectFFNN();
     // FeedForwardNeuralNetwork * ffnn = new FeedForwardNeuralNetwork("start_wf.txt");
-    ffnn->addFirstDerivativeSubstrate();
-    ffnn->addSecondDerivativeSubstrate();
     cout << "Created FFNN with " << NHIDDENLAYERS << " hidden layer(s) of " << HIDDENLAYERSIZE << " units each." << endl << endl;
 
     // Declare the trial wave functions
-    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn);
+    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn, false, false, false);
 
     // Store in two files the the initial wf, one for plotting, and for recovering it as nn
     cout << "Writing the plot file of the initial wave function in (plot_)init_wf.txt" << endl << endl;
-    double * base_input = new double[psi->getFFNN()->getNInput()]; // no need to set it, since it is 1-dim
+    double * base_input = new double[psi->getBareFFNN()->getNInput()]; // no need to set it, since it is 1-dim
     const int input_i = 0;
     const int output_i = 0;
     const double min = -5.;
     const double max = 5.;
     const int npoints = 500;
-    writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt");
-    psi->getFFNN()->storeOnFile("wf_init.txt");
+    writePlotFile(psi->getBareFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt");
+    psi->getBareFFNN()->storeOnFile("wf_init.txt");
 
 
 
@@ -133,8 +131,8 @@ int main(){
 
     // Store in two files the the initial wf, one for plotting, and for recovering it as nn
     cout << "Writing the plot file of the optimised wave function in (plot_)opt_wf.txt" << endl << endl;
-    writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt");
-    psi->getFFNN()->storeOnFile("opt_wf.txt");
+    writePlotFile(psi->getBareFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt");
+    psi->getBareFFNN()->storeOnFile("opt_wf.txt");
 
 
 

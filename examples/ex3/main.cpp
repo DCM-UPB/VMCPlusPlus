@@ -52,17 +52,17 @@ int main(){
     ffnn->addVariationalFirstDerivativeSubstrate();
 
     // Declare the trial wave functions
-    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn);
+    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn, true, false, false);
 
     // Store in a .txt file the values of the initial wf, so that it is possible to plot it
     cout << "Writing the plot file of the initial wave function in plot_init_wf.txt" << endl << endl;
-    double * base_input = new double[psi->getFFNN()->getNInput()]; // no need to set it, since it is 1-dim
+    double * base_input = new double[psi->getBareFFNN()->getNInput()]; // no need to set it, since it is 1-dim
     const int input_i = 0;
     const int output_i = 0;
     const double min = -7.5;
     const double max = 7.5;
     const int npoints = 500;
-    writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt");
+    writePlotFile(psi->getBareFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_init_wf.txt");
 
 
     // Declare an Hamiltonian
@@ -118,7 +118,7 @@ int main(){
 
     // store in a .txt file the values of the optimised wf, so that it is possible to plot it
     cout << "Writing the plot file of the optimised wave function in plot_opt_wf.txt" << endl << endl;
-    writePlotFile(psi->getFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt");
+    writePlotFile(psi->getBareFFNN(), base_input, input_i, output_i, min, max, npoints, "getOutput", "plot_opt_wf.txt");
 
 
 
