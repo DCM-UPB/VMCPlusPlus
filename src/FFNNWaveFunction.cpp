@@ -98,8 +98,8 @@ FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedF
     if (ffnn->getNOutput() != 1)
         throw std::invalid_argument( "FFNN number of output does not fit the wave function requirement (only one value)" );
 
-    _bare_ffnn = ffnn;
-    _deriv_ffnn = new FeedForwardNeuralNetwork(_bare_ffnn);
+    _bare_ffnn = new FeedForwardNeuralNetwork(ffnn);
+    _deriv_ffnn = new FeedForwardNeuralNetwork(ffnn);
     _deriv_ffnn->addFirstDerivativeSubstrate();
     _deriv_ffnn->addSecondDerivativeSubstrate();
     if (flag_vd1) _deriv_ffnn->addVariationalFirstDerivativeSubstrate();
@@ -110,7 +110,6 @@ FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedF
 
 
 FFNNWaveFunction::~FFNNWaveFunction(){
-    _bare_ffnn = 0;
-    delete _deriv_ffnn;
-    _deriv_ffnn = 0;
+    delete _bare_ffnn; _bare_ffnn = 0;
+    delete _deriv_ffnn; _deriv_ffnn = 0;
 }

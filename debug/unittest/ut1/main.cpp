@@ -92,7 +92,9 @@ protected:
 
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
-        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {_a=a; _b=b;}
+    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
+            _a=a; _b=b;
+        }
 
     void setVP(const double *in){
         _a=in[0];
@@ -100,7 +102,8 @@ public:
     }
 
     void getVP(double *out){
-        out[0]=_a; out[1]=_b;
+        out[0]=_a;
+        out[1]=_b;
     }
 
     void samplingFunction(const double *x, double *out){
@@ -120,8 +123,10 @@ public:
     void computeAllDerivatives(const double *x){
         setD1DivByWF(0, -2.*_b*(x[0]-_a));
         setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
-        setVD1DivByWF(0, 2.*_b*(x[0]-_a));
-        setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
+        if (hasVD1()){
+            setVD1DivByWF(0, 2.*_b*(x[0]-_a));
+            setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
+        }
     }
 
 };
@@ -171,8 +176,9 @@ int main(){
     // gaussian wave function
     QuadrExponential1D1POrbital * phi = new QuadrExponential1D1POrbital(a, b);
 
-    // Hamiltonian
-    HarmonicOscillator1D1P * ham = new HarmonicOscillator1D1P(1., psi);
+    // Hamiltonians
+    HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(1., psi);
+    HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(1., phi);
 
 
 
@@ -180,25 +186,25 @@ int main(){
 
 
     // --- Check that the energies are the same
-    VMC * vmc = new VMC(psi, ham);
+    VMC * vmc = new VMC(psi, ham1);
 
     double energy[4];
     double d_energy[4];
     vmc->computeVariationalEnergy(Nmc, energy, d_energy);
-    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    // cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+    // cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+    // cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+    // cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
 
     double energy_check[4];
     double d_energy_check[4];
-    VMC * vmc_check = new VMC(phi, ham);
+    VMC * vmc_check = new VMC(phi, ham2);
     vmc_check->computeVariationalEnergy(Nmc, energy_check, d_energy_check);
-    cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
-    cout << "       Potential Energy    = " << energy_check[1] << " +- " << d_energy_check[1] << endl;
-    cout << "       Kinetic (PB) Energy = " << energy_check[2] << " +- " << d_energy_check[2] << endl;
-    cout << "       Kinetic (JF) Energy = " << energy_check[3] << " +- " << d_energy_check[3] << endl << endl;
+    // cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
+    // cout << "       Potential Energy    = " << energy_check[1] << " +- " << d_energy_check[1] << endl;
+    // cout << "       Kinetic (PB) Energy = " << energy_check[2] << " +- " << d_energy_check[2] << endl;
+    // cout << "       Kinetic (JF) Energy = " << energy_check[3] << " +- " << d_energy_check[3] << endl << endl;
 
     for (int i=0; i<4; ++i){
         assert(abs(energy[i]-energy_check[i]) < 2.*(d_energy[i]+d_energy_check[i]));
@@ -236,9 +242,11 @@ int main(){
 
 
     // free resources
-    delete phi;
+    delete vmc_check;
     delete vmc;
-    delete ham;
+    delete ham1;
+    delete ham2;
+    delete phi;
     delete psi;
     delete ffnn;
 
