@@ -92,7 +92,7 @@ protected:
 
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
-        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_a=a; _b=b;}
+        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {_a=a; _b=b;}
 
     void setVP(const double *in){
         _a=in[0];
@@ -117,33 +117,13 @@ public:
         return exp(getProtoNew(0)-getProtoOld(0));
     }
 
-    double d1(const int &i, const double *x){
-        /*
-          Compute:    d/dx_i log(Psi(x))
-        */
-        return (-2.*_b*(x[0]-_a) );
+    void computeAllDerivatives(const double *x){
+        setD1DivByWF(0, -2.*_b*(x[0]-_a));
+        setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
+        setVD1DivByWF(0, 2.*_b*(x[0]-_a));
+        setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
     }
 
-    double d2(const int &i, const double *x){
-        /*
-          Compute:    d^2/dx_i^2 log(Psi(x))
-        */
-        return ( -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)) ) ;
-    }
-
-    double vd1(const int &i, const double *x){
-        /*
-          Compute:    d/dalpha_i log(Psi(x))
-          where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
-        */
-        if (i==0){
-            return (2.*_b*(x[0]-_a));
-        } else if (i==1){
-            return (-(x[0]-_a)*(x[0]-_a));
-        } else{
-            throw std::range_error( " the index i for QuadrExponential1D1POrbital.vd1() can be only 0 or 1" );
-        }
-    }
 };
 
 
@@ -172,9 +152,6 @@ int main(){
     ffnn->setLayerActivationFunction(1, gss_actf);
     ffnn->setLayerActivationFunction(2, id_actf);
     ffnn->connectFFNN();
-    ffnn->addFirstDerivativeSubstrate();
-    ffnn->addSecondDerivativeSubstrate();
-    ffnn->addVariationalFirstDerivativeSubstrate();
 
     ffnn->setBeta(0, p1);
     ffnn->setBeta(1, p2);
@@ -186,7 +163,10 @@ int main(){
 
 
     // NN wave function
-    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn);
+    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn, true, false, false);
+    assert(psi->hasVD1());
+    assert(!psi->hasD1VD1());
+    assert(!psi->hasD2VD1());
 
     // gaussian wave function
     QuadrExponential1D1POrbital * phi = new QuadrExponential1D1POrbital(a, b);
@@ -205,20 +185,20 @@ int main(){
     double energy[4];
     double d_energy[4];
     vmc->computeVariationalEnergy(Nmc, energy, d_energy);
-    // cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-    // cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-    // cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-    // cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
 
     double energy_check[4];
     double d_energy_check[4];
     VMC * vmc_check = new VMC(phi, ham);
     vmc_check->computeVariationalEnergy(Nmc, energy_check, d_energy_check);
-    // cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
-    // cout << "       Potential Energy    = " << energy_check[1] << " +- " << d_energy_check[1] << endl;
-    // cout << "       Kinetic (PB) Energy = " << energy_check[2] << " +- " << d_energy_check[2] << endl;
-    // cout << "       Kinetic (JF) Energy = " << energy_check[3] << " +- " << d_energy_check[3] << endl << endl;
+    cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
+    cout << "       Potential Energy    = " << energy_check[1] << " +- " << d_energy_check[1] << endl;
+    cout << "       Kinetic (PB) Energy = " << energy_check[2] << " +- " << d_energy_check[2] << endl;
+    cout << "       Kinetic (JF) Energy = " << energy_check[3] << " +- " << d_energy_check[3] << endl << endl;
 
     for (int i=0; i<4; ++i){
         assert(abs(energy[i]-energy_check[i]) < 2.*(d_energy[i]+d_energy_check[i]));
@@ -235,11 +215,14 @@ int main(){
     for (int i=0; i<10; ++i){
         x = x + dx;
 
-        const double dda_phi = phi->vd1(0, &x);
-        const double ddb_phi = phi->vd1(1, &x);
+        phi->computeAllDerivatives(&x);
+        psi->computeAllDerivatives(&x);
 
-        const double ddp1_psi = psi->vd1(0, &x);
-        const double ddp2_psi = psi->vd1(1, &x);
+        const double dda_phi = phi->getVD1DivByWF(0);
+        const double ddb_phi = phi->getVD1DivByWF(1);
+
+        const double ddp1_psi = psi->getVD1DivByWF(0);
+        const double ddp2_psi = psi->getVD1DivByWF(1);
 
         // cout << dda_phi << " == " << - ddp1_psi * sqrtb << " ? " << endl;
         assert( abs(dda_phi - ( - ddp1_psi * sqrtb )) < TINY );

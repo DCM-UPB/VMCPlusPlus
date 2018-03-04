@@ -91,7 +91,7 @@ void FFNNWaveFunction::computeAllDerivatives(const double *in){
 
 
 FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1)
-    :WaveFunction(nspacedim, npart, 1, ffnn->getNBeta()){
+    :WaveFunction(nspacedim, npart, 1, ffnn->getNBeta(), flag_vd1, flag_d1vd1, flag_d2vd1){
     if (ffnn->getNInput() != nspacedim*npart)
         throw std::invalid_argument( "FFNN number of inputs does not fit the nspacedime and npart" );
 
