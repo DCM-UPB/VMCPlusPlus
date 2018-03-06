@@ -33,7 +33,8 @@ int main(){
 
     // --- check derivatives
     // array that will store the analytical derivatives
-    double * analderiv = new double[NSPACEDIM];
+    double * analderivxy = new double[2*NSPACEDIM];
+    double * analderivyx = new double[2*NSPACEDIM];
 
     // random generator
     random_device rdev;
@@ -57,8 +58,10 @@ int main(){
 
         // --- check the first derivative
 
+        epd->distD1(x, y, analderivxy);
+        epd->distD1(y, x, analderivyx);
+
         // check derivative in respect to x
-        epd->distD1(x, y, analderiv);
         for (int i=0; i<NSPACEDIM; ++i){
             const double origx = x[i];
             x[i] += DX;
@@ -67,13 +70,13 @@ int main(){
 
             // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderiv[i]-numderiv) < TINY );
+            assert( abs(analderivxy[i]-numderiv) < TINY );
+            assert( abs(analderivyx[i+NSPACEDIM]-numderiv) < TINY );
 
             x[i] = origx;
         }
 
         // check derivative in respect to y
-        epd->distD1(y, x, analderiv);
         for (int i=0; i<NSPACEDIM; ++i){
             const double origy = y[i];
             y[i] += DX;
@@ -82,7 +85,8 @@ int main(){
 
             // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderiv[i]-numderiv) < TINY );
+            assert( abs(analderivyx[i]-numderiv) < TINY );
+            assert( abs(analderivxy[i+NSPACEDIM]-numderiv) < TINY );
 
             y[i] = origy;
         }
@@ -91,8 +95,10 @@ int main(){
 
         // --- check the second derivative
 
+        epd->distD2(x, y, analderivxy);
+        epd->distD2(y, x, analderivyx);
+
         // check derivative in respect to x
-        epd->distD2(x, y, analderiv);
         for (int i=0; i<NSPACEDIM; ++i){
             const double origx = x[i];
             x[i] += DX;
@@ -103,13 +109,13 @@ int main(){
 
             // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderiv[i]-numderiv) < TINY );
+            assert( abs(analderivxy[i]-numderiv) < TINY );
+            assert( abs(analderivyx[i+NSPACEDIM]-numderiv) < TINY );
 
             x[i] = origx;
         }
 
         // check derivative in respect to y
-        epd->distD2(y, x, analderiv);
         for (int i=0; i<NSPACEDIM; ++i){
             const double origy = y[i];
             y[i] += DX;
@@ -120,7 +126,8 @@ int main(){
 
             // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderiv[i]-numderiv) < TINY );
+            assert( abs(analderivyx[i]-numderiv) < TINY );
+            assert( abs(analderivxy[i+NSPACEDIM]-numderiv) < TINY );
 
             y[i] = origy;
         }
@@ -131,6 +138,8 @@ int main(){
 
 
     // --- free resources
+    delete[] analderivxy;
+    delete[] analderivyx;
     delete[] y;
     delete[] x;
     delete epd;
