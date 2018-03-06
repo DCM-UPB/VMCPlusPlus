@@ -17,3 +17,9 @@
 ## Unit Test 3
 
 `ut3/`: check the EuclidianParticleDistance class.
+
+
+
+## Unit Test 4
+
+`ut4/`: check the TwoBodyPseudoPotential.

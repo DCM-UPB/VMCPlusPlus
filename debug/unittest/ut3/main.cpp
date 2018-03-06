@@ -9,9 +9,9 @@
 int main(){
     using namespace std;
     const int NSPACEDIM = 3;
-    const double DX = 0.0001;
-    const double TINY = 0.0001;
-    const int NTEST = 20;
+    const double DX = 0.005;
+    const double TINY = 0.01;
+    const int NTEST = 10;
 
     EuclidianParticleDistance * epd = new EuclidianParticleDistance(NSPACEDIM);
 
@@ -39,16 +39,17 @@ int main(){
     // random generator
     random_device rdev;
     mt19937_64 rgen;
-    uniform_real_distribution<double> rd;
+    uniform_real_distribution<double> rd1, rd2;
     rgen = std::mt19937_64(rdev());
-    rd = uniform_real_distribution<double>(-5,5);
+    rd1 = uniform_real_distribution<double>(-5,-1);
+    rd2 = uniform_real_distribution<double>(1,5);
 
     // make NTEST tests, with random x and y
     for (int k=0; k<NTEST; ++k){
         // pick random x and y
         for (int i=0; i<NSPACEDIM; ++i){
-            x[i] = rd(rgen);
-            y[i] = rd(rgen);
+            x[i] = rd1(rgen);
+            y[i] = rd2(rgen);
         }
 
         // compute the distance xy
@@ -68,10 +69,10 @@ int main(){
             const double fdx = epd->dist(x, y);
             const double numderiv = (fdx - f)/DX;
 
-            // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
+            // cout << "analderivxy[" <<  i << "] = " << analderivxy[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivxy[i]-numderiv) < TINY );
-            assert( abs(analderivyx[i+NSPACEDIM]-numderiv) < TINY );
+            assert( abs(analderivxy[i]-numderiv)/numderiv < TINY );
+            assert( abs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             x[i] = origx;
         }
@@ -83,10 +84,10 @@ int main(){
             const double fdy = epd->dist(x, y);
             const double numderiv = (fdy - f)/DX;
 
-            // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
+            // cout << "analderivyx[" <<  i << "] = " << analderivyx[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivyx[i]-numderiv) < TINY );
-            assert( abs(analderivxy[i+NSPACEDIM]-numderiv) < TINY );
+            assert( abs(analderivyx[i]-numderiv)/numderiv < TINY );
+            assert( abs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             y[i] = origy;
         }
@@ -107,10 +108,10 @@ int main(){
             const double fmdx = epd->dist(x, y);
             const double numderiv = (fdx - 2.*f + fmdx)/(DX*DX);
 
-            // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
+            // cout << "analderivxy[" <<  i << "] = " << analderivxy[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivxy[i]-numderiv) < TINY );
-            assert( abs(analderivyx[i+NSPACEDIM]-numderiv) < TINY );
+            assert( abs(analderivxy[i]-numderiv)/numderiv < TINY );
+            assert( abs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             x[i] = origx;
         }
@@ -124,10 +125,10 @@ int main(){
             const double fmdy = epd->dist(x, y);
             const double numderiv = (fdy - 2.*f + fmdy)/(DX*DX);
 
-            // cout << "analderiv[" <<  i << "] = " << analderiv[i] << endl;
+            // cout << "analderivyx[" <<  i << "] = " << analderivyx[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivyx[i]-numderiv) < TINY );
-            assert( abs(analderivxy[i+NSPACEDIM]-numderiv) < TINY );
+            assert( abs(analderivyx[i]-numderiv)/numderiv < TINY );
+            assert( abs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             y[i] = origy;
         }
