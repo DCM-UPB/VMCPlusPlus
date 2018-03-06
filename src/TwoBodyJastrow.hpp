@@ -3,7 +3,7 @@
 
 #include "WaveFunction.hpp"
 #include "TwoBodyPseudoPotential.hpp"
-#include "ParticleArray.hpp"
+#include "ParticleArrayManager.hpp"
 
 
 /*
@@ -20,13 +20,13 @@ class TwoBodyJastrow: public WaveFunction{
 
 private:
     TwoBodyPseudoPotential * _u2;
-    ParticleArray * _ptc_ary;
+    ParticleArrayManager * _pam;
 
 public:
     TwoBodyJastrow(TwoBodyPseudoPotential * u2, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
     WaveFunction(u2->getNSpaceDim(), u2->getNPart(), 1, u2->getNVP(), flag_vd1, flag_d1vd1, flag_d2vd1){
         _u2 = u2;
-        _ptc_ary = new ParticleArray(u2->getNSpaceDim());
+        _pam = new ParticleArrayManager(u2->getNSpaceDim());
     }
     virtual ~TwoBodyJastrow();
 
