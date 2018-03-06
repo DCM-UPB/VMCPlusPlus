@@ -1,13 +1,13 @@
 #ifndef EUCLIDIAN_PARTICLE_DISTANCE
 #define EUCLIDIAN_PARTICLE_DISTANCE
 
-#include "ParticlesDistance.hpp"
+#include "ParticleDistance.hpp"
 
 
-class EuclidianParticlesDistance: public ParticlesDistance{
+class EuclidianParticleDistance: public ParticleDistance{
 
 public:
-    EuclidianParticlesDistance(const int &nspacedim): ParticlesDistance(nspacedim){}
+    EuclidianParticleDistance(const int &nspacedim): ParticleDistance(nspacedim){}
 
 
     double dist(const double * r1, const double * r2);

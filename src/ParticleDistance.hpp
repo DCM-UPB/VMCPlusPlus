@@ -2,13 +2,13 @@
 #define PARTICLE_DISTANCE
 
 
-class ParticlesDistance{
+class ParticleDistance{
 
 private:
     int _nspacedim;
 
 public:
-    ParticlesDistance(const int &nspacedim){
+    ParticleDistance(const int &nspacedim){
         _nspacedim = nspacedim;
     }
 

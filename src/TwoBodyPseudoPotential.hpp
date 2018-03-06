@@ -2,20 +2,20 @@
 #define  TWO_BODY_PSEUDO_POTENTIAL
 
 
-#include "ParticlesDistance.hpp"
+#include "ParticleDistance.hpp"
 
 
 
 class TwoBodyPseudoPotential{
 
 private:
-    ParticlesDistance * _dist;
+    ParticleDistance * _dist;
     int _npart;
 
     double * _foo;
 
 public:
-    TwoBodyPseudoPotential(const int &npart, ParticlesDistance * dist){
+    TwoBodyPseudoPotential(const int &npart, ParticleDistance * dist){
         _npart = npart;
         _dist = dist;
         _foo = new double[_dist->getNSpaceDim()];
