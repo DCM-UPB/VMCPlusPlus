@@ -45,11 +45,11 @@ protected:
 
 public:
     Gaussian1D1POrbital(const double &x0, const double &v, const double &eps):
-        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_eps=eps; this->setVP(x0, v);}
+        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false, false, false) {_eps=eps; this->setVP(x0, v);}
 
     // overwrite the parent setVP
     void setVP(const double *in){
-        this->setVP(in[0], in[1]);
+        setVP(in[0], in[1]);
     }
 
     //add another own setVP for convenience
@@ -77,33 +77,15 @@ public:
         return exp(getProtoNew(0)-getProtoOld(0));
     }
 
-    double d1(const int &i, const double * x){
-        /*
-          Compute:    d/dx_i log(Psi(x))
-        */
-        return (_niv*(x[0]-_x0) );
-    }
-
-    double d2(const int &i, const double *x){
-        /*
-          Compute:    d^2/dx_i^2 log(Psi(x))
-        */
-        return ( _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0) );
-    }
-
-    double vd1(const int &i, const double *x){
-        /*
-          Compute:    d/dalpha_i log(Psi(x))
-          where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
-        */
-        if (i==0){
-            return (-_niv*(x[0]-_x0));
-        } else if (i==1){
-            return (0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
-        } else{
-            throw std::range_error( " the index i for Gaussian1D1POrbital.vd1() can be only 0 or 1" );
+    void computeAllDerivatives(const double *x){
+        setD1DivByWF(0, _niv*(x[0]-_x0));
+        setD2DivByWF(0, _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+        if (hasVD1()){
+            setVD1DivByWF(0, -_niv*(x[0]-_x0));
+            setVD1DivByWF(1, 0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
         }
     }
+
 };
 
 
@@ -120,12 +102,8 @@ int main(){
 
     printFFNNStructure(ffnn);
 
-    ffnn->addFirstDerivativeSubstrate();
-    ffnn->addSecondDerivativeSubstrate();
-    ffnn->addVariationalFirstDerivativeSubstrate();
-
     // Declare the trial wave functions
-    FFNNWaveFunction * psin = new FFNNWaveFunction(1, 1, ffnn);
+    FFNNWaveFunction * psin = new FFNNWaveFunction(1, 1, ffnn, false, false, false);
 
     // Declare an Hamiltonian
     // We use the harmonic oscillator with w=1 and w=2
@@ -136,9 +114,16 @@ int main(){
     VMC * vmcg = new VMC(psig, hamg);
     VMC * vmcn = new VMC(psin, hamn);
 
-    cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
+    double ** irange = new double*[1];
+    irange[0] = new double[2];
+    irange[0][0] = -5.;
+    irange[0][1] = 5.;
+    cout << "Integration range: " << irange[0][0] << "   <->   " << irange[0][1] << endl << endl;
+    vmcg->getMCI()->setIRange(irange);
+    vmcn->getMCI()->setIRange(irange);
 
-    const long NMC = 40000l; // MC samplings to use for computing the energy
+
+    const long NMC = 200000l; // MC samplings to use for computing the energy
     double * energy = new double[4]; // energy
     double * d_energy = new double[4]; // energy error bar
     double * vpg = new double[psig->getNVP()];

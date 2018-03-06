@@ -34,10 +34,11 @@ public:
         const int nvp = _wf->getNVP();
         // local energy
         const double Hloc = _H->localPBKineticEnergy(in) + _H->localPotentialEnergy(in);
+
         // variational derivatives
         double * vd1 = new double[nvp];
         for (int i=0; i<nvp; ++i){
-            vd1[i] = _wf->vd1(i,in);
+            vd1[i] = _wf->getVD1DivByWF(i);
         }
         // store the elements Oi and HOi
         for (int i=0; i<nvp; ++i){

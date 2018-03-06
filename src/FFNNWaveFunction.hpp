@@ -11,18 +11,21 @@
 class FFNNWaveFunction: public WaveFunction{
 
 private:
-    FeedForwardNeuralNetwork * _ffnn;
+    FeedForwardNeuralNetwork * _bare_ffnn;   // FFNN without derivatives, used for sampling
+    FeedForwardNeuralNetwork * _deriv_ffnn;   // FFNN with derivatives, used for computing all the derivatives
 
 public:
     // --- Constructor and destructor
-    // IMPORTANT: The provided ffnn should be ready to use (connected) and have the first, second and variational derivatives substrates
-    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn);
+    // IMPORTANT: The provided ffnn should be ready to use (connected), but should not contain any substrate,
+    // as they will inside this class depending on the needs
+    FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
     ~FFNNWaveFunction();
 
 
 
     // --- Getters
-    FeedForwardNeuralNetwork * getFFNN(){return _ffnn;}
+    FeedForwardNeuralNetwork * getBareFFNN(){return _bare_ffnn;}
+    FeedForwardNeuralNetwork * getDerivFFNN(){return _deriv_ffnn;}
 
 
     // --- interface for manipulating the variational parameters
@@ -35,13 +38,9 @@ public:
     // MCI acceptance starting from the new and old sampling functions
     double getAcceptance();
 
-    // --- wf derivatives
-    // first derivative divided by the wf
-    double d1(const int &, const double * ); // 0 <= i <= _ndim
-    // second derivative divided by the wf
-    double d2(const int &, const double *);  // 0 <= i <= _ndim  ,  0 <= j <= _ndim
-    // variational derivative divided by the wf
-    double vd1(const int &, const double *);  // 0 <= i <= _npv
+    // --- computation of the derivatives
+    void computeAllDerivatives(const double *in);
+
 };
 
 

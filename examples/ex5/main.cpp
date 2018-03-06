@@ -44,18 +44,18 @@ protected:
 
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
-        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/) {_a=a; _b=b;}
+    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
+            _a=a; _b=b;
+        }
 
     void setVP(const double *in){
         _a=in[0];
-        if (in[1] < 0.1)   // b cannot be negative, so set a threshold of 0.1
-            _b = 0.1;
-        else
-            _b=in[1];
+        _b=in[1];
     }
 
     void getVP(double *out){
-        out[0]=_a; out[1]=_b;
+        out[0]=_a;
+        out[1]=_b;
     }
 
     void samplingFunction(const double *x, double *out){
@@ -72,33 +72,15 @@ public:
         return exp(getProtoNew(0)-getProtoOld(0));
     }
 
-    double d1(const int &i, const double *x){
-        /*
-          Compute:    d/dx_i log(Psi(x))
-        */
-        return (-2.*_b*(x[0]-_a) );
-    }
-
-    double d2(const int &i, const double *x){
-        /*
-          Compute:    d^2/dx_i^2 log(Psi(x))
-        */
-        return ( -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)) ) ;
-    }
-
-    double vd1(const int &i, const double *x){
-        /*
-          Compute:    d/dalpha_i log(Psi(x))
-          where alpha are the variational parameters, in our case an array of dimension 1: alpha = (b)
-        */
-        if (i==0){
-            return (2.*_b*(x[0]-_a));
-        } else if (i==1){
-            return (-(x[0]-_a)*(x[0]-_a));
-        } else{
-            throw std::range_error( " the index i for QuadrExponential1D1POrbital.vd1() can be only 0 or 1" );
+    void computeAllDerivatives(const double *x){
+        setD1DivByWF(0, -2.*_b*(x[0]-_a));
+        setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
+        if (hasVD1()){
+            setVD1DivByWF(0, 2.*_b*(x[0]-_a));
+            setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
         }
     }
+
 };
 
 

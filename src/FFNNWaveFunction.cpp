@@ -6,14 +6,17 @@
 
 // --- interface for manipulating the variational parameters
 void FFNNWaveFunction::setVP(const double *vp){
-    for (int i=0; i<_ffnn->getNBeta(); ++i)
-        _ffnn->setBeta(i, vp[i]);
+    for (int i=0; i<_bare_ffnn->getNBeta(); ++i){
+        _bare_ffnn->setBeta(i, vp[i]);
+        _deriv_ffnn->setBeta(i, vp[i]);
+    }
 }
 
 
 void FFNNWaveFunction::getVP(double *vp){
-    for (int i=0; i<_ffnn->getNBeta(); ++i)
-        vp[i] = _ffnn->getBeta(i);
+    for (int i=0; i<_bare_ffnn->getNBeta(); ++i){
+        vp[i] = _bare_ffnn->getBeta(i);
+    }
 }
 
 
@@ -22,9 +25,9 @@ void FFNNWaveFunction::getVP(double *vp){
 // --- methods herited from MCISamplingFunctionInterface
 
 void FFNNWaveFunction::samplingFunction(const double * in, double * out){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    out[0] = pow(_ffnn->getOutput(0), 2);
+    _bare_ffnn->setInput(in);
+    _bare_ffnn->FFPropagate();
+    out[0] = pow(_bare_ffnn->getOutput(0), 2);
 }
 
 
@@ -41,46 +44,72 @@ double FFNNWaveFunction::getAcceptance(){
 
 
 
-// --- wf derivatives
+// --- computation of the derivatives
 
-double FFNNWaveFunction::d1(const int &i, const double *in){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    return _ffnn->getFirstDerivative(0, i)/_ffnn->getOutput(0);
+void FFNNWaveFunction::computeAllDerivatives(const double *in){
+    _deriv_ffnn->setInput(in);
+    _deriv_ffnn->FFPropagate();
+
+    const double wf_value = _deriv_ffnn->getOutput(0);
+
+    for (int id1=0; id1<getTotalNDim(); ++id1){
+        setD1DivByWF(id1, _deriv_ffnn->getFirstDerivative(0, id1) / wf_value);
+    }
+
+    for (int id2=0; id2<getTotalNDim(); ++id2){
+        setD2DivByWF(id2, _deriv_ffnn->getSecondDerivative(0, id2) / wf_value);
+    }
+
+    if (hasVD1()){
+        for (int ivd1=0; ivd1<getNVP(); ++ivd1){
+            setVD1DivByWF(ivd1, _deriv_ffnn->getVariationalFirstDerivative(0, ivd1) / wf_value);
+        }
+    }
+
+    if (hasD1VD1()){
+        for (int id1=0; id1<getTotalNDim(); ++id1){
+            for (int ivd1=0; ivd1<getNVP(); ++ivd1){
+                setD1VD1DivByWF(id1, ivd1, _deriv_ffnn->getCrossFirstDerivative(0, id1, ivd1) / wf_value);
+            }
+        }
+    }
+
+    if (hasD2VD1()){
+        for (int id2=0; id2<getTotalNDim(); ++id2){
+            for (int ivd1=0; ivd1<getNVP(); ++ivd1){
+                setD1VD1DivByWF(id2, ivd1, _deriv_ffnn->getCrossSecondDerivative(0, id2, ivd1) / wf_value);
+            }
+        }
+    }
+
 }
 
-
-double FFNNWaveFunction::d2(const int &i, const double *in){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    return _ffnn->getSecondDerivative(0, i)/_ffnn->getOutput(0);
-}
-
-
-double FFNNWaveFunction::vd1(const int &i, const double *in){
-    _ffnn->setInput(in);
-    _ffnn->FFPropagate();
-    return _ffnn->getVariationalFirstDerivative(0, i)/_ffnn->getOutput(0);
-}
 
 
 
 // -- Constructor and destructor
 
 
-FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn)
-    :WaveFunction(nspacedim, npart, 1, ffnn->getNBeta()){
+FFNNWaveFunction::FFNNWaveFunction(const int &nspacedim, const int &npart, FeedForwardNeuralNetwork * ffnn, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1)
+    :WaveFunction(nspacedim, npart, 1, ffnn->getNBeta(), flag_vd1, flag_d1vd1, flag_d2vd1){
     if (ffnn->getNInput() != nspacedim*npart)
         throw std::invalid_argument( "FFNN number of inputs does not fit the nspacedime and npart" );
 
     if (ffnn->getNOutput() != 1)
         throw std::invalid_argument( "FFNN number of output does not fit the wave function requirement (only one value)" );
 
-    _ffnn = ffnn;
+    _bare_ffnn = new FeedForwardNeuralNetwork(ffnn);
+    _deriv_ffnn = new FeedForwardNeuralNetwork(ffnn);
+    _deriv_ffnn->addFirstDerivativeSubstrate();
+    _deriv_ffnn->addSecondDerivativeSubstrate();
+    if (flag_vd1) _deriv_ffnn->addVariationalFirstDerivativeSubstrate();
+    if (flag_d1vd1) _deriv_ffnn->addCrossFirstDerivativeSubstrate();
+    if (flag_d2vd1) _deriv_ffnn->addCrossSecondDerivativeSubstrate();
 }
 
 
 
 FFNNWaveFunction::~FFNNWaveFunction(){
-    _ffnn = 0;
+    delete _bare_ffnn; _bare_ffnn = 0;
+    delete _deriv_ffnn; _deriv_ffnn = 0;
 }
