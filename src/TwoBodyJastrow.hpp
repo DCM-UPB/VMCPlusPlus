@@ -1,8 +1,9 @@
 #ifndef TWO_BODY_JASTROW
 #define TWO_BODY_JASTROW
 
+#include "WaveFunction.hpp"
 #include "TwoBodyPseudoPotential.hpp"
-#include "ParticlesPosition.hpp"
+#include "ParticleArray.hpp"
 
 
 /*
@@ -19,20 +20,20 @@ class TwoBodyJastrow: public WaveFunction{
 
 private:
     TwoBodyPseudoPotential * _u2;
-    ParticlesPosition * _ppos;
+    ParticleArray * _ptc_ary;
 
 public:
     TwoBodyJastrow(TwoBodyPseudoPotential * u2, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
     WaveFunction(u2->getNSpaceDim(), u2->getNPart(), 1, u2->getNVP(), flag_vd1, flag_d1vd1, flag_d2vd1){
         _u2 = u2;
-        _ppos = new ParticlesPosition(u2->getNSpaceDim());
+        _ptc_ary = new ParticleArray(u2->getNSpaceDim());
     }
     virtual ~TwoBodyJastrow();
 
 
 
-    void setVP(const double *vp){u2->setVP(vp);}
-    void getVP(double *vp){u2->getVP(vp);}
+    void setVP(const double *vp){_u2->setVP(vp);}
+    void getVP(double *vp){_u2->getVP(vp);}
 
 
 

@@ -17,7 +17,7 @@ public:
 
 
 
-    virtual void dist(const double * r1, const double * r2, double * out) = 0;
+    virtual double dist(const double * r1, const double * r2) = 0;
 
     virtual void distD1(const double * r1, const double * r2, double * out) = 0;
 

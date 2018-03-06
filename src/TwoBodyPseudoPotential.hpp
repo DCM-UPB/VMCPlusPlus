@@ -2,18 +2,27 @@
 #define  TWO_BODY_PSEUDO_POTENTIAL
 
 
+#include "ParticlesDistance.hpp"
+
+
+
 class TwoBodyPseudoPotential{
 
 private:
     ParticlesDistance * _dist;
     int _npart;
 
+    double * _foo;
+
 public:
-    TwoBodyPseudoPotential(ParticlesDistance * _dist, const int &npart){
-        _nspacedim = nspacedim;
+    TwoBodyPseudoPotential(const int &npart, ParticlesDistance * dist){
         _npart = npart;
+        _dist = dist;
+        _foo = new double[_dist->getNSpaceDim()];
     }
-    virtual ~TwoBodyPseudoPotential();
+    virtual ~TwoBodyPseudoPotential(){
+        delete[] _foo;
+    }
 
     int getNSpaceDim(){return _dist->getNSpaceDim();}
     int getNPart(){return _npart;}
@@ -23,14 +32,15 @@ public:
     virtual void setVP(const double *vp) = 0;
     virtual void getVP(double *vp) = 0;
 
+    virtual double ur(const double &dist) = 0;
+    virtual double urD1(const double &dist) = 0;
+    virtual double urD2(const double &dist) = 0;
 
-    virtual double u(const double & dist) = 0;
-    double u(const double * r1, const double * r2){return u(_dist());}
 
-    virtual double d1(const double & dist);
-    void d1(const double * r1, const double * r2, double * grad);
+    double u(const double * r1, const double * r2);
+    void d1(const double * r1, const double * r2, double * deriv1);
+    void d2(const double * r1, const double * r2, double * deriv2);
 
-    virtual double d2() = 0;
     virtual double vd1() = 0;
     virtual double d1vd1() = 0;
     virtual double d2vd1() = 0;
