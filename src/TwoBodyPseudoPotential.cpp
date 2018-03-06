@@ -24,6 +24,6 @@ void TwoBodyPseudoPotential::d2(const double * r1, const double * r2, double * d
     _dist->distD1(r1, r2, _foo);
 
     for (int i=0; i<2*_dist->getNSpaceDim(); ++i){
-        deriv2[i] *= deriv2[i] * ud1 + _foo[i] * _foo[i] * ud2;
+        deriv2[i] = deriv2[i] * ud1 + _foo[i] * _foo[i] * ud2;
     }
 }

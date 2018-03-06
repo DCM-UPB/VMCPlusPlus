@@ -141,11 +141,11 @@ int main(){
             const double fmdx = u2->u(x, y);
             const double numderiv = (fdx - 2.*f + fmdx)/(DX*DX);
 
-            cout << "analderivxy[" << i << "] = " << analderivxy[i] << endl;
-            cout << "analderivyx[" << i+NSPACEDIM << "] = " << analderivyx[i+NSPACEDIM] << endl;
-            cout << "numderiv = " << numderiv << endl << endl;
-            // assert( abs(analderivxy[i]-numderiv) < TINY );
-            // assert( abs(analderivyx[i+NSPACEDIM]-numderiv) < TINY );
+            // cout << "analderivxy[" << i << "] = " << analderivxy[i] << endl;
+            // cout << "analderivyx[" << i+NSPACEDIM << "] = " << analderivyx[i+NSPACEDIM] << endl;
+            // cout << "numderiv = " << numderiv << endl << endl;
+            assert( abs(analderivxy[i]-numderiv) < TINY );
+            assert( abs(analderivyx[i+NSPACEDIM]-numderiv) < TINY );
 
             x[i] = origx;
         }
@@ -159,11 +159,11 @@ int main(){
             const double fmdy = u2->u(x, y);
             const double numderiv = (fdy - 2.*f + fmdy)/(DX*DX);
 
-            cout << "analderivyx[" << i << "] = " << analderivyx[i] << endl;
-            cout << "analderivxy[" << i+NSPACEDIM << "] = " << analderivxy[i+NSPACEDIM] << endl;
-            cout << "numderiv = " << numderiv << endl << endl;
-            // assert( abs(analderivyx[i]-numderiv) < TINY );
-            // assert( abs(analderivxy[i+NSPACEDIM]-numderiv) < TINY );
+            // cout << "analderivyx[" << i << "] = " << analderivyx[i] << endl;
+            // cout << "analderivxy[" << i+NSPACEDIM << "] = " << analderivxy[i+NSPACEDIM] << endl;
+            // cout << "numderiv = " << numderiv << endl << endl;
+            assert( abs(analderivyx[i]-numderiv) < TINY );
+            assert( abs(analderivxy[i+NSPACEDIM]-numderiv) < TINY );
 
             y[i] = origy;
         }
