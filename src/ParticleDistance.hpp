@@ -11,6 +11,7 @@ public:
     ParticleDistance(const int &nspacedim){
         _nspacedim = nspacedim;
     }
+    virtual ~ParticleDistance(){}
 
 
     int getNSpaceDim(){return _nspacedim;}

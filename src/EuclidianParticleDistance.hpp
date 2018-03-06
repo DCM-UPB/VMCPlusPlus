@@ -8,7 +8,7 @@ class EuclidianParticleDistance: public ParticleDistance{
 
 public:
     EuclidianParticleDistance(const int &nspacedim): ParticleDistance(nspacedim){}
-
+    ~EuclidianParticleDistance(){}
 
     double dist(const double * r1, const double * r2);
 

@@ -11,3 +11,9 @@
 ## Unit Test 2
 
 `ut2/`: check the ParticleArray class.
+
+
+
+## Unit Test 3
+
+`ut3/`: check the EuclidianParticleDistance class.
