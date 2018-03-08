@@ -19,11 +19,10 @@ private:
 
 public:
     He3u2(ParticleDistance * dist):
-    TwoBodyPseudoPotential(dist){
-        _b = 1;
+    TwoBodyPseudoPotential(dist, 1, true, true, true){
+        _b = -1.;
     }
 
-    int getNVP(){return 1;}
     void setVP(const double *vp){_b=vp[0];}
     void getVP(double *vp){vp[0]=_b;}
 

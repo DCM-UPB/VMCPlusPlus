@@ -41,85 +41,60 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
         for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d2vd1_divbywf[i][j] = 0.;
     }
 
-
-
-    double * ud1 = new double[2*getNSpaceDim()];
-    double * ud1_2 = new double[2*getNSpaceDim()];
-    double * ud2 = new double[2*getNSpaceDim()];
-    double * uvd1 = new double[getNVP()];
-    double ** ud1vd1 = new double*[2*getNSpaceDim()];
-    for (int i=0; i<2*getNSpaceDim(); ++i) ud1vd1[i] = new double[getNVP()];
-    double ** ud2vd1 = new double*[2*getNSpaceDim()];
-    for (int i=0; i<2*getNSpaceDim(); ++i) ud2vd1[i] = new double[getNVP()];
-
     for (int i=0; i<getNPart()-1; ++i){
         for (int j=i+1; j<getNPart(); ++j){
-            // compute factors used for Jastrow derivatives
-            _u2->d1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud1);
-            for (int i=0; i<2*getNSpaceDim(); ++i) ud1_2[i] = ud1[i]*ud1[i];
+            // pre-compute the pseudo-potential derivatives
+            _u2->computeAllDerivatives(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j));
 
-            _u2->d2(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud2);
-
-            if (hasVD1() || hasD1VD1() || hasD2VD1()){
-                _u2->vd1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), uvd1);
+            // first derivative
+            for (int idim=0; idim<getNSpaceDim(); ++idim){
+                const int jdim = idim + getNSpaceDim();
+                const int ii = idim + i*getNSpaceDim();
+                const int ij = idim + j*getNSpaceDim();
+                d1_divbywf[ii] += _u2->getD1(idim);
+                d1_divbywf[ij] += _u2->getD1(jdim);
             }
 
-            if (hasD1VD1() || hasD2VD1()){
-                _u2->d1vd1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud1vd1);
+            // second derivative
+            for (int idim=0; idim<getNSpaceDim(); ++idim){
+                const int jdim = idim + getNSpaceDim();
+                const int ii = idim + i*getNSpaceDim();
+                const int ij = idim + j*getNSpaceDim();
+                d2_divbywf[ii] += _u2->getD1(idim) * _u2->getD1(idim) + _u2->getD2(idim);
+                d2_divbywf[ij] += _u2->getD1(jdim) * _u2->getD1(jdim) + _u2->getD2(jdim);
             }
 
-            if (hasD2VD1()){
-                _u2->d2vd1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud2vd1);
-            }
-
-
-            // update derivatives
-            _pam->addArrayToParticleArray(d1_divbywf, i, ud1);
-            _pam->addArrayToParticleArray(d1_divbywf, j, ud1+getNSpaceDim());
-
-            _pam->addArrayToParticleArray(d2_divbywf, i, ud1_2);
-            _pam->addArrayToParticleArray(d2_divbywf, j, ud1_2+getNSpaceDim());
-
-            _pam->addArrayToParticleArray(d2_divbywf, i, ud2);
-            _pam->addArrayToParticleArray(d2_divbywf, j, ud2+getNSpaceDim());
-
+            // first variational derivative
             if (hasVD1()){
-                for (int ivd1=0; ivd1<getNVP(); ++ivd1) vd1_divbywf[ivd1] += uvd1[ivd1];
+                for (int ivp=0; ivp<getNVP(); ++ivp) vd1_divbywf[ivp] += _u2->getVD1(ivp);
             }
 
+            // first cross derivative
             if (hasD1VD1()){
                 for (int idim=0; idim<getNSpaceDim(); ++idim){
-                    const int jdim = idm + getNSpaceDim();
+                    const int jdim = idim + getNSpaceDim();
                     const int ii = idim + i*getNSpaceDim();
                     const int ij = idim + j*getNSpaceDim();
                     for (int ivp=0; ivp<getNVP(); ++ivp){
-                        d1vd1_divbywf[ii][ivp] += uvd1[ivp] * ud1[idim] + ud1vd1[idim][ivp];
-                        d1vd1_divbywf[ij][ivp] += uvd1[ivp] * ud1[jdim] + ud1vd1[jdim][ivp];
+                        d1vd1_divbywf[ii][ivp] += _u2->getVD1(ivp) * _u2->getD1(idim) + _u2->getD1VD1(idim, ivp);
+                        d1vd1_divbywf[ij][ivp] += _u2->getVD1(ivp) * _u2->getD1(jdim) + _u2->getD1VD1(jdim, ivp);
                     }
                 }
             }
 
+            // second cross derivative
             if (hasD2VD1()){
                 for (int idim=0; idim<getNSpaceDim(); ++idim){
-                    const int jdim = idm + getNSpaceDim();
+                    const int jdim = idim + getNSpaceDim();
                     const int ii = idim + i*getNSpaceDim();
                     const int ij = idim + j*getNSpaceDim();
                     for (int ivp=0; ivp<getNVP(); ++ivp){
-                        d2vd1_divbywf[ii][ivp] += uvd1[ivp] * ud1[idim] * ud1[idim] + 2. * ud1vd1[idim][ivp] * ud1[idim] + uvd1[ivp] * ud2[idim] + ud2vd1[idim][ivp];
-                        d2vd1_divbywf[ij][ivp] += uvd1[ivp] * ud1[jdim] * ud1[jdim] + 2. * ud1vd1[jdim][ivp] * ud1[jdim] + uvd1[ivp] * ud2[jdim] + ud2vd1[jdim][ivp];
+                        d2vd1_divbywf[ii][ivp] += _u2->getVD1(ivp) * _u2->getD1(idim) * _u2->getD1(idim) + 2. * _u2->getD1VD1(idim, ivp) * _u2->getD1(idim) + _u2->getVD1(ivp) * _u2->getD2(idim) + _u2->getD2VD1(idim, ivp);
+                        d2vd1_divbywf[ij][ivp] += _u2->getVD1(ivp) * _u2->getD1(jdim) * _u2->getD1(jdim) + 2. * _u2->getD1VD1(jdim, ivp) * _u2->getD1(jdim) + _u2->getVD1(ivp) * _u2->getD2(jdim) + _u2->getD2VD1(jdim, ivp);
                     }
                 }
             }
         }
     }
 
-
-    for (int i=0; i<2*getNSpaceDim(); ++i) delete[] ud2vd1[i];
-    delete[] ud2vd1;
-    for (int i=0; i<2*getNSpaceDim(); ++i) delete[] ud1vd1[i];
-    delete[] ud1vd1;
-    delete[] uvd1;
-    delete[] ud2;
-    delete[] ud1_2;
-    delete[] ud1;
 }
