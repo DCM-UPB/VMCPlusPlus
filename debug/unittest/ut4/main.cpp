@@ -56,9 +56,9 @@ int main(){
 
     // constants
     const int NSPACEDIM = 3;
-    const double DX = 0.0001;
+    const double DX = 0.001;
     const double TINY = 0.01;
-    const int NTEST = 10;
+    const int NTEST = 1;
 
     // random generator
     random_device rdev;

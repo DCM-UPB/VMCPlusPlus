@@ -43,6 +43,10 @@ public:
         vd1[0] = 1./pow(dist, 5);
     }
 
+    void urD1VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = -5./pow(dist, 6);
+    }
+
 };
 
 
@@ -54,7 +58,7 @@ int main(){
     // constants
     const int NSPACEDIM = 3;
     const int NPART = 3;
-    const double DX = 0.0001;
+    const double DX = 0.001;
     const double TINY = 0.1;
 
     // random generator
@@ -74,13 +78,9 @@ int main(){
 
     // pick x from a grid
     const double K = 2.;
-    x[0] = 0.0; x[1] = 0.0; x[2] = 0.0;
-    x[3] = -K; x[4] = 0.0; x[5] = 0.0;
-    x[6] = K; x[7] = 0.0; x[8] = 0.0;
-    // x[9] = 0.0; x[10] = -K; x[11] = 0.0;
-    // x[12] = 0.0; x[13] = K; x[14] = 0.0;
-    // x[15] = 0.0; x[16] = 0.0; x[17] = -K;
-    // x[18] = 0.0; x[19] = 0.0; x[20] = K;
+    x[0] = 0.0; x[1] = 0.0; x[2] = K;
+    x[3] = K; x[4] = 0.0; x[5] = 0.0;
+    x[6] = 0.0; x[7] = K; x[8] = 0.0;
 
     // add randomness to x
     for (int i=0; i<NPART; ++i){
@@ -99,7 +99,7 @@ int main(){
 
 
     // initial wave function
-    double f, fdx, fmdx, fdvp;
+    double f, fdx, fmdx, fdvp, fdxdvp;
     J->samplingFunction(x, &f); f = exp(f);
 
 
@@ -149,6 +149,36 @@ int main(){
 
         vp[i] = origvp;
         J->setVP(vp);
+    }
+
+
+    // --- check the first cross derivative
+    for (int i=0; i<NPART*NSPACEDIM; ++i){
+        for (int j=0; j<J->getNVP(); ++j){
+            const double origx = x[i];
+            const double origvp = vp[j];
+
+            x[i] += DX;
+            J->samplingFunction(x, &fdx); fdx = exp(fdx);
+
+            x[i] = origx;
+            vp[j] += DX;
+            J->setVP(vp);
+            J->samplingFunction(x, &fdvp); fdvp = exp(fdvp);
+
+            x[i] += DX;
+            J->samplingFunction(x, &fdxdvp); fdxdvp = exp(fdxdvp);
+
+            const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
+
+            // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << J->getD1VD1DivByWF(i, j) << endl;
+            // cout << "numderiv = " << numderiv << endl << endl;
+            assert( abs( (J->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+
+            x[i] = origx;
+            vp[j] = origvp;
+            J->setVP(vp);
+        }
     }
 
 
