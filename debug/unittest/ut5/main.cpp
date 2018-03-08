@@ -39,6 +39,10 @@ public:
         return 30.*_b/pow(dist, 7);
     }
 
+    void urVD1(const double &dist, double * vd1){
+        vd1[0] = 1./pow(dist, 5);
+    }
+
 };
 
 
@@ -49,7 +53,7 @@ int main(){
 
     // constants
     const int NSPACEDIM = 3;
-    const int NPART = 7;
+    const int NPART = 3;
     const double DX = 0.0001;
     const double TINY = 0.1;
 
@@ -68,15 +72,16 @@ int main(){
     // particles position
     double * x = new double[NPART*NSPACEDIM];
 
-    // pick x
+    // pick x from a grid
     const double K = 2.;
     x[0] = 0.0; x[1] = 0.0; x[2] = 0.0;
     x[3] = -K; x[4] = 0.0; x[5] = 0.0;
     x[6] = K; x[7] = 0.0; x[8] = 0.0;
-    x[9] = 0.0; x[10] = -K; x[11] = 0.0;
-    x[12] = 0.0; x[13] = K; x[14] = 0.0;
-    x[15] = 0.0; x[16] = 0.0; x[17] = -K;
-    x[18] = 0.0; x[19] = 0.0; x[20] = K;
+    // x[9] = 0.0; x[10] = -K; x[11] = 0.0;
+    // x[12] = 0.0; x[13] = K; x[14] = 0.0;
+    // x[15] = 0.0; x[16] = 0.0; x[17] = -K;
+    // x[18] = 0.0; x[19] = 0.0; x[20] = K;
+
     // add randomness to x
     for (int i=0; i<NPART; ++i){
         for (int j=0; j<NSPACEDIM; ++j){
@@ -84,15 +89,19 @@ int main(){
         }
     }
 
+    // variational parameters
+    double * vp = new double[J->getNVP()];
+    J->getVP(vp);
+
 
     // compute all the derivatives analytically
     J->computeAllDerivatives(x);
 
 
     // initial wave function
-    double f, fdx, fmdx;
+    double f, fdx, fmdx, fdvp;
     J->samplingFunction(x, &f); f = exp(f);
-    
+
 
     // --- check the first derivatives
     for (int i=0; i<NPART*NSPACEDIM; ++i){
@@ -101,12 +110,13 @@ int main(){
         J->samplingFunction(x, &fdx); fdx = exp(fdx);
         const double numderiv = (fdx-f)/(DX*f);
 
-        cout << "getD1DivByWF(" << i <<") = " << J->getD1DivByWF(i) << endl;
-        cout << "numderiv = " << numderiv << endl << endl;
-        assert( ( J->getD1DivByWF(i) - numderiv )/numderiv < TINY );
+        // cout << "getD1DivByWF(" << i <<") = " << J->getD1DivByWF(i) << endl;
+        // cout << "numderiv = " << numderiv << endl << endl;
+        assert( abs( (J->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
 
         x[i] = origx;
     }
+
 
     // --- check the second derivatives
     for (int i=0; i<NPART*NSPACEDIM; ++i){
@@ -117,17 +127,34 @@ int main(){
         J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
         const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
-        cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
-        cout << "numderiv = " << numderiv << endl << endl;
-        assert( ( J->getD2DivByWF(i) - numderiv )/numderiv < TINY );
+        // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
+        // cout << "numderiv = " << numderiv << endl << endl;
+        assert( abs( (J->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
 
         x[i] = origx;
     }
 
 
+    // -- check the first variational derivative
+    for (int i=0; i<J->getNVP(); ++i){
+        const double origvp = vp[i];
+        vp[i] += DX;
+        J->setVP(vp);
+        J->samplingFunction(x, &fdvp); fdvp = exp(fdvp);
+        const double numderiv = (fdvp - f)/(DX*f);
+
+        // cout << "getVD1DivByWF(" << i << ") = " << J->getVD1DivByWF(i) << endl;
+        // cout << "numderiv = " << numderiv << endl << endl;
+        assert( abs( (J->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
+
+        vp[i] = origvp;
+        J->setVP(vp);
+    }
 
 
 
+
+    delete[] vp;
     delete[] x;
     delete J;
     delete u2;
