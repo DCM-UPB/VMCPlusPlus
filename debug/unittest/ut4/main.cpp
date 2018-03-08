@@ -38,6 +38,10 @@ public:
         return 30.*_b/pow(dist, 7);
     }
 
+    void urVD1(const double &dist, double * vd1){
+        vd1[0] = 1./pow(dist, 5);
+    }
+
 };
 
 
@@ -68,9 +72,13 @@ int main(){
     double * x = new double[NSPACEDIM];
     double * y = new double[NSPACEDIM];
 
+    // variational parameters
+    double * vp = new double[u2->getNVP()];
+
     // analytical derivative
     double * analderivxy = new double[2*NSPACEDIM];
     double * analderivyx = new double[2*NSPACEDIM];
+    double * analvd1 = new double[u2->getNVP()];
 
 
     // do NTEST tests with random x and y
@@ -169,12 +177,36 @@ int main(){
         }
 
 
+
+        // -- check the first variational derivative
+
+        // compute analytical derivative
+        u2->vd1(x, y, analvd1);
+
+        for (int i=0; i<u2->getNVP(); ++i){
+            u2->getVP(vp);
+            const double origvp = vp[i];
+            vp[i] += DX;
+            u2->setVP(vp);
+            const double fdp = u2->u(x,y);
+            const double numderiv = (fdp - f)/DX;
+
+            // cout << "analvd1[" << i << "] = " << analvd1[i] << endl;
+            // cout << "numderiv = " << numderiv << endl << endl;
+            assert( abs(analvd1[i]-numderiv) < TINY );
+
+            vp[i] = origvp;
+            u2->setVP(vp);
+        }
+
+
     }
 
 
 
 
-
+    delete[] vp;
+    delete[] analvd1;
     delete[] analderivxy;
     delete[] analderivyx;
     delete[] x;
