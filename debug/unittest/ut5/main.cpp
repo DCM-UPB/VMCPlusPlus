@@ -47,6 +47,10 @@ public:
         d1vd1[0] = -5./pow(dist, 6);
     }
 
+    void urD2VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = 30./pow(dist, 7);
+    }
+
 };
 
 

@@ -46,6 +46,10 @@ public:
         d1vd1[0] = -5./pow(dist, 6);
     }
 
+    void urD2VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = 30./pow(dist, 7);
+    }
+
 };
 
 
@@ -86,6 +90,8 @@ int main(){
     double * analvd1 = new double[u2->getNVP()];
     double ** anald1vd1 = new double*[2*NSPACEDIM];
     for (int i=0; i<2*NSPACEDIM; ++i) anald1vd1[i] = new double[u2->getNVP()];
+    double ** anald2vd1 = new double*[2*NSPACEDIM];
+    for (int i=0; i<2*NSPACEDIM; ++i) anald2vd1[i] = new double[u2->getNVP()];
 
 
     // do NTEST tests with random x and y
@@ -270,11 +276,94 @@ int main(){
         }
 
 
+
+        // --- check the second cross derivative
+        u2->d2vd1(x, y, anald2vd1);
+
+        // derivative in respect to x
+        for (int i=0; i<NSPACEDIM; ++i){
+            for (int j=0; j<u2->getNVP(); ++j){
+                const double origx = x[i];
+                const double origvp = vp[j];
+
+                x[i] = origx + DX;
+                const double fdx = u2->u(x, y);
+
+                x[i] = origx;
+                vp[j] += DX;
+                u2->setVP(vp);
+                const double fdp = u2->u(x, y);
+
+                x[i] += DX;
+                const double fdxdp = u2->u(x, y);
+
+                x[i] = origx - DX;
+                vp[j] = origvp;
+                u2->setVP(vp);
+                const double fmdx = u2->u(x, y);
+
+                vp[j] = origvp + DX;
+                u2->setVP(vp);
+                const double fmdxdp = u2->u(x,y);
+
+                const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*f - fmdx)/(DX*DX*DX);
+
+                // cout << "anald2vd1[" << i << "][" << j << "] = " << anald2vd1[i][j] << endl;
+                // cout << "numderiv = " << numderiv << endl << endl;
+                assert( abs( (anald2vd1[i][j]-numderiv)/numderiv ) < TINY );
+
+                x[i] = origx;
+                vp[j] = origvp;
+                u2->setVP(vp);
+            }
+        }
+
+        // derivative in respect to y
+        for (int i=0; i<NSPACEDIM; ++i){
+            for (int j=0; j<u2->getNVP(); ++j){
+                const double origy = y[i];
+                const double origvp = vp[j];
+
+                y[i] = origy + DX;
+                const double fdx = u2->u(x, y);
+
+                y[i] = origy;
+                vp[j] += DX;
+                u2->setVP(vp);
+                const double fdp = u2->u(x, y);
+
+                y[i] += DX;
+                const double fdxdp = u2->u(x, y);
+
+                y[i] = origy - DX;
+                vp[j] = origvp;
+                u2->setVP(vp);
+                const double fmdx = u2->u(x, y);
+
+                vp[j] = origvp + DX;
+                u2->setVP(vp);
+                const double fmdxdp = u2->u(x,y);
+
+                const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*f - fmdx)/(DX*DX*DX);
+
+                // cout << "anald2vd1[" << i+NSPACEDIM << "][" << j << "] = " << anald2vd1[i+NSPACEDIM][j] << endl;
+                // cout << "numderiv = " << numderiv << endl << endl;
+                assert( abs( (anald2vd1[i+NSPACEDIM][j]-numderiv)/numderiv ) < TINY );
+
+                y[i] = origy;
+                vp[j] = origvp;
+                u2->setVP(vp);
+            }
+        }
+
+
     }
 
 
 
 
+    for (int i=0; i<2*NSPACEDIM; ++i) delete[] anald2vd1[i];
+    delete[] anald2vd1;
     for (int i=0; i<2*NSPACEDIM; ++i) delete[] anald1vd1[i];
     delete[] anald1vd1;
     delete[] vp;
