@@ -131,6 +131,7 @@ public:
     bool hasD1VD1(){return (_d1vd1_divbywf == 0 ? false : true);}
     void setD1VD1DivByWF(const int &id1, const int &ivd1, const double &d1vd1_divbywf){_d1vd1_divbywf[id1][ivd1] = d1vd1_divbywf;}
     double getD1VD1DivByWF(const int &id1, const int &ivd1){return _d1vd1_divbywf[id1][ivd1];}
+    double ** getD1VD1DivByWF(){return _d1vd1_divbywf;}
     // cross derivative: second derivative and first variational derivative divided by the wf
     bool hasD2VD1(){return (_d2vd1_divbywf == 0 ? false : true);}
     void setD2VD1DivByWF(const int &id2, const int &ivd1, const double &d2vd1_divbywf){_d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf;}

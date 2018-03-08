@@ -32,3 +32,17 @@ void TwoBodyPseudoPotential::d2(const double * r1, const double * r2, double * d
 void TwoBodyPseudoPotential::vd1(const double * r1, const double * r2, double * varderiv1){
     urVD1(_dist->dist(r1, r2), varderiv1);
 }
+
+
+void TwoBodyPseudoPotential::d1vd1(const double * r1, const double * r2, double ** deriv1varderiv1){
+    if (!_vfoo) _vfoo = new double[getNVP()];
+
+    _dist->distD1(r1, r2, _foo);
+    urVD1(_dist->dist(r1, r2), _vfoo);
+
+    for (int i=0; i<2*_dist->getNSpaceDim(); ++i){
+        for (int j=0; j<getNVP(); ++j){
+            deriv1varderiv1[i][j] = _foo[i] * _vfoo[j];
+        }
+    }
+}
