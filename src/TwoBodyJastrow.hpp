@@ -9,7 +9,7 @@
 /*
 TwoBodyJastrow is a virtual class (or interface) for any 2-body Jastrow of the form:
 
-    J(R) = exp( - sum_ij u(r_ij) )
+    J(R) = exp( sum_ij u(r_ij) )
 
 where R contains all the particle coordinates, sum_ij is a sum over all the particle pairs (i, j) and r_ij is the distance between the particles i and j.
 u is a 2-body pseudopotential, and must be implemented as TwoBodyPseudoPotential.
@@ -28,7 +28,7 @@ public:
         _u2 = u2;
         _pam = new ParticleArrayManager(u2->getNSpaceDim());
     }
-    virtual ~TwoBodyJastrow();
+    virtual ~TwoBodyJastrow(){}
 
 
 

@@ -19,7 +19,7 @@ private:
 public:
     He3u2(ParticleDistance * dist):
     TwoBodyPseudoPotential(dist){
-        _b = 1;
+        _b = -1.;
     }
 
     int getNVP(){return 1;}
@@ -50,7 +50,7 @@ int main(){
     const int NSPACEDIM = 3;
     const double DX = 0.001;
     const double TINY = 0.01;
-    const int NTEST = 1;
+    const int NTEST = 10;
 
     // random generator
     random_device rdev;
