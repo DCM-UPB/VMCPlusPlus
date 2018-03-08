@@ -32,6 +32,7 @@ public:
     virtual double ur(const double &dist) = 0;
     virtual double urD1(const double &dist) = 0;
     virtual double urD2(const double &dist) = 0;
+    virtual void urVD1(const double &dist, double * vd1) = 0;
 
 
 
@@ -39,8 +40,8 @@ public:
     double u(const double * r1, const double * r2);
     void d1(const double * r1, const double * r2, double * deriv1);
     void d2(const double * r1, const double * r2, double * deriv2);
+    void vd1(const double * r1, const double * r2, double * varderiv1);
 
-    // virtual double vd1() = 0;
     // virtual double d1vd1() = 0;
     // virtual double d2vd1() = 0;
 
