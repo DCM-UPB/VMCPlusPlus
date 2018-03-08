@@ -103,7 +103,7 @@ int main(){
 
 
     // initial wave function
-    double f, fdx, fmdx, fdvp, fdxdvp;
+    double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
     J->samplingFunction(x, &f); f = exp(f);
 
 
@@ -178,6 +178,42 @@ int main(){
             // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << J->getD1VD1DivByWF(i, j) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
             assert( abs( (J->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+
+            x[i] = origx;
+            vp[j] = origvp;
+            J->setVP(vp);
+        }
+    }
+
+
+    // --- check the second cross derivative
+    for (int i=0; i<NPART*NSPACEDIM; ++i){
+        for (int j=0; j<J->getNVP(); ++j){
+            const double origx = x[i];
+            const double origvp = vp[j];
+
+            x[i] = origx + DX;
+            J->samplingFunction(x, &fdx); fdx = exp(fdx);
+
+            vp[j] = origvp + DX;
+            J->setVP(vp);
+            J->samplingFunction(x, &fdxdvp); fdxdvp = exp(fdxdvp);
+
+            x[i] = origx;
+            J->samplingFunction(x, &fdvp); fdvp = exp(fdvp);
+
+            x[i] = origx - DX;
+            J->samplingFunction(x, &fmdxdvp); fmdxdvp = exp(fmdxdvp);
+
+            vp[j] = origvp;
+            J->setVP(vp);
+            J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
+
+            const double numderiv = (fdxdvp - 2.*fdvp + fmdxdvp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
+
+            // cout << "getD2VD1DivByWF(" << i << ", " << j << ") = " << J->getD2VD1DivByWF(i, j) << endl;
+            // cout << "numderiv = " << numderiv << endl << endl;
+            assert( abs( (J->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
             vp[j] = origvp;

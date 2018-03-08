@@ -89,22 +89,24 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
 
             if (hasD1VD1()){
                 for (int idim=0; idim<getNSpaceDim(); ++idim){
+                    const int jdim = idm + getNSpaceDim();
                     const int ii = idim + i*getNSpaceDim();
                     const int ij = idim + j*getNSpaceDim();
-                    for (int ivd1=0; ivd1<getNVP(); ++ivd1){
-                        d1vd1_divbywf[ii][ivd1] += uvd1[ivd1] * ud1[idim] + ud1vd1[idim][ivd1];
-                        d1vd1_divbywf[ij][ivd1] += uvd1[ivd1] * ud1[idim+getNSpaceDim()] + ud1vd1[idim+getNSpaceDim()][ivd1];
+                    for (int ivp=0; ivp<getNVP(); ++ivp){
+                        d1vd1_divbywf[ii][ivp] += uvd1[ivp] * ud1[idim] + ud1vd1[idim][ivp];
+                        d1vd1_divbywf[ij][ivp] += uvd1[ivp] * ud1[jdim] + ud1vd1[jdim][ivp];
                     }
                 }
             }
 
             if (hasD2VD1()){
                 for (int idim=0; idim<getNSpaceDim(); ++idim){
+                    const int jdim = idm + getNSpaceDim();
                     const int ii = idim + i*getNSpaceDim();
                     const int ij = idim + j*getNSpaceDim();
-                    for (int ivd1=0; ivd1<getNVP(); ++ivd1){
-                        d2vd1_divbywf[ii][ivd1] += uvd1[ivd1] * ud1[idim] * ud1[idim] + 2. * ud1vd1[idim][ivd1] * ud1[idim] + uvd1[ivd1] * ud2[idim] + ud2vd1[idim][ivd1];
-                        d2vd1_divbywf[ij][ivd1] += uvd1[ivd1] * ud1[idim+getNSpaceDim()] * ud1[idim+getNSpaceDim()] + 2. * ud1vd1[idim+getNSpaceDim()][ivd1] * ud1[idim+getNSpaceDim()] + uvd1[ivd1] * ud2[idim+getNSpaceDim()] + ud2vd1[idim+getNSpaceDim()][ivd1];
+                    for (int ivp=0; ivp<getNVP(); ++ivp){
+                        d2vd1_divbywf[ii][ivp] += uvd1[ivp] * ud1[idim] * ud1[idim] + 2. * ud1vd1[idim][ivp] * ud1[idim] + uvd1[ivp] * ud2[idim] + ud2vd1[idim][ivp];
+                        d2vd1_divbywf[ij][ivp] += uvd1[ivp] * ud1[jdim] * ud1[jdim] + 2. * ud1vd1[jdim][ivp] * ud1[jdim] + uvd1[ivp] * ud2[jdim] + ud2vd1[jdim][ivp];
                     }
                 }
             }
