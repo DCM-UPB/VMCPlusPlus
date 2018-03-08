@@ -36,6 +36,11 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
         for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d1vd1_divbywf[i][j] = 0.;
     }
 
+    double ** d2vd1_divbywf = getD2VD1DivByWF();
+    if (hasD2VD1()){
+        for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d2vd1_divbywf[i][j] = 0.;
+    }
+
 
 
     double * ud1 = new double[2*getNSpaceDim()];
@@ -44,6 +49,8 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
     double * uvd1 = new double[getNVP()];
     double ** ud1vd1 = new double*[2*getNSpaceDim()];
     for (int i=0; i<2*getNSpaceDim(); ++i) ud1vd1[i] = new double[getNVP()];
+    double ** ud2vd1 = new double*[2*getNSpaceDim()];
+    for (int i=0; i<2*getNSpaceDim(); ++i) ud2vd1[i] = new double[getNVP()];
 
     for (int i=0; i<getNPart()-1; ++i){
         for (int j=i+1; j<getNPart(); ++j){
@@ -53,12 +60,16 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
 
             _u2->d2(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud2);
 
-            if (hasVD1() || hasD1VD1()){
+            if (hasVD1() || hasD1VD1() || hasD2VD1()){
                 _u2->vd1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), uvd1);
             }
 
-            if (hasD1VD1()){
+            if (hasD1VD1() || hasD2VD1()){
                 _u2->d1vd1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud1vd1);
+            }
+
+            if (hasD2VD1()){
+                _u2->d2vd1(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j), ud2vd1);
             }
 
 
@@ -78,11 +89,22 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
 
             if (hasD1VD1()){
                 for (int idim=0; idim<getNSpaceDim(); ++idim){
-                    const int ix = idim + i*getNSpaceDim();
-                    const int iy = idim + j*getNSpaceDim();
+                    const int ii = idim + i*getNSpaceDim();
+                    const int ij = idim + j*getNSpaceDim();
                     for (int ivd1=0; ivd1<getNVP(); ++ivd1){
-                        d1vd1_divbywf[ix][ivd1] += uvd1[ivd1] * ud1[idim] + ud1vd1[idim][ivd1];
-                        d1vd1_divbywf[iy][ivd1] += uvd1[ivd1] * ud1[idim+getNSpaceDim()] + ud1vd1[idim+getNSpaceDim()][ivd1];
+                        d1vd1_divbywf[ii][ivd1] += uvd1[ivd1] * ud1[idim] + ud1vd1[idim][ivd1];
+                        d1vd1_divbywf[ij][ivd1] += uvd1[ivd1] * ud1[idim+getNSpaceDim()] + ud1vd1[idim+getNSpaceDim()][ivd1];
+                    }
+                }
+            }
+
+            if (hasD2VD1()){
+                for (int idim=0; idim<getNSpaceDim(); ++idim){
+                    const int ii = idim + i*getNSpaceDim();
+                    const int ij = idim + j*getNSpaceDim();
+                    for (int ivd1=0; ivd1<getNVP(); ++ivd1){
+                        d2vd1_divbywf[ii][ivd1] += uvd1[ivd1] * ud1[idim] * ud1[idim] + 2. * ud1vd1[idim][ivd1] * ud1[idim] + uvd1[ivd1] * ud2[idim] + ud2vd1[idim][ivd1];
+                        d2vd1_divbywf[ij][ivd1] += uvd1[ivd1] * ud1[idim+getNSpaceDim()] * ud1[idim+getNSpaceDim()] + 2. * ud1vd1[idim+getNSpaceDim()][ivd1] * ud1[idim+getNSpaceDim()] + uvd1[ivd1] * ud2[idim+getNSpaceDim()] + ud2vd1[idim+getNSpaceDim()][ivd1];
                     }
                 }
             }
@@ -90,6 +112,8 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
     }
 
 
+    for (int i=0; i<2*getNSpaceDim(); ++i) delete[] ud2vd1[i];
+    delete[] ud2vd1;
     for (int i=0; i<2*getNSpaceDim(); ++i) delete[] ud1vd1[i];
     delete[] ud1vd1;
     delete[] uvd1;
