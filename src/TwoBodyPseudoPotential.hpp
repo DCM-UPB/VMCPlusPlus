@@ -2,14 +2,14 @@
 #define  TWO_BODY_PSEUDO_POTENTIAL
 
 
-#include "ParticleDistance.hpp"
+#include "Metric.hpp"
 
 
 
 class TwoBodyPseudoPotential{
 
 private:
-    ParticleDistance * _dist;
+    Metric * _metric;
     int _ndim2;
     int _nvp;
 
@@ -32,10 +32,10 @@ private:
     double * _vfoo2;
 
 public:
-    TwoBodyPseudoPotential(ParticleDistance * dist, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
+    TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
     virtual ~TwoBodyPseudoPotential();
 
-    int getNSpaceDim(){return _dist->getNSpaceDim();}
+    int getNSpaceDim(){return _metric->getNSpaceDim();}
     int getNVP(){return _nvp;}
 
 

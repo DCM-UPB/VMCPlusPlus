@@ -3,20 +3,20 @@
 
 
 double TwoBodyPseudoPotential::u(const double * r1, const double * r2){
-    return ur(_dist->dist(r1, r2));
+    return ur(_metric->dist(r1, r2));
 }
 
 
 void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const double * r2){
-    const double ud1 = urD1(_dist->dist(r1, r2));
-    const double ud2 = urD2(_dist->dist(r1, r2));
+    const double ud1 = urD1(_metric->dist(r1, r2));
+    const double ud2 = urD2(_metric->dist(r1, r2));
 
-    _dist->distD1(r1, r2, _foo);
-    _dist->distD2(r1, r2, _foo2);
+    _metric->distD1(r1, r2, _foo);
+    _metric->distD2(r1, r2, _foo2);
 
-    if (_flag_vd1) urVD1(_dist->dist(r1, r2), _vfoo);
-    if (_flag_d1vd1 || _flag_d2vd1) urD1VD1(_dist->dist(r1, r2), _vfoo1);
-    if (_flag_d2vd1) urD2VD1(_dist->dist(r1, r2), _vfoo2);
+    if (_flag_vd1) urVD1(_metric->dist(r1, r2), _vfoo);
+    if (_flag_d1vd1 || _flag_d2vd1) urD1VD1(_metric->dist(r1, r2), _vfoo1);
+    if (_flag_d2vd1) urD2VD1(_metric->dist(r1, r2), _vfoo2);
 
     for (int i=0; i<_ndim2; ++i){
         _d1[i] = _foo[i] * ud1;
@@ -50,8 +50,8 @@ void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const doub
 }
 
 
-TwoBodyPseudoPotential::TwoBodyPseudoPotential(ParticleDistance * dist, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1){
-    _dist = dist;
+TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * dist, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1){
+    _metric = dist;
     _ndim2 = 2*dist->getNSpaceDim();
     _nvp = nvp;
 

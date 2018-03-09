@@ -1,4 +1,4 @@
-#include "EuclidianParticleDistance.hpp"
+#include "EuclideanMetric.hpp"
 #include "TwoBodyPseudoPotential.hpp"
 #include "TwoBodyJastrow.hpp"
 
@@ -18,8 +18,8 @@ private:
     double _b;
 
 public:
-    He3u2(ParticleDistance * dist):
-    TwoBodyPseudoPotential(dist, 1, true, true, true){
+    He3u2(EuclideanMetric * em):
+    TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
 
@@ -72,8 +72,8 @@ int main(){
     rd = uniform_real_distribution<double>(-0.3, 0.3);
 
     // distance metric and two body-pseudopotential
-    EuclidianParticleDistance * dist = new EuclidianParticleDistance(NSPACEDIM);
-    He3u2 * u2 = new He3u2(dist);
+    EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
+    He3u2 * u2 = new He3u2(em);
     TwoBodyJastrow * J = new TwoBodyJastrow(NPART, u2, true, true, true);
 
     // particles position
@@ -227,7 +227,7 @@ int main(){
     delete[] x;
     delete J;
     delete u2;
-    delete dist;
+    delete em;
 
     return 0;
 }

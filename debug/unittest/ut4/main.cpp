@@ -1,4 +1,4 @@
-#include "EuclidianParticleDistance.hpp"
+#include "EuclideanMetric.hpp"
 #include "TwoBodyPseudoPotential.hpp"
 
 #include <assert.h>
@@ -17,8 +17,8 @@ private:
     double _b;
 
 public:
-    He3u2(ParticleDistance * dist):
-    TwoBodyPseudoPotential(dist, 1, true, true, true){
+    He3u2(EuclideanMetric * em):
+    TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
 
@@ -72,8 +72,8 @@ int main(){
     rd2 = uniform_real_distribution<double>(0.1, 1.);
 
     // distance metric and two body-pseudopotential
-    EuclidianParticleDistance * dist = new EuclidianParticleDistance(NSPACEDIM);
-    He3u2 * u2 = new He3u2(dist);
+    EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
+    He3u2 * u2 = new He3u2(em);
 
     // position of two particles
     double * x = new double[NSPACEDIM];
@@ -340,7 +340,7 @@ int main(){
     delete[] x;
     delete[] y;
     delete u2;
-    delete dist;
+    delete em;
 
     return 0;
 }

@@ -1,17 +1,17 @@
-#ifndef PARTICLE_DISTANCE
-#define PARTICLE_DISTANCE
+#ifndef METRIC
+#define METRIC
 
 
-class ParticleDistance{
+class Metric{
 
 private:
     int _nspacedim;
 
 public:
-    ParticleDistance(const int &nspacedim){
+    Metric(const int &nspacedim){
         _nspacedim = nspacedim;
     }
-    virtual ~ParticleDistance(){}
+    virtual ~Metric(){}
 
 
     int getNSpaceDim(){return _nspacedim;}
