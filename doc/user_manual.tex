@@ -158,6 +158,101 @@ Let us now see in details the methods of the class \verb+WaveFunction+:
 
 
 
+
+\subsection{Two-Body Jastrow}
+\label{sub:two_body_jastrow}
+There is a set of classes already prepared if you want to define a Two-Body Jastrow.
+
+First of all you need to define the metric of your system, by implementing a child class of \verb+Metric+:
+\begin{lstlisting}
+class Metric{
+public:
+    Metric(const int &nspacedim);
+
+    // --- Methods that must be implemented
+    virtual double dist(const double * r1, const double * r2) = 0;
+    virtual void distD1(const double * r1, const double * r2, double * out) = 0;
+    virtual void distD2(const double * r1, const double * r2, double * out) = 0;
+};
+\end{lstlisting}
+The method \verb+dist+ returns the distance between two particles.
+The method \verb+distD1+ computes the first derivative of the distance function in respect to the coordinates of \verb+r1+ and \verb+r2+.
+Therefore \verb+out+ must be \verb+2*_nspacedim+-dimensional.
+The method \verb+distD2+ computes the second derivative.
+In case you are interested in the Euclidean metric, you can use the \verb+EuclideanMetric+ class, which can be instanciated simply specifying the number of space dimensions. For example, for a $3$-dimensional space:
+\begin{lstlisting}
+EuclideanMetric * em = new EuclideanMetric(3);
+\end{lstlisting}
+
+Then you need to specify the Two-Body Pseudopotential by implementing a child class of \verb+TwoBodyPseudoPotential+:
+\begin{lstlisting}
+class TwoBodyPseudoPotential{
+public:
+    TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
+    virtual ~TwoBodyPseudoPotential();
+
+    // --- Methods that must be implemented
+    // manage variational parameters
+    virtual void setVP(const double *vp) = 0;
+    virtual void getVP(double *vp) = 0;
+    // functions of the distance that define the pseudopotential
+    virtual double ur(const double &r) = 0;
+    virtual double urD1(const double &r) = 0;
+    virtual double urD2(const double &r) = 0;
+    virtual void urVD1(const double &r, double * vd1) = 0;
+    virtual void urD1VD1(const double &r, double * d1vd1) = 0;
+    virtual void urD2VD1(const double &r, double * d1vd1) = 0;
+};
+\end{lstlisting}
+For example, the implementation of the Pseudopotential typically used for simulating $\text{He}$ atoms:
+\begin{lstlisting}
+class He3u2: public TwoBodyPseudoPotential{
+private:
+    double _b;
+public:
+    He3u2(EuclideanMetric * em):
+    TwoBodyPseudoPotential(em, 1, true, true, true){
+        _b = -1.;
+    }
+
+    void setVP(const double *vp){_b=vp[0];}
+    void getVP(double *vp){vp[0]=_b;}
+
+    double ur(const double &dist){
+        return _b/pow(dist, 5);
+    }
+    double urD1(const double &dist){
+        return -5.*_b/pow(dist, 6);
+    }
+    double urD2(const double &dist){
+        return 30.*_b/pow(dist, 7);
+    }
+    void urVD1(const double &dist, double * vd1){
+        vd1[0] = 1./pow(dist, 5);
+    }
+    void urD1VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = -5./pow(dist, 6);
+    }
+    void urD2VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = 30./pow(dist, 7);
+    }
+};
+\end{lstlisting}
+
+Finally, we are ready to declare a Two-Body Jastrow, simply by making use of the ready-to-use class \verb+TwoBodyJastrow+:
+\begin{lstlisting}
+EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
+He3u2 * u2 = new He3u2(em);
+TwoBodyJastrow * J = new TwoBodyJastrow(NPART, u2);
+\end{lstlisting}
+
+
+% subsection two_body_jastrow (end)
+
+
+
+
+
 \subsection{FFNNWaveFunction} % (fold)
 \label{sub:ffnnwavefunction}
 
