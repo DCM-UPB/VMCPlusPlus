@@ -47,9 +47,6 @@ int main(){
         ffnn->pushHiddenLayer(HIDDENLAYERSIZE);
     }
     ffnn->connectFFNN();
-    ffnn->addFirstDerivativeSubstrate();
-    ffnn->addSecondDerivativeSubstrate();
-    ffnn->addVariationalFirstDerivativeSubstrate();
 
     // Declare the trial wave functions
     FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn, true, false, false);
