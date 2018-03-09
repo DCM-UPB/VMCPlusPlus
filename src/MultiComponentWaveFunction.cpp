@@ -6,7 +6,7 @@
 
 void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
     for (WaveFunction * wf : _wfs){
-        wf->computeAllDerivatives();
+        wf->computeAllDerivatives(x);
     }
 
     // first derivative
@@ -22,8 +22,8 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
         for (WaveFunction * wf : _wfs){
             _setD2DivByWF(i, getD2DivByWF(i) + wf->getD2DivByWF(i));
         }
-        for (int iwf=0; iwf<_wfs.size()-1; ++iwf){
-            for (int jwf=iwf+1; jwf<_wfs.size(); ++jwf){
+        for (unsigned int iwf=0; iwf<_wfs.size()-1; ++iwf){
+            for (unsigned int jwf=iwf+1; jwf<_wfs.size(); ++jwf){
                 _setD2DivByWF(i, getD2DivByWF(i) + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1DivByWF(i));
             }
         }
@@ -49,12 +49,12 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
                 }
                 contvp += wf->getNVP();
             }
-            for (int iwf=0; iwf<_wfs.size(); ++iwf){
+            for (unsigned int iwf=0; iwf<_wfs.size(); ++iwf){
                 contvp = 0;
-                for (int jwf=0; jwf<_wfs.size(); ++jwf){
+                for (unsigned int jwf=0; jwf<_wfs.size(); ++jwf){
                     if (iwf != jwf){
-                        for (int ivp=0; ivp<_wfs[jwf]; ++ivp){
-                            _setD1VD1DivByWF(i, ivp+contvp, getD1VD1DivByWF() + _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getVD1DivByWF(ivp);
+                        for (int ivp=0; ivp<_wfs[jwf]->getNVP(); ++ivp){
+                            _setD1VD1DivByWF(i, ivp+contvp, getD1VD1DivByWF(i, ivp+contvp) + _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getVD1DivByWF(ivp));
                         }
                     }
                     contvp += _wfs[jwf]->getNVP();
@@ -74,9 +74,9 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
                  contvp += wf->getNVP();
              }
 
-             for (int iwf=0; iwf<_wfs.size(); ++iwf){
+             for (unsigned int iwf=0; iwf<_wfs.size(); ++iwf){
                  contvp = 0;
-                 for (int jwf=0; jwf<_wfs.size(); ++jwf){
+                 for (unsigned int jwf=0; jwf<_wfs.size(); ++jwf){
                      if (iwf != jwf){
                          for (int ivp=0; ivp<_wfs[jwf]->getNVP(); ++ivp){
                              _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp) + _wfs[iwf]->getD2DivByWF(i) * _wfs[jwf]->getVD1DivByWF(ivp));
@@ -86,9 +86,9 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
                  }
              }
 
-             for (int iwf=0; iwf<_wfs.size(); ++iwf){
+             for (unsigned int iwf=0; iwf<_wfs.size(); ++iwf){
                  contvp = 0;
-                 for (int jwf=0; jwf<_wfs.size(); ++jwf){
+                 for (unsigned int jwf=0; jwf<_wfs.size(); ++jwf){
                      if (iwf != jwf){
                          for (int ivp=0; ivp<_wfs[jwf]->getNVP(); ++ivp){
                              _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp) + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1VD1DivByWF(i, ivp));
@@ -98,10 +98,10 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
                  }
              }
 
-             for (int iwf=0; iwf<_wfs.size()-1; ++iwf){
-                 for (int jwf=iwf+1; jwf<_wfs.size(); ++jwf){
+             for (unsigned int iwf=0; iwf<_wfs.size()-1; ++iwf){
+                 for (unsigned int jwf=iwf+1; jwf<_wfs.size(); ++jwf){
                      contvp = 0;
-                     for (int kwf; kwf<_wfs.size(); ++kwf){
+                     for (unsigned int kwf; kwf<_wfs.size(); ++kwf){
                         if ((kwf != iwf) && (kwf != jwf)){
                             for (int ivp=0; ivp<_wfs[kwf]->getNVP(); ++ivp){
                                 _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp) + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1DivByWF(i) * _wfs[kwf]->getVD1DivByWF(ivp));
@@ -122,7 +122,7 @@ double MultiComponentWaveFunction::getAcceptance(){
 
 
 void MultiComponentWaveFunction::samplingFunction(const double * in, double * out){
-    const int = 0;
+    out[0] = 0.5;
 }
 
 
