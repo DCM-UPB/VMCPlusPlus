@@ -23,8 +23,8 @@ private:
     ParticleArrayHelper * _pah;
 
 public:
-    TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
-    WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), flag_vd1, flag_d1vd1, flag_d2vd1){
+    TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2):
+    WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()){
         _u2 = u2;
         _pah = new ParticleArrayHelper(u2->getNSpaceDim());
     }

@@ -74,7 +74,7 @@ int main(){
     // distance metric and two body-pseudopotential
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
     He3u2 * u2 = new He3u2(em);
-    TwoBodyJastrow * J = new TwoBodyJastrow(NPART, u2, true, true, true);
+    TwoBodyJastrow * J = new TwoBodyJastrow(NPART, u2);
 
     // particles position
     double * x = new double[NPART*NSPACEDIM];

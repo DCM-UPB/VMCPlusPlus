@@ -40,34 +40,38 @@ public:
 
 
 
+    // --- Methods that must be implemented
+    // manage variational parameters
+    virtual void setVP(const double *vp) = 0;
+    virtual void getVP(double *vp) = 0;
+    // functions of the distance that define the pseudopotential
+    virtual double ur(const double &r) = 0;                           // e.g. -b/r^5
+    virtual double urD1(const double &r) = 0;                         // e.g. 5*b/r^6
+    virtual double urD2(const double &r) = 0;                         // e.g. -30*b/r^7
+    virtual void urVD1(const double &r, double * vd1) = 0;            // e.g. -1/r^5
+    virtual void urD1VD1(const double &r, double * d1vd1) = 0;        // e.g. 5/r^6
+    virtual void urD2VD1(const double &r, double * d1vd1) = 0;        // e.g. -30/r^7
+
+
+
+    // -- Pair pseudopotential
     double u(const double * r1, const double * r2);
 
 
+
+    // --- Derivatives
+    // compute all the derivatives
     void computeAllDerivatives(const double * r1, const double * r2);
-
-
-
-
-    // -- derivatives
+    // get the derivatives
     double getD1(const int &id1){return _d1[id1];}
     double getD2(const int &id2){return _d2[id2];}
     double getVD1(const int &ivd1){return _vd1[ivd1];}
     double getD1VD1(const int &id1, const int &ivd1){return _d1vd1[id1][ivd1];}
     double getD2VD1(const int &id2, const int &ivd1){return _d2vd1[id2][ivd1];}
-
-
-
-
-    // --- methods that must be implemented
-    virtual void setVP(const double *vp) = 0;
-    virtual void getVP(double *vp) = 0;
-
-    virtual double ur(const double &dist) = 0;
-    virtual double urD1(const double &dist) = 0;
-    virtual double urD2(const double &dist) = 0;
-    virtual void urVD1(const double &dist, double * vd1) = 0;
-    virtual void urD1VD1(const double &dist, double * d1vd1) = 0;
-    virtual void urD2VD1(const double &dist, double * d1vd1) = 0;
+    // has the variational derivatives?
+    bool hasVD1(){return _flag_vd1;}
+    bool hasD1VD1(){return _flag_d1vd1;}
+    bool hasD2VD1(){return _flag_d2vd1;}
 
 };
 
