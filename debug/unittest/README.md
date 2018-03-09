@@ -10,7 +10,7 @@
 
 ## Unit Test 2
 
-`ut2/`: check the ParticleArray class.
+`ut2/`: check the ParticleArrayHelper class.
 
 
 

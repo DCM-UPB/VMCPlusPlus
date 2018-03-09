@@ -192,24 +192,24 @@ int main(){
     double * energy = new double[4];
     double * d_energy = new double[4];
     vmc->computeVariationalEnergy(Nmc, energy, d_energy);
-    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    // cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+    // cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+    // cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+    // cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
 
     double energy_check[4]; for (int i=0; i<4; ++i) energy_check[i] = 0.;
     double d_energy_check[4]; for (int i=0; i<4; ++i) d_energy_check[i] = 0.;
     VMC * vmc_check = new VMC(phi, ham2);
     vmc_check->computeVariationalEnergy(Nmc, energy_check, d_energy_check);
-    cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
-    cout << "       Potential Energy    = " << energy_check[1] << " +- " << d_energy_check[1] << endl;
-    cout << "       Kinetic (PB) Energy = " << energy_check[2] << " +- " << d_energy_check[2] << endl;
-    cout << "       Kinetic (JF) Energy = " << energy_check[3] << " +- " << d_energy_check[3] << endl << endl;
+    // cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
+    // cout << "       Potential Energy    = " << energy_check[1] << " +- " << d_energy_check[1] << endl;
+    // cout << "       Kinetic (PB) Energy = " << energy_check[2] << " +- " << d_energy_check[2] << endl;
+    // cout << "       Kinetic (JF) Energy = " << energy_check[3] << " +- " << d_energy_check[3] << endl << endl;
 
-    // for (int i=0; i<4; ++i){
-    //     assert(abs(energy[i]-energy_check[i]) < 2.*(d_energy[i]+d_energy_check[i]));
-    // }
+    for (int i=0; i<4; ++i){
+        assert(abs(energy[i]-energy_check[i]) < 2.*(d_energy[i]+d_energy_check[i]));
+    }
 
 
 
@@ -217,26 +217,26 @@ int main(){
 
 
     // --- Check the variational derivatives
-    // const double dx=0.2;
-    // double x = -1.;
-    // for (int i=0; i<10; ++i){
-    //     x = x + dx;
-    //
-    //     phi->computeAllDerivatives(&x);
-    //     psi->computeAllDerivatives(&x);
-    //
-    //     const double dda_phi = phi->getVD1DivByWF(0);
-    //     const double ddb_phi = phi->getVD1DivByWF(1);
-    //
-    //     const double ddp1_psi = psi->getVD1DivByWF(0);
-    //     const double ddp2_psi = psi->getVD1DivByWF(1);
-    //
-    //     // cout << dda_phi << " == " << - ddp1_psi * sqrtb << " ? " << endl;
-    //     assert( abs(dda_phi - ( - ddp1_psi * sqrtb )) < TINY );
-    //
-    //     // cout << ddb_phi << " == " << ddp2_psi / (2. * sqrtb) - ddp1_psi * a / (2. * sqrtb) << " ? " << endl;
-    //     assert( abs(ddb_phi - ( ddp2_psi / (2. * sqrtb) - ddp1_psi * a / (2. * sqrtb) ) ) < TINY );
-    // }
+    const double dx=0.2;
+    double x = -1.;
+    for (int i=0; i<10; ++i){
+        x = x + dx;
+
+        phi->computeAllDerivatives(&x);
+        psi->computeAllDerivatives(&x);
+
+        const double dda_phi = phi->getVD1DivByWF(0);
+        const double ddb_phi = phi->getVD1DivByWF(1);
+
+        const double ddp1_psi = psi->getVD1DivByWF(0);
+        const double ddp2_psi = psi->getVD1DivByWF(1);
+
+        // cout << dda_phi << " == " << - ddp1_psi * sqrtb << " ? " << endl;
+        assert( abs(dda_phi - ( - ddp1_psi * sqrtb )) < TINY );
+
+        // cout << ddb_phi << " == " << ddp2_psi / (2. * sqrtb) - ddp1_psi * a / (2. * sqrtb) << " ? " << endl;
+        assert( abs(ddb_phi - ( ddp2_psi / (2. * sqrtb) - ddp1_psi * a / (2. * sqrtb) ) ) < TINY );
+    }
 
 
 
@@ -252,8 +252,6 @@ int main(){
     delete phi;
     delete psi;
     delete ffnn;
-    delete gss_actf;
-    delete id_actf;
 
 
     return 0;

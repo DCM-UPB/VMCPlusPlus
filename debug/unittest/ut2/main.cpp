@@ -1,4 +1,4 @@
-#include "ParticleArrayManager.hpp"
+#include "ParticleArrayHelper.hpp"
 
 #include <assert.h>
 
@@ -8,7 +8,7 @@ int main(){
     const int NSPACEDIM = 3;
     const int RANDOMINT = 37;
 
-    ParticleArrayManager * pam = new ParticleArrayManager(NSPACEDIM);
+    ParticleArrayHelper * pah = new ParticleArrayHelper(NSPACEDIM);
 
 
     // create the initial multi-particle array
@@ -24,7 +24,7 @@ int main(){
     // check getParticleArray
     double * vec;
     for (int i=0; i<NPART; ++i){
-        vec = pam->getParticleArray(x, i);
+        vec = pah->getParticleArray(x, i);
         for (int j=0; j<NSPACEDIM; ++j){
             assert( vec[j] == x[i*NPART + j] );
             assert( x[i*NPART + j] == RANDOMINT*i + j );    // array x was not modified
@@ -39,10 +39,10 @@ int main(){
     double * oldx = new double[NSPACEDIM];
     for (int i=0; i<NPART; ++i){
         // store the original array values
-        vec = pam->getParticleArray(x, i);
+        vec = pah->getParticleArray(x, i);
         for (int j=0; j<NSPACEDIM; ++j) oldx[j] = vec[j];
         // change the values for the particle i
-        pam->setParticleArray(x, i, newx);
+        pah->setParticleArray(x, i, newx);
         // check that the values in the array x are as expected
         for (int i2=0; i2<NPART; ++i2){
             if (i2 == i){
@@ -58,7 +58,7 @@ int main(){
             }
         }
         // set x to its original values
-        pam->setParticleArray(x, i, oldx);
+        pah->setParticleArray(x, i, oldx);
         // check that x is set back to the original values
         for (int i2=0; i2<NPART; ++i2){
             for (int j=0; j<NSPACEDIM; ++j){
@@ -72,10 +72,10 @@ int main(){
     // check addArrayToParticleArray
     for (int i=0; i<NPART; ++i){
         // store the original array values
-        vec = pam->getParticleArray(x, i);
+        vec = pah->getParticleArray(x, i);
         for (int j=0; j<NSPACEDIM; ++j) oldx[j] = vec[j];
         // change the values for the particle i
-        pam->addArrayToParticleArray(x, i, newx);
+        pah->addArrayToParticleArray(x, i, newx);
         // check that the values in the array x are as expected
         for (int i2=0; i2<NPART; ++i2){
             if (i2 == i){
@@ -92,7 +92,7 @@ int main(){
         }
         // set x to its original values
         for (int j=0; j<NSPACEDIM; ++j) newx[j] = - newx[j];
-        pam->addArrayToParticleArray(x, i, newx);
+        pah->addArrayToParticleArray(x, i, newx);
         for (int j=0; j<NSPACEDIM; ++j) newx[j] = - newx[j];
         // check that x is set back to the original values
         for (int i2=0; i2<NPART; ++i2){
@@ -111,7 +111,7 @@ int main(){
     delete[] oldx;
     delete[] newx;
     delete[] x;
-    delete pam;
+    delete pah;
 
     return 0;
 }

@@ -7,7 +7,7 @@ void TwoBodyJastrow::samplingFunction(const double * x, double * protov){
     protov[0] = 0.;
     for (int i=0; i<getNPart()-1; ++i){
         for (int j=i+1; j<getNPart(); ++j){
-            protov[0] += _u2->u(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j));
+            protov[0] += _u2->u(_pah->getParticleArray(x, i), _pah->getParticleArray(x, j));
         }
     }
 }
@@ -44,7 +44,7 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
     for (int i=0; i<getNPart()-1; ++i){
         for (int j=i+1; j<getNPart(); ++j){
             // pre-compute the pseudo-potential derivatives
-            _u2->computeAllDerivatives(_pam->getParticleArray(x, i), _pam->getParticleArray(x, j));
+            _u2->computeAllDerivatives(_pah->getParticleArray(x, i), _pah->getParticleArray(x, j));
 
             // first derivative
             for (int idim=0; idim<getNSpaceDim(); ++idim){
