@@ -61,13 +61,14 @@ int main(){
     const int NSPACEDIM = 3;
     const double DX = 0.001;
     const double TINY = 0.01;
-    const int NTEST = 4;
+    const int NTEST = 10;
 
     // random generator
     random_device rdev;
     mt19937_64 rgen;
     uniform_real_distribution<double> rd1, rd2;
     rgen = std::mt19937_64(rdev());
+    rgen.seed(18984687);
     rd1 = uniform_real_distribution<double>(-1., -0.1);
     rd2 = uniform_real_distribution<double>(0.1, 1.);
 

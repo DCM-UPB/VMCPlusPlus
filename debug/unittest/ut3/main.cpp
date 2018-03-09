@@ -41,6 +41,7 @@ int main(){
     mt19937_64 rgen;
     uniform_real_distribution<double> rd1, rd2;
     rgen = std::mt19937_64(rdev());
+    rgen.seed(18984687);
     rd1 = uniform_real_distribution<double>(-5,-1);
     rd2 = uniform_real_distribution<double>(1,5);
 

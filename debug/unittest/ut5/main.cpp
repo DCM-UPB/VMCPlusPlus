@@ -69,6 +69,7 @@ int main(){
     mt19937_64 rgen;
     uniform_real_distribution<double> rd;
     rgen = std::mt19937_64(rdev());
+    rgen.seed(18984687);
     rd = uniform_real_distribution<double>(-0.3, 0.3);
 
     // distance metric and two body-pseudopotential
