@@ -78,11 +78,11 @@ public:
     }
 
     void computeAllDerivatives(const double *x){
-        setD1DivByWF(0, _niv*(x[0]-_x0));
-        setD2DivByWF(0, _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+        _setD1DivByWF(0, _niv*(x[0]-_x0));
+        _setD2DivByWF(0, _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0));
         if (hasVD1()){
-            setVD1DivByWF(0, -_niv*(x[0]-_x0));
-            setVD1DivByWF(1, 0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+            _setVD1DivByWF(0, -_niv*(x[0]-_x0));
+            _setVD1DivByWF(1, 0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
         }
     }
 
