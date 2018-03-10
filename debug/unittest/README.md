@@ -29,3 +29,10 @@
 ## Unit Test 5
 
 `ut5/`: check the TwoBodyJastrow.
+
+
+
+
+## Unit Test 6
+
+`ut6/`: check the MultiComponentWaveFunction.

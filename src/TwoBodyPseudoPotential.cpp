@@ -91,15 +91,31 @@ TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int &nvp, 
 
 
 TwoBodyPseudoPotential::~TwoBodyPseudoPotential(){
-    delete[] _d1;
-    delete[] _d2;
-    if (_vd1) delete[] _vd1;
-    if (_d1vd1) delete[] _d1vd1;
-    if (_d2vd1) delete[] _d2vd1;
+    _metric = 0;
 
-    delete[] _foo;
-    delete[] _foo2;
-    if (_vfoo) delete[] _vfoo;
-    if (_vfoo1) delete[] _vfoo1;
-    if (_vfoo2) delete[] _vfoo2;
+    delete[] _d1; _d1=0;
+    delete[] _d2; _d2=0;
+    if (_vd1 != 0){
+        delete[] _vd1; _vd1 = 0;
+    }
+    if (_d1vd1 != 0){
+        for (int i=0; i<_ndim2; ++i) delete[] _d1vd1[i];
+        delete[] _d1vd1; _d1vd1 = 0;
+    }
+    if (_d2vd1 != 0){
+        for (int i=0; i<_ndim2; ++i) delete[] _d2vd1[i];
+        delete[] _d2vd1; _d2vd1 = 0;
+    }
+
+    delete[] _foo; _foo = 0;
+    delete[] _foo2; _foo2 = 0;
+    if (_vfoo){
+        delete[] _vfoo; _vfoo = 0;
+    }
+    if (_vfoo1){
+        delete[] _vfoo1; _vfoo1 = 0;
+    }
+    if (_vfoo2){
+        delete[] _vfoo2; _vfoo2 = 0;
+    }
 }

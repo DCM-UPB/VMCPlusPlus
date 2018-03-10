@@ -28,7 +28,9 @@ public:
         _u2 = u2;
         _pah = new ParticleArrayHelper(u2->getNSpaceDim());
     }
-    virtual ~TwoBodyJastrow(){}
+    virtual ~TwoBodyJastrow(){
+        delete _pah;
+    }
 
 
 

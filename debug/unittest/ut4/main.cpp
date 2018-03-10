@@ -21,6 +21,7 @@ public:
     TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
+    ~He3u2(){}
 
     void setVP(const double *vp){_b=vp[0];}
     void getVP(double *vp){vp[0]=_b;}
@@ -67,7 +68,7 @@ int main(){
     random_device rdev;
     mt19937_64 rgen;
     uniform_real_distribution<double> rd1, rd2;
-    rgen = std::mt19937_64(rdev());
+    rgen = mt19937_64(rdev());
     rgen.seed(18984687);
     rd1 = uniform_real_distribution<double>(-1., -0.1);
     rd2 = uniform_real_distribution<double>(0.1, 1.);

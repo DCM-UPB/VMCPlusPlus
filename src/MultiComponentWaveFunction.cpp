@@ -101,7 +101,7 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
              for (unsigned int iwf=0; iwf<_wfs.size()-1; ++iwf){
                  for (unsigned int jwf=iwf+1; jwf<_wfs.size(); ++jwf){
                      contvp = 0;
-                     for (unsigned int kwf; kwf<_wfs.size(); ++kwf){
+                     for (unsigned int kwf=0; kwf<_wfs.size(); ++kwf){
                         if ((kwf != iwf) && (kwf != jwf)){
                             for (int ivp=0; ivp<_wfs[kwf]->getNVP(); ++ivp){
                                 _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp) + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1DivByWF(i) * _wfs[kwf]->getVD1DivByWF(ivp));
@@ -164,4 +164,5 @@ void MultiComponentWaveFunction::addWaveFunction(WaveFunction * wf){
     _wfs.push_back(wf);
     setNProto( getNProto() + wf->getNProto() );
     setNVP( getNVP() + wf->getNVP() );
+    _allocateVariationalDerivativesMemory();
 }
