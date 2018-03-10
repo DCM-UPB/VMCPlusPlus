@@ -36,7 +36,7 @@ public:
     // wave function values that will be used to compute the acceptance
     void samplingFunction(const double * in, double * out);
     // MCI acceptance starting from the new and old sampling functions
-    double getAcceptance();
+    double getAcceptance(const double * protoold, const double * protonew);
 
     // --- computation of the derivatives
     void computeAllDerivatives(const double *in);

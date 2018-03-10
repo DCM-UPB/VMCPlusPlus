@@ -65,11 +65,11 @@ public:
         *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
     }
 
-    double getAcceptance(){
+    double getAcceptance(const double * protoold, const double * protonew){
         /*
           Compute the acceptance probability
         */
-        return exp(getProtoNew(0)-getProtoOld(0));
+        return exp(protonew[0]-protoold[0]);
     }
 
     void computeAllDerivatives(const double *x){

@@ -28,7 +28,7 @@ public:
 
     void samplingFunction(const double * in, double * out);
 
-    double getAcceptance();
+    double getAcceptance(const double * protoold, const double * protonew);
 
     void computeAllDerivatives(const double *x);
 

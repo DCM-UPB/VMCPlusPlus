@@ -116,8 +116,14 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
 }
 
 
-double MultiComponentWaveFunction::getAcceptance(){
-    return 1.;
+double MultiComponentWaveFunction::getAcceptance(const double * protoold, const double * protonew){
+    double acceptance = 1.;
+    int contproto = 0;
+    for (WaveFunction * wf : _wfs){
+        acceptance *= wf->getAcceptance(protoold+contproto, protonew+contproto);
+        contproto += wf->getNProto();
+    }
+    return acceptance;
 }
 
 

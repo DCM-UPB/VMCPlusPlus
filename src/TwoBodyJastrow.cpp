@@ -13,8 +13,8 @@ void TwoBodyJastrow::samplingFunction(const double * x, double * protov){
 }
 
 
-double TwoBodyJastrow::getAcceptance(){
-    return exp(2.0 * (getProtoNew(0) - getProtoOld(0)) );   // the factor 2 comes from the fact that the wf must be squared (sampling from psi^2)
+double TwoBodyJastrow::getAcceptance(const double * protoold, const double * protonew){
+    return exp(2.0 * (protonew[0] - protoold[0]) );   // the factor 2 comes from the fact that the wf must be squared (sampling from psi^2)
 }
 
 
