@@ -122,7 +122,11 @@ double MultiComponentWaveFunction::getAcceptance(){
 
 
 void MultiComponentWaveFunction::samplingFunction(const double * in, double * out){
-    out[0] = 0.5;
+    int contproto = 0;
+    for (WaveFunction * wf : _wfs){
+        wf->samplingFunction(in, out+contproto);
+        contproto += wf->getNProto();
+    }
 }
 
 

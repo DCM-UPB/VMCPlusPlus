@@ -83,10 +83,10 @@ int main(){
 
     // Define 4 Jastrow
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
-    PolynomialU2 * u2_1 = new PolynomialU2(em, -0.5, -2.);
-    PolynomialU2 * u2_2 = new PolynomialU2(em, -1.5, -0.5);
-    PolynomialU2 * u2_3 = new PolynomialU2(em, -2.0, -0.5);
-    PolynomialU2 * u2_4 = new PolynomialU2(em, -1.0, -1.);
+    PolynomialU2 * u2_1 = new PolynomialU2(em, -0.2, -0.2);
+    PolynomialU2 * u2_2 = new PolynomialU2(em, -0.1, -0.2);
+    PolynomialU2 * u2_3 = new PolynomialU2(em, -0.1, -0.1);
+    PolynomialU2 * u2_4 = new PolynomialU2(em, -0.2, -0.1);
     TwoBodyJastrow * J_1 = new TwoBodyJastrow(NPART, u2_1);
     TwoBodyJastrow * J_2 = new TwoBodyJastrow(NPART, u2_2);
     TwoBodyJastrow * J_3 = new TwoBodyJastrow(NPART, u2_3);
@@ -103,7 +103,7 @@ int main(){
     double * x = new double[NPART*NSPACEDIM];
 
     // pick x from a grid
-    const double K = 2.;
+    const double K = 0.7;
     x[0] = 0.0; x[1] = 0.0; x[2] = K;
     x[3] = K; x[4] = 0.0; x[5] = 0.0;
     x[6] = 0.0; x[7] = K; x[8] = 0.0;
@@ -120,7 +120,27 @@ int main(){
     Psi->getVP(vp);
 
 
-    // compute all the derivatives analytically
+    // --- check the sampling function
+    double * protov = new double[4];
+    Psi->samplingFunction(x, protov);
+    double * protovJ = new double;
+    J_1->samplingFunction(x, protovJ);
+    cout << "Psi protovalue = " << protov[0] << "    J_1 protovalue = " << *protovJ << endl;
+    assert( protov[0] == *protovJ );
+    J_2->samplingFunction(x, protovJ);
+    cout << "Psi protovalue = " << protov[1] << "    J_2 protovalue = " << *protovJ << endl;
+    assert( protov[1] == *protovJ );
+    J_3->samplingFunction(x, protovJ);
+    cout << "Psi protovalue = " << protov[2] << "    J_3 protovalue = " << *protovJ << endl;
+    assert( protov[2] == *protovJ );
+    J_4->samplingFunction(x, protovJ);
+    cout << "Psi protovalue = " << protov[3] << "    J_4 protovalue = " << *protovJ << endl;
+    assert( protov[3] == *protovJ );
+
+
+    // --- check the derivatives
+
+    // pre-compute all the derivatives analytically
     Psi->computeAllDerivatives(x);
 
 
@@ -246,6 +266,8 @@ int main(){
 
 
 
+    delete protovJ;
+    delete[] protov;
     delete[] vp;
     delete[] x;
     delete Psi;
