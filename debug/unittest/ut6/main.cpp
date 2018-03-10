@@ -123,19 +123,45 @@ int main(){
     // --- check the sampling function
     double * protov = new double[4];
     Psi->samplingFunction(x, protov);
-    double * protovJ = new double;
+    double * protovJ = new double[0];
     J_1->samplingFunction(x, protovJ);
-    cout << "Psi protovalue = " << protov[0] << "    J_1 protovalue = " << *protovJ << endl;
-    assert( protov[0] == *protovJ );
-    J_2->samplingFunction(x, protovJ);
-    cout << "Psi protovalue = " << protov[1] << "    J_2 protovalue = " << *protovJ << endl;
-    assert( protov[1] == *protovJ );
-    J_3->samplingFunction(x, protovJ);
-    cout << "Psi protovalue = " << protov[2] << "    J_3 protovalue = " << *protovJ << endl;
-    assert( protov[2] == *protovJ );
-    J_4->samplingFunction(x, protovJ);
-    cout << "Psi protovalue = " << protov[3] << "    J_4 protovalue = " << *protovJ << endl;
-    assert( protov[3] == *protovJ );
+    cout << "Psi protovalue = " << protov[0] << "    J_1 protovalue = " << protovJ[0] << endl;
+    assert( protov[0] == protovJ[0] );
+    J_2->samplingFunction(x, protovJ+1);
+    cout << "Psi protovalue = " << protov[1] << "    J_2 protovalue = " << protovJ[1] << endl;
+    assert( protov[1] == protovJ[1] );
+    J_3->samplingFunction(x, protovJ+2);
+    cout << "Psi protovalue = " << protov[2] << "    J_3 protovalue = " << protovJ[2] << endl;
+    assert( protov[2] == protovJ[2] );
+    J_4->samplingFunction(x, protovJ+3);
+    cout << "Psi protovalue = " << protov[3] << "    J_4 protovalue = " << protovJ[3] << endl;
+    assert( protov[3] == protovJ[3] );
+
+
+
+    // --- check the acceptance function
+    // slightly change x
+    for (int i=0; i<NPART; ++i){
+        for (int j=0; j<NSPACEDIM; ++j){
+            x[i*NSPACEDIM+j] += 0.1 * rd(rgen);
+        }
+    }
+    // compute the new protovalues
+    double * protovnew = new double[4];
+    Psi->samplingFunction(x, protovnew);
+    double * protovJnew = new double[4];
+    J_1->samplingFunction(x, protovJnew);
+    J_2->samplingFunction(x, protovJnew+1);
+    J_3->samplingFunction(x, protovJnew+2);
+    J_4->samplingFunction(x, protovJnew+3);
+
+    // compute and compare the acceptance values
+    const double accPsi = Psi->getAcceptance(protov, protovnew);
+    const double accJ1 = J_1->getAcceptance(protovJ, protovJnew);
+    const double accJ2 = J_2->getAcceptance(protovJ+1, protovJnew+1);
+    const double accJ3 = J_3->getAcceptance(protovJ+2, protovJnew+2);
+    const double accJ4 = J_4->getAcceptance(protovJ+3, protovJnew+3);
+    cout << "acceptance values:    Psi = " << accPsi << "    J_1 = " << accJ1 << "    J_2 = " << accJ2 << "    J_3 = " << accJ3 << "    J_4 = " << accJ4 << "    J_1*J_2*J_3*J_4 = " << accJ1*accJ2*accJ3*accJ4 << endl;
 
 
     // --- check the derivatives
@@ -266,7 +292,9 @@ int main(){
 
 
 
-    delete protovJ;
+    delete[] protovJnew;
+    delete[] protovnew;
+    delete[] protovJ;
     delete[] protov;
     delete[] vp;
     delete[] x;

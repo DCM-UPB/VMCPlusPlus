@@ -31,14 +31,14 @@ void FFNNWaveFunction::samplingFunction(const double * in, double * out){
 }
 
 
-double FFNNWaveFunction::getAcceptance(){
-    if ((getProtoOld(0) == 0.) && (getProtoNew(0) != 0.)){
+double FFNNWaveFunction::getAcceptance(const double * protoold, const double * protonew){
+    if ((protoold[0] == 0.) && (protonew[0] != 0.)){
         return 1.;
-    } else if ((getProtoOld(0) == 0.) && (getProtoNew(0) == 0.)) {
+    } else if ((protoold[0] == 0.) && (protonew[0] == 0.)) {
         return 0.;
     }
 
-    return getProtoNew(0)/getProtoOld(0);
+    return protonew[0]/protoold[0];
 }
 
 

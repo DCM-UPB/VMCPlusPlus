@@ -18,7 +18,7 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
     - void samplingFunction(const double * in, double * out)
             heritage from MCISamplingFunctionInterface, uses Psi^2
 
-    - double getAcceptance()
+    - double getAcceptance(const double * protoold, const double * protonew)
             heritage from MCISamplingFunctionInterface
 
     - void computeAllDerivatives(const double *x)
