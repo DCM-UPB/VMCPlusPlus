@@ -72,6 +72,8 @@ int main(){
     const int NPART = 3;
     const double DX = 0.001;
     const double TINY = 0.1;
+    const double FOO1 = 37.;
+    const double FOO2 = 42.;
 
     // random generator
     random_device rdev;
@@ -91,6 +93,8 @@ int main(){
     TwoBodyJastrow * J_2 = new TwoBodyJastrow(NPART, u2_2);
     TwoBodyJastrow * J_3 = new TwoBodyJastrow(NPART, u2_3);
     TwoBodyJastrow * J_4 = new TwoBodyJastrow(NPART, u2_4);
+    TwoBodyJastrow ** J = new TwoBodyJastrow *[4];
+    J[0] = J_1; J[1] = J_2; J[2] = J_3; J[3] = J_4;
 
     // define Multi Component Wave Function
     MultiComponentWaveFunction * Psi = new MultiComponentWaveFunction(NSPACEDIM, NPART);
@@ -120,22 +124,49 @@ int main(){
     Psi->getVP(vp);
 
 
+
+    // --- check get/setVP
+    cout << "Psi->getNVP() = " << Psi->getNVP() << endl;
+    assert( Psi->getNVP() == 8);
+    for (int iJ=0; iJ<4; ++iJ){
+        double * Jvp = new double[J[iJ]->getNVP()];
+        J[iJ]->getVP(Jvp);
+        for (int ivp=0; ivp<J[iJ]->getNVP(); ++ivp){
+            cout << "vp[" << iJ*2+ivp << "] = " << vp[iJ*2+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
+            assert( vp[iJ*2+ivp] == Jvp[ivp] );
+            const double origvp = Jvp[ivp];
+
+            vp[iJ*2+ivp] = FOO1;
+            Psi->setVP(vp);
+            Psi->getVP(vp);
+            J[iJ]->getVP(Jvp);
+            cout << "vp[" << iJ*2+ivp << "] = " << vp[iJ*2+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
+            assert( vp[iJ*2+ivp] == Jvp[ivp] );
+
+            Jvp[ivp] = FOO2;
+            J[iJ]->setVP(Jvp);
+            J[iJ]->getVP(Jvp);
+            Psi->getVP(vp);
+            cout << "vp[" << iJ*2+ivp << "] = " << vp[iJ*2+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
+            assert( vp[iJ*2+ivp] == Jvp[ivp] );
+
+            vp[iJ*2+ivp] = origvp;
+            Jvp[ivp] = origvp;
+        }
+        delete[] Jvp;
+    }
+
+
+
     // --- check the sampling function
     double * protov = new double[4];
     Psi->samplingFunction(x, protov);
     double * protovJ = new double[0];
-    J_1->samplingFunction(x, protovJ);
-    cout << "Psi protovalue = " << protov[0] << "    J_1 protovalue = " << protovJ[0] << endl;
-    assert( protov[0] == protovJ[0] );
-    J_2->samplingFunction(x, protovJ+1);
-    cout << "Psi protovalue = " << protov[1] << "    J_2 protovalue = " << protovJ[1] << endl;
-    assert( protov[1] == protovJ[1] );
-    J_3->samplingFunction(x, protovJ+2);
-    cout << "Psi protovalue = " << protov[2] << "    J_3 protovalue = " << protovJ[2] << endl;
-    assert( protov[2] == protovJ[2] );
-    J_4->samplingFunction(x, protovJ+3);
-    cout << "Psi protovalue = " << protov[3] << "    J_4 protovalue = " << protovJ[3] << endl;
-    assert( protov[3] == protovJ[3] );
+    for (int iJ=0; iJ<4; ++iJ){
+        J[iJ]->samplingFunction(x, protovJ+iJ);
+        cout << "Psi protovalue = " << protov[iJ] << "    J_" << iJ+1 << " protovalue = " << protovJ[iJ] << endl;
+        assert( protov[iJ] == protovJ[iJ] );
+    }
 
 
 
@@ -162,6 +193,8 @@ int main(){
     const double accJ3 = J_3->getAcceptance(protovJ+2, protovJnew+2);
     const double accJ4 = J_4->getAcceptance(protovJ+3, protovJnew+3);
     cout << "acceptance values:    Psi = " << accPsi << "    J_1 = " << accJ1 << "    J_2 = " << accJ2 << "    J_3 = " << accJ3 << "    J_4 = " << accJ4 << "    J_1*J_2*J_3*J_4 = " << accJ1*accJ2*accJ3*accJ4 << endl;
+    assert( accPsi == accJ1*accJ2*accJ3*accJ4 );
+
 
 
     // --- check the derivatives
@@ -299,6 +332,7 @@ int main(){
     delete[] vp;
     delete[] x;
     delete Psi;
+    delete[] J;
     delete J_4;
     delete J_3;
     delete J_2;
