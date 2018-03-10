@@ -93,7 +93,7 @@ int main(){
     TwoBodyJastrow * J_2 = new TwoBodyJastrow(NPART, u2_2);
     TwoBodyJastrow * J_3 = new TwoBodyJastrow(NPART, u2_3);
     TwoBodyJastrow * J_4 = new TwoBodyJastrow(NPART, u2_4);
-    TwoBodyJastrow ** J = new TwoBodyJastrow *[4];
+    TwoBodyJastrow ** J = new TwoBodyJastrow*[4];
     J[0] = J_1; J[1] = J_2; J[2] = J_3; J[3] = J_4;
 
     // define Multi Component Wave Function
@@ -152,6 +152,7 @@ int main(){
 
             vp[iJ*2+ivp] = origvp;
             Jvp[ivp] = origvp;
+            Psi->setVP(vp);
         }
         delete[] Jvp;
     }
@@ -161,11 +162,11 @@ int main(){
     // --- check the sampling function
     double * protov = new double[4];
     Psi->samplingFunction(x, protov);
-    double * protovJ = new double[0];
+    double ** protovJ = new double*[4]; for (int i=0; i<4; ++i) protovJ[i] = new double;
     for (int iJ=0; iJ<4; ++iJ){
-        J[iJ]->samplingFunction(x, protovJ+iJ);
-        cout << "Psi protovalue = " << protov[iJ] << "    J_" << iJ+1 << " protovalue = " << protovJ[iJ] << endl;
-        assert( protov[iJ] == protovJ[iJ] );
+        J[iJ]->samplingFunction(x, protovJ[iJ]);
+        cout << "Psi protovalue = " << protov[iJ] << "    J_" << iJ+1 << " protovalue = " << protovJ[iJ][0] << endl;
+        assert( protov[iJ] == protovJ[iJ][0] );
     }
 
 
@@ -180,18 +181,18 @@ int main(){
     // compute the new protovalues
     double * protovnew = new double[4];
     Psi->samplingFunction(x, protovnew);
-    double * protovJnew = new double[4];
-    J_1->samplingFunction(x, protovJnew);
-    J_2->samplingFunction(x, protovJnew+1);
-    J_3->samplingFunction(x, protovJnew+2);
-    J_4->samplingFunction(x, protovJnew+3);
+    double ** protovJnew = new double*[4]; for (int i=0; i<4; ++i) protovJnew[i] = new double;
+    J_1->samplingFunction(x, protovJnew[0]);
+    J_2->samplingFunction(x, protovJnew[1]);
+    J_3->samplingFunction(x, protovJnew[2]);
+    J_4->samplingFunction(x, protovJnew[3]);
 
     // compute and compare the acceptance values
     const double accPsi = Psi->getAcceptance(protov, protovnew);
-    const double accJ1 = J_1->getAcceptance(protovJ, protovJnew);
-    const double accJ2 = J_2->getAcceptance(protovJ+1, protovJnew+1);
-    const double accJ3 = J_3->getAcceptance(protovJ+2, protovJnew+2);
-    const double accJ4 = J_4->getAcceptance(protovJ+3, protovJnew+3);
+    const double accJ1 = J_1->getAcceptance(protovJ[0], protovJnew[0]);
+    const double accJ2 = J_2->getAcceptance(protovJ[1], protovJnew[1]);
+    const double accJ3 = J_3->getAcceptance(protovJ[2], protovJnew[2]);
+    const double accJ4 = J_4->getAcceptance(protovJ[3], protovJnew[3]);
     cout << "acceptance values:    Psi = " << accPsi << "    J_1 = " << accJ1 << "    J_2 = " << accJ2 << "    J_3 = " << accJ3 << "    J_4 = " << accJ4 << "    J_1*J_2*J_3*J_4 = " << accJ1*accJ2*accJ3*accJ4 << endl;
     assert( accPsi == accJ1*accJ2*accJ3*accJ4 );
 
@@ -203,26 +204,27 @@ int main(){
     Psi->computeAllDerivatives(x);
 
 
-    // // initial wave function
-    // double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
-    // J->samplingFunction(x, &f); f = exp(f);
+    // initial wave function
+    double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
+    double * samp = new double[4];
+    Psi->samplingFunction(x, samp); f = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
 
-    // // --- check the first derivatives
-    // for (int i=0; i<NPART*NSPACEDIM; ++i){
-    //     const double origx = x[i];
-    //     x[i] += DX;
-    //     J->samplingFunction(x, &fdx); fdx = exp(fdx);
-    //     const double numderiv = (fdx-f)/(DX*f);
-    //
-    //     // cout << "getD1DivByWF(" << i <<") = " << J->getD1DivByWF(i) << endl;
-    //     // cout << "numderiv = " << numderiv << endl << endl;
-    //     assert( abs( (J->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
-    //
-    //     x[i] = origx;
-    // }
-    //
-    //
+    // --- check the first derivatives
+    for (int i=0; i<NPART*NSPACEDIM; ++i){
+        const double origx = x[i];
+        x[i] += DX;
+        Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        const double numderiv = (fdx-f)/(DX*f);
+
+        cout << "getD1DivByWF(" << i <<") = " << Psi->getD1DivByWF(i) << endl;
+        cout << "numderiv = " << numderiv << endl << endl;
+        assert( abs( (Psi->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
+
+        x[i] = origx;
+    }
+
+
     // // --- check the second derivatives
     // for (int i=0; i<NPART*NSPACEDIM; ++i){
     //     const double origx = x[i];
@@ -325,8 +327,14 @@ int main(){
 
 
 
+    for(int i=0; i<4; ++i){
+        delete protovJnew[i];
+    }
     delete[] protovJnew;
     delete[] protovnew;
+    for(int i=0; i<4; ++i){
+        delete protovJ[i];
+    }
     delete[] protovJ;
     delete[] protov;
     delete[] vp;
