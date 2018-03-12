@@ -69,6 +69,7 @@ debug/exe*
 debug/unittest/ut*/exe
 debug/unittest/ut*/*.o
 debug/unittest/ut*/run_single_unittest.sh
+debug/unittest/ut*/exe.dSYM*
 
 examples/*/exe*
 examples/*/*.o
