@@ -141,11 +141,11 @@ int main(){
     const double TINY = 0.000001;
 
     // variational parameters
-    double a = 0.37;
-    double sqrtb = 1.18;
-    double b = sqrtb * sqrtb;
-    double p1 = - sqrtb * a;
-    double p2 = sqrtb;
+    const double a = 0.37;
+    const double sqrtb = 1.18;
+    const double b = sqrtb * sqrtb;
+    const double p1 = - sqrtb * a;
+    const double p2 = sqrtb;
 
 
 
@@ -168,7 +168,8 @@ int main(){
 
 
     // NN wave function
-    FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn, true, false, false);
+    const int n = 1;
+    FFNNWaveFunction * psi = new FFNNWaveFunction(n, n, ffnn, true, false, false);
     assert(psi->hasVD1());
     assert(!psi->hasD1VD1());
     assert(!psi->hasD2VD1());
@@ -188,8 +189,8 @@ int main(){
     // --- Check that the energies are the same
     VMC * vmc = new VMC(psi, ham1);
 
-    double energy[4];
-    double d_energy[4];
+    double * energy = new double[4];
+    double * d_energy = new double[4];
     vmc->computeVariationalEnergy(Nmc, energy, d_energy);
     // cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     // cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
@@ -197,8 +198,8 @@ int main(){
     // cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
 
-    double energy_check[4];
-    double d_energy_check[4];
+    double energy_check[4]; for (int i=0; i<4; ++i) energy_check[i] = 0.;
+    double d_energy_check[4]; for (int i=0; i<4; ++i) d_energy_check[i] = 0.;
     VMC * vmc_check = new VMC(phi, ham2);
     vmc_check->computeVariationalEnergy(Nmc, energy_check, d_energy_check);
     // cout << "       Total Energy        = " << energy_check[0] << " +- " << d_energy_check[0] << endl;
@@ -242,6 +243,8 @@ int main(){
 
 
     // free resources
+    delete[] energy;
+    delete[] d_energy;
     delete vmc_check;
     delete vmc;
     delete ham1;
