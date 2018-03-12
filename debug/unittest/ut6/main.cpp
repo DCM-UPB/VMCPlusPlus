@@ -81,7 +81,7 @@ int main(){
     uniform_real_distribution<double> rd;
     rgen = mt19937_64(rdev());
     rgen.seed(18984687);
-    rd = uniform_real_distribution<double>(-0.3, 0.3);
+    rd = uniform_real_distribution<double>(-0.1, 0.1);
 
     // Define 4 Jastrow
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
@@ -107,7 +107,7 @@ int main(){
     double * x = new double[NPART*NSPACEDIM];
 
     // pick x from a grid
-    const double K = 0.7;
+    const double K = 0.5;
     x[0] = 0.0; x[1] = 0.0; x[2] = K;
     x[3] = K; x[4] = 0.0; x[5] = 0.0;
     x[6] = 0.0; x[7] = K; x[8] = 0.0;
@@ -225,23 +225,23 @@ int main(){
     }
 
 
-    // // --- check the second derivatives
-    // for (int i=0; i<NPART*NSPACEDIM; ++i){
-    //     const double origx = x[i];
-    //     x[i] += DX;
-    //     J->samplingFunction(x, &fdx); fdx = exp(fdx);
-    //     x[i] -= 2.*DX;
-    //     J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
-    //     const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
-    //
-    //     // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
-    //     // cout << "numderiv = " << numderiv << endl << endl;
-    //     assert( abs( (J->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
-    //
-    //     x[i] = origx;
-    // }
-    //
-    //
+    // --- check the second derivatives
+    for (int i=0; i<NPART*NSPACEDIM; ++i){
+        const double origx = x[i];
+        x[i] += DX;
+        Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        x[i] -= 2.*DX;
+        Psi->samplingFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
+
+        cout << "getD2DivByWF(" << i << ") = " << Psi->getD2DivByWF(i) << endl;
+        cout << "numderiv = " << numderiv << endl << endl;
+        // assert( abs( (Psi->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
+
+        x[i] = origx;
+    }
+
+
     // // -- check the first variational derivative
     // for (int i=0; i<J->getNVP(); ++i){
     //     const double origvp = vp[i];
@@ -327,6 +327,7 @@ int main(){
 
 
 
+    delete[] samp;
     for(int i=0; i<4; ++i){
         delete protovJnew[i];
     }
