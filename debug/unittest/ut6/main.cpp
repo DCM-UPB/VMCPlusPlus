@@ -119,7 +119,7 @@ int main(){
     const int NSPACEDIM = 3;
     const int NPART = 3;
     const double DX = 0.001;
-    const double TINY = 0.1;
+    const double TINY = 0.01;
     const double FOO1 = 37.;
     const double FOO2 = 42.;
 
@@ -133,8 +133,8 @@ int main(){
 
     // Define 4 Jastrow
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
-    He3u2 * u2_1 = new He3u2(em);
-    FlatU2 * u2_2 = new FlatU2(em, 0.);
+    PolynomialU2 * u2_1 = new PolynomialU2(em, -0.3, -0.1);;
+    PolynomialU2 * u2_2 = new PolynomialU2(em, -0.2, -0.15);
     FlatU2 * u2_3 = new FlatU2(em, 0.);
     FlatU2 * u2_4 = new FlatU2(em, 0.);
     TwoBodyJastrow * J_1 = new TwoBodyJastrow(NPART, u2_1);
@@ -155,7 +155,7 @@ int main(){
     double * x = new double[NPART*NSPACEDIM];
 
     // pick x from a grid
-    const double K = 0.7;
+    const double K = 0.5;
     x[0] = 0.0; x[1] = 0.0; x[2] = K;
     x[3] = K; x[4] = 0.0; x[5] = 0.0;
     x[6] = 0.0; x[7] = K; x[8] = 0.0;
@@ -284,79 +284,62 @@ int main(){
         Psi->samplingFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
-        cout << "getD2DivByWF(" << i << ") = " << Psi->getD2DivByWF(i) << endl;
-        cout << "J_1->getD2DivByWF(" << i << ") = " << J_1->getD2DivByWF(i) << endl;
-        cout << "numderiv = " << numderiv << endl << endl;
-        // assert( abs( (Psi->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
+        // cout << "getD2DivByWF(" << i << ") = " << Psi->getD2DivByWF(i) << endl;
+        // cout << "J_1->getD2DivByWF(" << i << ") = " << J_1->getD2DivByWF(i) << endl;
+        // cout << "numderiv = " << numderiv << endl << endl;
+        assert( abs( (Psi->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
 
         x[i] = origx;
     }
 
 
-    // // --- check the second derivatives
-    // for (int i=0; i<NPART*NSPACEDIM; ++i){
-    //     const double origx = x[i];
-    //     x[i] += DX;
-    //     J->samplingFunction(x, &fdx); fdx = exp(fdx);
-    //     x[i] -= 2.*DX;
-    //     J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
-    //     const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
-    //
-    //     // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
-    //     // cout << "numderiv = " << numderiv << endl << endl;
-    //     assert( abs( (J->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
-    //
-    //     x[i] = origx;
-    // }
-    //
-    //
-    // // -- check the first variational derivative
-    // for (int i=0; i<J->getNVP(); ++i){
-    //     const double origvp = vp[i];
-    //     vp[i] += DX;
-    //     J->setVP(vp);
-    //     J->samplingFunction(x, &fdvp); fdvp = exp(fdvp);
-    //     const double numderiv = (fdvp - f)/(DX*f);
-    //
-    //     // cout << "getVD1DivByWF(" << i << ") = " << J->getVD1DivByWF(i) << endl;
-    //     // cout << "numderiv = " << numderiv << endl << endl;
-    //     assert( abs( (J->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
-    //
-    //     vp[i] = origvp;
-    //     J->setVP(vp);
-    // }
-    //
-    //
-    // // --- check the first cross derivative
-    // for (int i=0; i<NPART*NSPACEDIM; ++i){
-    //     for (int j=0; j<J->getNVP(); ++j){
-    //         const double origx = x[i];
-    //         const double origvp = vp[j];
-    //
-    //         x[i] += DX;
-    //         J->samplingFunction(x, &fdx); fdx = exp(fdx);
-    //
-    //         x[i] = origx;
-    //         vp[j] += DX;
-    //         J->setVP(vp);
-    //         J->samplingFunction(x, &fdvp); fdvp = exp(fdvp);
-    //
-    //         x[i] += DX;
-    //         J->samplingFunction(x, &fdxdvp); fdxdvp = exp(fdxdvp);
-    //
-    //         const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
-    //
-    //         // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << J->getD1VD1DivByWF(i, j) << endl;
-    //         // cout << "numderiv = " << numderiv << endl << endl;
-    //         assert( abs( (J->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
-    //
-    //         x[i] = origx;
-    //         vp[j] = origvp;
-    //         J->setVP(vp);
-    //     }
-    // }
-    //
-    //
+    // -- check the first variational derivative
+    for (int i=0; i<Psi->getNVP(); ++i){
+        const double origvp = vp[i];
+        vp[i] += DX;
+        Psi->setVP(vp);
+        Psi->samplingFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        const double numderiv = (fdvp - f)/(DX*f);
+
+        // cout << "getVD1DivByWF(" << i << ") = " << Psi->getVD1DivByWF(i) << endl;
+        // cout << "numderiv = " << numderiv << endl << endl;
+        assert( abs( (Psi->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
+
+        vp[i] = origvp;
+        Psi->setVP(vp);
+    }
+
+
+    // --- check the first cross derivative
+    for (int i=0; i<NPART*NSPACEDIM; ++i){
+        for (int j=0; j<Psi->getNVP(); ++j){
+            const double origx = x[i];
+            const double origvp = vp[j];
+
+            x[i] += DX;
+            Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+
+            x[i] = origx;
+            vp[j] += DX;
+            Psi->setVP(vp);
+            Psi->samplingFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+
+            x[i] += DX;
+            Psi->samplingFunction(x, samp); fdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+
+            const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
+
+            // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << Psi->getD1VD1DivByWF(i, j) << endl;
+            // cout << "numderiv = " << numderiv << endl << endl;
+            assert( abs( (Psi->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+
+            x[i] = origx;
+            vp[j] = origvp;
+            Psi->setVP(vp);
+        }
+    }
+
+
     // // --- check the second cross derivative
     // for (int i=0; i<NPART*NSPACEDIM; ++i){
     //     for (int j=0; j<J->getNVP(); ++j){
