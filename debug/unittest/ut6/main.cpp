@@ -10,52 +10,6 @@
 
 
 
-
-class He3u2: public TwoBodyPseudoPotential{
-/*
-    u(r) = b/r^5
-*/
-
-private:
-    double _b;
-
-public:
-    He3u2(EuclideanMetric * em):
-    TwoBodyPseudoPotential(em, 1, true, true, true){
-        _b = -1.;
-    }
-
-    void setVP(const double *vp){_b=vp[0];}
-    void getVP(double *vp){vp[0]=_b;}
-
-    double ur(const double &dist){
-        return _b/pow(dist, 5);
-    }
-
-    double urD1(const double &dist){
-        return -5.*_b/pow(dist, 6);
-    }
-
-    double urD2(const double &dist){
-        return 30.*_b/pow(dist, 7);
-    }
-
-    void urVD1(const double &dist, double * vd1){
-        vd1[0] = 1./pow(dist, 5);
-    }
-
-    void urD1VD1(const double &dist, double * d1vd1){
-        d1vd1[0] = -5./pow(dist, 6);
-    }
-
-    void urD2VD1(const double &dist, double * d1vd1){
-        d1vd1[0] = 30./pow(dist, 7);
-    }
-
-};
-
-
-
 class PolynomialU2: public TwoBodyPseudoPotential{
 /*
     u(r) = a * r^2 + b * r^3
@@ -201,7 +155,7 @@ int main(){
     double * x = new double[NPART*NSPACEDIM];
 
     // pick x from a grid
-    const double K = -2.;
+    const double K = 0.7;
     x[0] = 0.0; x[1] = 0.0; x[2] = K;
     x[3] = K; x[4] = 0.0; x[5] = 0.0;
     x[6] = 0.0; x[7] = K; x[8] = 0.0;
@@ -212,8 +166,6 @@ int main(){
             x[i*NSPACEDIM+j] += rd(rgen);
         }
     }
-    for (int i=0; i<NSPACEDIM*NPART; ++i) cout << x[i] << "    ";
-    cout << endl;
 
     // variational parameters
     double * vp = new double[Psi->getNVP()];
@@ -341,6 +293,23 @@ int main(){
     }
 
 
+    // // --- check the second derivatives
+    // for (int i=0; i<NPART*NSPACEDIM; ++i){
+    //     const double origx = x[i];
+    //     x[i] += DX;
+    //     J->samplingFunction(x, &fdx); fdx = exp(fdx);
+    //     x[i] -= 2.*DX;
+    //     J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
+    //     const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
+    //
+    //     // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
+    //     // cout << "numderiv = " << numderiv << endl << endl;
+    //     assert( abs( (J->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
+    //
+    //     x[i] = origx;
+    // }
+    //
+    //
     // // -- check the first variational derivative
     // for (int i=0; i<J->getNVP(); ++i){
     //     const double origvp = vp[i];
