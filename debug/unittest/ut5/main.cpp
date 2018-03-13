@@ -54,14 +54,67 @@ public:
 
 
 
+class PolynomialU2: public TwoBodyPseudoPotential{
+/*
+    u(r) = a * r^2 + b * r^3
+*/
+
+private:
+    double _a, _b;
+
+public:
+    PolynomialU2(EuclideanMetric * em, double a, double b):
+    TwoBodyPseudoPotential(em, 2, true, true, true){
+        _a = a;
+        _b = b;
+    }
+    ~PolynomialU2(){}
+
+    void setVP(const double *vp){
+        _a=vp[0]; _b=vp[1];
+    }
+    void getVP(double *vp){
+        vp[0]=_a; vp[1]=_b;
+    }
+
+    double ur(const double &r){
+        return _a * pow(r, 2) + _b * pow(r, 3);
+    }
+
+    double urD1(const double &r){
+        return 2. * _a * r + 3. * _b * pow(r, 2);
+    }
+
+    double urD2(const double &r){
+        return 2. * _a + 6. * _b * r;
+    }
+
+    void urVD1(const double &r, double * vd1){
+        vd1[0] = r*r;
+        vd1[1] = r*r*r;
+    }
+
+    void urD1VD1(const double &r, double * d1vd1){
+        d1vd1[0] = 2.*r;
+        d1vd1[1] = 3.*r*r;
+    }
+
+    void urD2VD1(const double &r, double * d2vd1){
+        d2vd1[0] = 2.;
+        d2vd1[1] = 6.*r;
+    }
+};
+
+
+
 
 int main(){
     using namespace std;
 
     // constants
     const int NSPACEDIM = 3;
-    const int NPART = 3;
-    const double DX = 0.001;
+    const int NPART = 2;
+    const double DX = 0.0001;
     const double TINY = 0.1;
 
     // random generator
@@ -70,21 +123,22 @@ int main(){
     uniform_real_distribution<double> rd;
     rgen = mt19937_64(rdev());
     rgen.seed(18984687);
-    rd = uniform_real_distribution<double>(-0.3, 0.3);
+    rd = uniform_real_distribution<double>(-0.05, 0.05);
 
     // distance metric and two body-pseudopotential
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
-    He3u2 * u2 = new He3u2(em);
+    PolynomialU2 * u2 = new PolynomialU2(em, -0.3, -0.1);
     TwoBodyJastrow * J = new TwoBodyJastrow(NPART, u2);
 
     // particles position
     double * x = new double[NPART*NSPACEDIM];
 
     // pick x from a grid
-    const double K = 2.;
+    const double K = 0.5;
     x[0] = 0.0; x[1] = 0.0; x[2] = K;
     x[3] = K; x[4] = 0.0; x[5] = 0.0;
-    x[6] = 0.0; x[7] = K; x[8] = 0.0;
+    // x[6] = 0.0; x[7] = K; x[8] = 0.0;
+    // x[9] = 0.0; x[10] = 0.0; x[11] = 0.0;
 
     // add randomness to x
     for (int i=0; i<NPART; ++i){
@@ -92,6 +146,8 @@ int main(){
             x[i*NSPACEDIM+j] += rd(rgen);
         }
     }
+    for (int i=0; i<NSPACEDIM*NPART; ++i) cout << x[i] << "    ";
+    cout << endl;
 
     // variational parameters
     double * vp = new double[J->getNVP()];
@@ -105,6 +161,7 @@ int main(){
     // initial wave function
     double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
     J->samplingFunction(x, &f); f = exp(f);
+    cout << "f = " << f << endl;
 
 
     // --- check the first derivatives
@@ -125,12 +182,14 @@ int main(){
     // --- check the second derivatives
     for (int i=0; i<NPART*NSPACEDIM; ++i){
         const double origx = x[i];
-        x[i] += DX;
+        x[i] = origx + DX;
         J->samplingFunction(x, &fdx); fdx = exp(fdx);
-        x[i] -= 2.*DX;
+        x[i] = origx - DX;
         J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
         const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
+        // cout << "fdx = " << fdx << "    f = " << f << "    fmdx = " << fmdx << endl;
+        // cout << "fdx - 2.*f + fmdx = " << fdx - 2.*f + fmdx << "    DX*DX*f = " << DX*DX*f << endl;
         // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
         // cout << "numderiv = " << numderiv << endl << endl;
         assert( abs( (J->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
@@ -175,8 +234,8 @@ int main(){
 
             const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
 
-            // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << J->getD1VD1DivByWF(i, j) << endl;
-            // cout << "numderiv = " << numderiv << endl << endl;
+            cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << J->getD1VD1DivByWF(i, j) << endl;
+            cout << "numderiv = " << numderiv << endl << endl;
             assert( abs( (J->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
@@ -211,9 +270,9 @@ int main(){
 
             const double numderiv = (fdxdvp - 2.*fdvp + fmdxdvp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
 
-            // cout << "getD2VD1DivByWF(" << i << ", " << j << ") = " << J->getD2VD1DivByWF(i, j) << endl;
-            // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (J->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+            cout << "getD2VD1DivByWF(" << i << ", " << j << ") = " << J->getD2VD1DivByWF(i, j) << endl;
+            cout << "numderiv = " << numderiv << endl << endl;
+            // assert( abs( (J->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
             vp[j] = origvp;

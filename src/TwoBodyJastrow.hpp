@@ -5,6 +5,8 @@
 #include "TwoBodyPseudoPotential.hpp"
 #include "ParticleArrayHelper.hpp"
 
+#include <stdexcept>
+
 
 /*
 TwoBodyJastrow is a virtual class (or interface) for any 2-body Jastrow of the form:
@@ -27,6 +29,12 @@ public:
     WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()){
         _u2 = u2;
         _pah = new ParticleArrayHelper(u2->getNSpaceDim());
+        if (hasD1VD1() && !hasVD1()){
+            throw std::invalid_argument( "TwoBodyJastrow derivative d1vd1 requires vd1" );
+        }
+        if (hasD2VD1() && !(hasVD1() && hasD1VD1())){
+            throw std::invalid_argument( "TwoBodyJastrow derivative d2vd1 requires vd1 and d1vd1" );
+        }
     }
     virtual ~TwoBodyJastrow(){
         delete _pah;

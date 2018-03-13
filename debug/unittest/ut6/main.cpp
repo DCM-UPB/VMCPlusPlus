@@ -10,6 +10,52 @@
 
 
 
+
+class He3u2: public TwoBodyPseudoPotential{
+/*
+    u(r) = b/r^5
+*/
+
+private:
+    double _b;
+
+public:
+    He3u2(EuclideanMetric * em):
+    TwoBodyPseudoPotential(em, 1, true, true, true){
+        _b = -1.;
+    }
+
+    void setVP(const double *vp){_b=vp[0];}
+    void getVP(double *vp){vp[0]=_b;}
+
+    double ur(const double &dist){
+        return _b/pow(dist, 5);
+    }
+
+    double urD1(const double &dist){
+        return -5.*_b/pow(dist, 6);
+    }
+
+    double urD2(const double &dist){
+        return 30.*_b/pow(dist, 7);
+    }
+
+    void urVD1(const double &dist, double * vd1){
+        vd1[0] = 1./pow(dist, 5);
+    }
+
+    void urD1VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = -5./pow(dist, 6);
+    }
+
+    void urD2VD1(const double &dist, double * d1vd1){
+        d1vd1[0] = 30./pow(dist, 7);
+    }
+
+};
+
+
+
 class PolynomialU2: public TwoBodyPseudoPotential{
 /*
     u(r) = a * r^2 + b * r^3
@@ -63,6 +109,54 @@ public:
 
 
 
+class FlatU2: public TwoBodyPseudoPotential{
+/*
+    u(r) = K
+*/
+private:
+    double _K;
+
+public:
+    FlatU2(EuclideanMetric * em, const double &K):
+    TwoBodyPseudoPotential(em, 1, true, true, true){
+        _K = K;
+    }
+    ~FlatU2(){}
+
+    void setVP(const double *vp){
+        _K = vp[0];
+    }
+    void getVP(double *vp){
+        vp[0] = _K;
+    }
+
+    double ur(const double &r){
+        return _K;
+    }
+
+    double urD1(const double &r){
+        return 0.;
+    }
+
+    double urD2(const double &r){
+        return 0.;
+    }
+
+    void urVD1(const double &r, double * vd1){
+        vd1[0] = 1.;
+    }
+
+    void urD1VD1(const double &r, double * d1vd1){
+        d1vd1[0] = 0.;
+    }
+
+    void urD2VD1(const double &r, double * d2vd1){
+        d2vd1[0] = 0.;
+    }
+};
+
+
+
 
 int main(){
     using namespace std;
@@ -81,14 +175,14 @@ int main(){
     uniform_real_distribution<double> rd;
     rgen = mt19937_64(rdev());
     rgen.seed(18984687);
-    rd = uniform_real_distribution<double>(-0.1, 0.1);
+    rd = uniform_real_distribution<double>(-0.05, 0.05);
 
     // Define 4 Jastrow
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
-    PolynomialU2 * u2_1 = new PolynomialU2(em, -0.2, -0.2);
-    PolynomialU2 * u2_2 = new PolynomialU2(em, -0.1, -0.2);
-    PolynomialU2 * u2_3 = new PolynomialU2(em, -0.1, -0.1);
-    PolynomialU2 * u2_4 = new PolynomialU2(em, -0.2, -0.1);
+    He3u2 * u2_1 = new He3u2(em);
+    FlatU2 * u2_2 = new FlatU2(em, 0.);
+    FlatU2 * u2_3 = new FlatU2(em, 0.);
+    FlatU2 * u2_4 = new FlatU2(em, 0.);
     TwoBodyJastrow * J_1 = new TwoBodyJastrow(NPART, u2_1);
     TwoBodyJastrow * J_2 = new TwoBodyJastrow(NPART, u2_2);
     TwoBodyJastrow * J_3 = new TwoBodyJastrow(NPART, u2_3);
@@ -107,7 +201,7 @@ int main(){
     double * x = new double[NPART*NSPACEDIM];
 
     // pick x from a grid
-    const double K = 0.5;
+    const double K = -2.;
     x[0] = 0.0; x[1] = 0.0; x[2] = K;
     x[3] = K; x[4] = 0.0; x[5] = 0.0;
     x[6] = 0.0; x[7] = K; x[8] = 0.0;
@@ -118,6 +212,8 @@ int main(){
             x[i*NSPACEDIM+j] += rd(rgen);
         }
     }
+    for (int i=0; i<NSPACEDIM*NPART; ++i) cout << x[i] << "    ";
+    cout << endl;
 
     // variational parameters
     double * vp = new double[Psi->getNVP()];
@@ -127,34 +223,36 @@ int main(){
 
     // --- check get/setVP
     cout << "Psi->getNVP() = " << Psi->getNVP() << endl;
-    assert( Psi->getNVP() == 8);
+    assert( Psi->getNVP() == J_1->getNVP()+J_2->getNVP()+J_3->getNVP()+J_4->getNVP());
+    int contivp = 0;
     for (int iJ=0; iJ<4; ++iJ){
         double * Jvp = new double[J[iJ]->getNVP()];
         J[iJ]->getVP(Jvp);
         for (int ivp=0; ivp<J[iJ]->getNVP(); ++ivp){
-            cout << "vp[" << iJ*2+ivp << "] = " << vp[iJ*2+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
-            assert( vp[iJ*2+ivp] == Jvp[ivp] );
+            cout << "vp[" << contivp+ivp << "] = " << vp[contivp+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
+            assert( vp[contivp+ivp] == Jvp[ivp] );
             const double origvp = Jvp[ivp];
 
-            vp[iJ*2+ivp] = FOO1;
+            vp[contivp+ivp] = FOO1;
             Psi->setVP(vp);
             Psi->getVP(vp);
             J[iJ]->getVP(Jvp);
-            cout << "vp[" << iJ*2+ivp << "] = " << vp[iJ*2+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
-            assert( vp[iJ*2+ivp] == Jvp[ivp] );
+            cout << "vp[" << contivp+ivp << "] = " << vp[contivp+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
+            assert( vp[contivp+ivp] == Jvp[ivp] );
 
             Jvp[ivp] = FOO2;
             J[iJ]->setVP(Jvp);
             J[iJ]->getVP(Jvp);
             Psi->getVP(vp);
-            cout << "vp[" << iJ*2+ivp << "] = " << vp[iJ*2+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
-            assert( vp[iJ*2+ivp] == Jvp[ivp] );
+            cout << "vp[" << contivp+ivp << "] = " << vp[contivp+ivp] << "    Jvp[" << ivp << "] = " << Jvp[ivp] << endl;
+            assert( vp[contivp+ivp] == Jvp[ivp] );
 
-            vp[iJ*2+ivp] = origvp;
+            vp[contivp+ivp] = origvp;
             Jvp[ivp] = origvp;
             Psi->setVP(vp);
         }
         delete[] Jvp;
+        contivp += J[iJ]->getNVP();
     }
 
 
@@ -217,8 +315,8 @@ int main(){
         Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         const double numderiv = (fdx-f)/(DX*f);
 
-        cout << "getD1DivByWF(" << i <<") = " << Psi->getD1DivByWF(i) << endl;
-        cout << "numderiv = " << numderiv << endl << endl;
+        // cout << "getD1DivByWF(" << i <<") = " << Psi->getD1DivByWF(i) << endl;
+        // cout << "numderiv = " << numderiv << endl << endl;
         assert( abs( (Psi->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
 
         x[i] = origx;
@@ -228,13 +326,14 @@ int main(){
     // --- check the second derivatives
     for (int i=0; i<NPART*NSPACEDIM; ++i){
         const double origx = x[i];
-        x[i] += DX;
+        x[i] = origx + DX;
         Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
-        x[i] -= 2.*DX;
+        x[i] = origx - DX;
         Psi->samplingFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
         cout << "getD2DivByWF(" << i << ") = " << Psi->getD2DivByWF(i) << endl;
+        cout << "J_1->getD2DivByWF(" << i << ") = " << J_1->getD2DivByWF(i) << endl;
         cout << "numderiv = " << numderiv << endl << endl;
         // assert( abs( (Psi->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
 
