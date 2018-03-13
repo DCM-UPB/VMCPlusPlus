@@ -39,9 +39,6 @@ public:
     virtual ~TwoBodyJastrow(){
         delete _pah;
     }
-    virtual ~TwoBodyJastrow(){
-        delete _pah;
-    }
 
 
 
