@@ -2,6 +2,14 @@
 
 
 
+
+void WaveFunction::setNVP(const int &nvp){
+    _nvp=nvp;
+    _allocateVariationalDerivativesMemory();
+}
+
+
+
 void WaveFunction::callBackFunction(const double *x, const bool flag_observation){
     if (flag_observation){
         computeAllDerivatives(x);

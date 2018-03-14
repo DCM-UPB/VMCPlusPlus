@@ -89,24 +89,26 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
             }
         }
     }
-    // --- conclude the computation of the derivatives
-    for (int i=0; i<getTotalNDim(); ++i){
-        // second derivative
-        d2_divbywf[i] += pow(d1_divbywf[i], 2);
-        // first cross derivatives
-        if (hasD1VD1()){
+    // --- complete the computation of the derivatives
+    // second cross derivatives
+    if (hasD2VD1()){
+        for (int i=0; i<getTotalNDim(); ++i){
+            for (int ivp=0; ivp<getNVP(); ++ivp){
+                d2vd1_divbywf[i][ivp] += d1_divbywf[i]*d1_divbywf[i]*vd1_divbywf[ivp] + d2_divbywf[i]*vd1_divbywf[ivp] + 2.*d1_divbywf[i]*d1vd1_divbywf[i][ivp];
+            }
+        }
+    }
+    // first cross derivative
+    if (hasD1VD1()){
+        for (int i=0; i<getTotalNDim(); ++i){
             for (int ivp=0; ivp<getNVP(); ++ivp){
                 d1vd1_divbywf[i][ivp] += d1_divbywf[i] * vd1_divbywf[ivp];
             }
         }
     }
-    // second cross derivatives
-    if (hasD2VD1()){
-        for (int i=0; i<getTotalNDim(); ++i){
-            for (int ivp=0; ivp<getNVP(); ++ivp){
-                d2vd1_divbywf[i][ivp] += vd1_divbywf[ivp] * d2_divbywf[i] + 2. * d1vd1_divbywf[i][ivp] * d1_divbywf[i];
-            }
-        }
+    // second derivative
+    for (int i=0; i<getTotalNDim(); ++i){
+        d2_divbywf[i] += pow(d1_divbywf[i], 2);
     }
 
 }

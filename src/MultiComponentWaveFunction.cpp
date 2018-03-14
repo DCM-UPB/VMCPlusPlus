@@ -174,5 +174,4 @@ void MultiComponentWaveFunction::addWaveFunction(WaveFunction * wf){
     _wfs.push_back(wf);
     setNProto( getNProto() + wf->getNProto() );
     setNVP( getNVP() + wf->getNVP() );
-    _allocateVariationalDerivativesMemory();
 }

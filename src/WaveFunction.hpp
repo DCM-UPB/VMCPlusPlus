@@ -73,10 +73,9 @@ public:
     int getNPart(){return _npart;}
     int getNVP(){return _nvp;}
 
-    void setNVP(const int &nvp){_nvp=nvp;}
-
 
     // --- interface for manipulating the variational parameters
+    void setNVP(const int &nvp);
     virtual void setVP(const double *vp) = 0;    // --- MUST BE IMPLEMENTED
     virtual void getVP(double *vp) = 0;    // --- MUST BE IMPLEMENTED
 
