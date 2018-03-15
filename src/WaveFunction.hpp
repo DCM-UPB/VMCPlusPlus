@@ -18,7 +18,7 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
     - void samplingFunction(const double * in, double * out)
             heritage from MCISamplingFunctionInterface, uses Psi^2
 
-    - double getAcceptance()
+    - double getAcceptance(const double * protoold, const double * protonew)
             heritage from MCISamplingFunctionInterface
 
     - void computeAllDerivatives(const double *x)
@@ -39,53 +39,34 @@ protected:
     double ** _d1vd1_divbywf;
     double ** _d2vd1_divbywf;
 
+    bool _flag_vd1;
+    bool _flag_d1vd1;
+    bool _flag_d2vd1;
+
+
+    void _allocateVariationalDerivativesMemory();
+
+
+    // --- getters and setters for the derivatives
+    // first derivative divided by the wf
+    void _setD1DivByWF(const int &id1, const double &d1_divbywf){_d1_divbywf[id1] = d1_divbywf;}
+    double * _getD1DivByWF(){return _d1_divbywf;}
+    // second derivative divided by the wf
+    void _setD2DivByWF(const int &id2, const double &d2_divbywf){_d2_divbywf[id2] = d2_divbywf;}
+    double * _getD2DivByWF(){return _d2_divbywf;}
+    // variational derivative divided by the wf
+    void _setVD1DivByWF(const int &ivd1, const double &vd1_divbywf){_vd1_divbywf[ivd1] = vd1_divbywf;}
+    double * _getVD1DivByWF(){return _vd1_divbywf;}
+    // cross derivative: first derivative and first variational derivative divided by the wf
+    void _setD1VD1DivByWF(const int &id1, const int &ivd1, const double &d1vd1_divbywf){_d1vd1_divbywf[id1][ivd1] = d1vd1_divbywf;}
+    double ** _getD1VD1DivByWF(){return _d1vd1_divbywf;}
+    // cross derivative: second derivative and first variational derivative divided by the wf
+    void _setD2VD1DivByWF(const int &id2, const int &ivd1, const double &d2vd1_divbywf){_d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf;}
+    double ** _getD2VD1DivByWF(){return _d2vd1_divbywf;}
+
 public:
-    WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
-    MCISamplingFunctionInterface(nspacedim*npart, ncomp),
-    MCICallBackOnAcceptanceInterface(nspacedim*npart){
-        _nspacedim=nspacedim;
-        _npart=npart;
-        _nvp=nvp;
-
-        _d1_divbywf = new double[nspacedim*npart];
-        _d2_divbywf = new double[nspacedim*npart];
-
-        _vd1_divbywf = 0;
-        if (flag_vd1){
-            _vd1_divbywf = new double[nvp];
-        }
-
-        _d1vd1_divbywf = 0;
-        if (flag_d1vd1){
-            _d1vd1_divbywf = new double*[nspacedim*npart];
-            for (int id1=0; id1<nspacedim*npart; ++id1) _d1vd1_divbywf[id1] = new double[nvp];
-        }
-
-        _d2vd1_divbywf = 0;
-        if (flag_d2vd1){
-            _d2vd1_divbywf = new double*[nspacedim*npart];
-            for (int id2=0; id2<nspacedim*npart; ++id2) _d2vd1_divbywf[id2] = new double[nvp];
-        }
-    }
-    virtual ~WaveFunction(){
-        delete[] _d1_divbywf;
-        delete[] _d2_divbywf;
-        if (_vd1_divbywf != 0){
-            delete[] _vd1_divbywf;
-        }
-        if (_d1vd1_divbywf != 0){
-            for (int id1=0; id1<getTotalNDim(); ++id1){
-                delete[] _d1vd1_divbywf[id1];
-            }
-            delete[] _d1vd1_divbywf;
-        }
-        if (_d2vd1_divbywf != 0){
-            for (int id2=0; id2<getTotalNDim(); ++id2){
-                delete[] _d2vd1_divbywf[id2];
-            }
-            delete[] _d2vd1_divbywf;
-        }
-    }
+    WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
+    virtual ~WaveFunction();
 
     int getNSpaceDim(){return _nspacedim;}
     int getTotalNDim(){return MCISamplingFunctionInterface::getNDim();}
@@ -94,6 +75,7 @@ public:
 
 
     // --- interface for manipulating the variational parameters
+    void setNVP(const int &nvp);
     virtual void setVP(const double *vp) = 0;    // --- MUST BE IMPLEMENTED
     virtual void getVP(double *vp) = 0;    // --- MUST BE IMPLEMENTED
 
@@ -106,37 +88,23 @@ public:
 
 
     // --- method herited from MCICallBackOnAcceptanceInterface, that will simply call computeAllDerivatives
-    void callBackFunction(const double *x, const bool flag_observation){
-        if (flag_observation){
-            computeAllDerivatives(x);
-        }
-    }
+    void callBackFunction(const double *x, const bool flag_observation);
 
 
     // --- getters and setters for the derivatives
     // first derivative divided by the wf
-    void setD1DivByWF(const int &id1, const double &d1_divbywf){_d1_divbywf[id1] = d1_divbywf;}
     double getD1DivByWF(const int &id1){return _d1_divbywf[id1];}
-    double * getD1DivByWF(){return _d1_divbywf;}
     // second derivative divided by the wf
-    void setD2DivByWF(const int &id2, const double &d2_divbywf){_d2_divbywf[id2] = d2_divbywf;}
     double getD2DivByWF(const int &id2){return _d2_divbywf[id2];}
-    double * getD2DivByWF(){return _d2_divbywf;}
     // variational derivative divided by the wf
-    bool hasVD1(){return (_vd1_divbywf == 0 ? false : true);}
-    void setVD1DivByWF(const int &ivd1, const double &vd1_divbywf){_vd1_divbywf[ivd1] = vd1_divbywf;}
+    bool hasVD1(){return _flag_vd1;}
     double getVD1DivByWF(const int &ivd1){return _vd1_divbywf[ivd1];}
-    double * getVD1DivByWF(){return _vd1_divbywf;}
     // cross derivative: first derivative and first variational derivative divided by the wf
-    bool hasD1VD1(){return (_d1vd1_divbywf == 0 ? false : true);}
-    void setD1VD1DivByWF(const int &id1, const int &ivd1, const double &d1vd1_divbywf){_d1vd1_divbywf[id1][ivd1] = d1vd1_divbywf;}
+    bool hasD1VD1(){return _flag_d1vd1;}
     double getD1VD1DivByWF(const int &id1, const int &ivd1){return _d1vd1_divbywf[id1][ivd1];}
-    double ** getD1VD1DivByWF(){return _d1vd1_divbywf;}
     // cross derivative: second derivative and first variational derivative divided by the wf
-    bool hasD2VD1(){return (_d2vd1_divbywf == 0 ? false : true);}
-    void setD2VD1DivByWF(const int &id2, const int &ivd1, const double &d2vd1_divbywf){_d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf;}
+    bool hasD2VD1(){return _flag_d2vd1;}
     double getD2VD1DivByWF(const int &id2, const int &ivd1){return _d2vd1_divbywf[id2][ivd1];}
-    double ** getD2VD1DivByWF(){return _d2vd1_divbywf;}
 };
 
 

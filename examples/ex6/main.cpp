@@ -70,19 +70,19 @@ public:
         *out = _niv*(x[0]-_x0)*(x[0]-_x0);
     }
 
-    double getAcceptance(){
+    double getAcceptance(const double * protoold, const double * protonew){
         /*
           Compute the acceptance probability
         */
-        return exp(getProtoNew(0)-getProtoOld(0));
+        return exp(protonew[0]-protoold[0]);
     }
 
     void computeAllDerivatives(const double *x){
-        setD1DivByWF(0, _niv*(x[0]-_x0));
-        setD2DivByWF(0, _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+        _setD1DivByWF(0, _niv*(x[0]-_x0));
+        _setD2DivByWF(0, _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0));
         if (hasVD1()){
-            setVD1DivByWF(0, -_niv*(x[0]-_x0));
-            setVD1DivByWF(1, 0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+            _setVD1DivByWF(0, -_niv*(x[0]-_x0));
+            _setVD1DivByWF(1, 0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
         }
     }
 

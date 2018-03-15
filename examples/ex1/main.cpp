@@ -64,19 +64,19 @@ public:
         *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
     }
 
-    double getAcceptance(){
+    double getAcceptance(const double * protoold, const double * protonew){
         /*
           Compute the acceptance probability
         */
-        return exp(getProtoNew(0)-getProtoOld(0));
+        return exp(protonew[0]-protoold[0]);
     }
 
     void computeAllDerivatives(const double *x){
-        setD1DivByWF(0, -2.*_b*(x[0]-_a));
-        setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
+        _setD1DivByWF(0, -2.*_b*(x[0]-_a));
+        _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
         if (hasVD1()){
-            setVD1DivByWF(0, 2.*_b*(x[0]-_a));
-            setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
+            _setVD1DivByWF(0, 2.*_b*(x[0]-_a));
+            _setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
         }
     }
 
@@ -117,16 +117,16 @@ public:
         *out=-2.*_b*(*in)*(*in);
     }
 
-    double getAcceptance()
+    double getAcceptance(const double * protoold, const double * protonew)
     {
-        return exp(getProtoNew(0)-getProtoOld(0));
+        return exp(protonew[0]-protoold[0]);
     }
 
     void computeAllDerivatives(const double *in){
-        setD1DivByWF(0, -2.*_b*(*in));
-        setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
+        _setD1DivByWF(0, -2.*_b*(*in));
+        _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
         if (hasVD1()){
-            setVD1DivByWF(0, (-(*in)*(*in)));
+            _setVD1DivByWF(0, (-(*in)*(*in)));
         }
     }
 };

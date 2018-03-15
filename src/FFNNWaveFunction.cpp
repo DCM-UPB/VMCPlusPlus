@@ -31,14 +31,14 @@ void FFNNWaveFunction::samplingFunction(const double * in, double * out){
 }
 
 
-double FFNNWaveFunction::getAcceptance(){
-    if ((getProtoOld(0) == 0.) && (getProtoNew(0) != 0.)){
+double FFNNWaveFunction::getAcceptance(const double * protoold, const double * protonew){
+    if ((protoold[0] == 0.) && (protonew[0] != 0.)){
         return 1.;
-    } else if ((getProtoOld(0) == 0.) && (getProtoNew(0) == 0.)) {
+    } else if ((protoold[0] == 0.) && (protonew[0] == 0.)) {
         return 0.;
     }
 
-    return getProtoNew(0)/getProtoOld(0);
+    return protonew[0]/protoold[0];
 }
 
 
@@ -53,23 +53,23 @@ void FFNNWaveFunction::computeAllDerivatives(const double *in){
     const double wf_value = _deriv_ffnn->getOutput(0);
 
     for (int id1=0; id1<getTotalNDim(); ++id1){
-        setD1DivByWF(id1, _deriv_ffnn->getFirstDerivative(0, id1) / wf_value);
+        _setD1DivByWF(id1, _deriv_ffnn->getFirstDerivative(0, id1) / wf_value);
     }
 
     for (int id2=0; id2<getTotalNDim(); ++id2){
-        setD2DivByWF(id2, _deriv_ffnn->getSecondDerivative(0, id2) / wf_value);
+        _setD2DivByWF(id2, _deriv_ffnn->getSecondDerivative(0, id2) / wf_value);
     }
 
     if (hasVD1()){
         for (int ivd1=0; ivd1<getNVP(); ++ivd1){
-            setVD1DivByWF(ivd1, _deriv_ffnn->getVariationalFirstDerivative(0, ivd1) / wf_value);
+            _setVD1DivByWF(ivd1, _deriv_ffnn->getVariationalFirstDerivative(0, ivd1) / wf_value);
         }
     }
 
     if (hasD1VD1()){
         for (int id1=0; id1<getTotalNDim(); ++id1){
             for (int ivd1=0; ivd1<getNVP(); ++ivd1){
-                setD1VD1DivByWF(id1, ivd1, _deriv_ffnn->getCrossFirstDerivative(0, id1, ivd1) / wf_value);
+                _setD1VD1DivByWF(id1, ivd1, _deriv_ffnn->getCrossFirstDerivative(0, id1, ivd1) / wf_value);
             }
         }
     }
@@ -77,7 +77,7 @@ void FFNNWaveFunction::computeAllDerivatives(const double *in){
     if (hasD2VD1()){
         for (int id2=0; id2<getTotalNDim(); ++id2){
             for (int ivd1=0; ivd1<getNVP(); ++ivd1){
-                setD1VD1DivByWF(id2, ivd1, _deriv_ffnn->getCrossSecondDerivative(0, id2, ivd1) / wf_value);
+                _setD1VD1DivByWF(id2, ivd1, _deriv_ffnn->getCrossSecondDerivative(0, id2, ivd1) / wf_value);
             }
         }
     }
