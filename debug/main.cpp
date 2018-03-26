@@ -10,31 +10,16 @@
 
 class QuadrExponential1D1POrbital: public WaveFunction
 {
-protected:
-    double _a, _b;
-    double _wf_exp, _d1, _d2, _vd1_a, _vd1_b;
 
 public:
-    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false) {_a=a; _b=b;}
-
-    void setVP(const double *in)
-    {
-        _a=in[0];
-        //if (_a<0.01) _a=0.01;
-        _b=in[1];
-        //if (_b<0.01) _b=0.01;
-        using namespace std;
-        //cout << "change a and b! " << _a << "   " << _b << endl;
-    }
-    void getVP(double *out)
-    {
-        out[0]=_a;
-        out[1]=_b;
+    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false){
+        setVP(0, a);
+        setVP(1, b);
     }
 
     void samplingFunction(const double *in, double *out)
     {
-        *out = -2.*(_b*(in[0]-_a)*(in[0]-_a));
+        *out = -2.*(getVP(1)*(in[0]-getVP(0))*(in[0]-getVP(0)));
     }
 
     double getAcceptance(const double * protoold, const double * protonew)
@@ -43,11 +28,11 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        _setD1DivByWF(0, -2.*_b*(in[0]-_a));
-        _setD2DivByWF(0, -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)));
+        _setD1DivByWF(0, -2.*getVP(1)*(in[0]-getVP(0)));
+        _setD2DivByWF(0, -2.*getVP(1) + (-2.*getVP(1)*(in[0]-getVP(0)))*(-2.*getVP(1)*(in[0]-getVP(0))));
         if (hasVD1()){
-            _setVD1DivByWF(0, 2.*_b*(in[0]-_a));
-            _setVD1DivByWF(1, -(in[0]-_a)*(in[0]-_a));
+            _setVD1DivByWF(0, 2.*getVP(1)*(in[0]-getVP(0)));
+            _setVD1DivByWF(1, -(in[0]-getVP(0))*(in[0]-getVP(0)));
         }
     }
 };
@@ -56,30 +41,15 @@ public:
 
 class Gaussian1D1POrbital: public WaveFunction
 {
-protected:
-    double _b;
-
 public:
     Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
-        _b=b;
-    }
-
-    void setVP(const double *in)
-    {
-        _b=*in;
-        //if (_b<0.01) _b=0.01;
-        using namespace std;
-        //cout << "change b! " << _b << endl;
-    }
-    void getVP(double *out)
-    {
-        *out=_b;
+        setVP(0, b);
     }
 
     void samplingFunction(const double *in, double *out)
     {
-        *out=-2.*_b*(*in)*(*in);
+        *out=-2.*getVP(0)*(*in)*(*in);
     }
 
     double getAcceptance(const double * protoold, const double * protonew)
@@ -88,8 +58,8 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        _setD1DivByWF(0, -2.*_b*(*in));
-        _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
+        _setD1DivByWF(0, -2.*getVP(0)*(*in));
+        _setD2DivByWF(0, -2.*getVP(0)+4.*getVP(0)*getVP(0)*(*in)*(*in));
         if (hasVD1()){
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }

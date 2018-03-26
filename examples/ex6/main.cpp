@@ -41,33 +41,31 @@ public:
 */
 class Gaussian1D1POrbital: public WaveFunction{
 protected:
-    double _x0, _v, _niv, _eps;
+    double _eps;
 
 public:
     Gaussian1D1POrbital(const double &x0, const double &v, const double &eps):
-        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false, false, false) {_eps=eps; this->setVP(x0, v);}
+        WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false, false, false){
+            _eps=eps;
+            setVP(0, x0);
+            setVP(1, v);
+        }
 
-    // overwrite the parent setVP
-    void setVP(const double *in){
-        setVP(in[0], in[1]);
-    }
-
-    //add another own setVP for convenience
-    void setVP(const double &x0, const double &v) {
-        _x0=x0;
-        _v=(v<_eps)? _eps:v;
-        _niv = -1./_v;
-    }
-
-    void getVP(double *out){
-        out[0]=_x0; out[1]=_v;
+    //customize set VP
+    void setVP(const int &i, const double &vp){
+        if (i==1){
+            WaveFunction::setVP(i, (vp<_eps) ? _eps : vp);
+        } else {
+            WaveFunction::setVP(i, vp);
+        }
     }
 
     void samplingFunction(const double *x, double *out){
         /*
           Compute the sampling function proto value, used in getAcceptance()
         */
-        *out = _niv*(x[0]-_x0)*(x[0]-_x0);
+        const double niv = -1./getVP(1);
+        *out = niv*(x[0]-getVP(0))*(x[0]-getVP(0));
     }
 
     double getAcceptance(const double * protoold, const double * protonew){
@@ -78,11 +76,12 @@ public:
     }
 
     void computeAllDerivatives(const double *x){
-        _setD1DivByWF(0, _niv*(x[0]-_x0));
-        _setD2DivByWF(0, _niv + _niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+        const double niv = -1./getVP(1);
+        _setD1DivByWF(0, niv*(x[0]-getVP(0)));
+        _setD2DivByWF(0, niv + niv*niv*(x[0]-getVP(0))*(x[0]-getVP(0)));
         if (hasVD1()){
-            _setVD1DivByWF(0, -_niv*(x[0]-_x0));
-            _setVD1DivByWF(1, 0.5*_niv*_niv*(x[0]-_x0)*(x[0]-_x0));
+            _setVD1DivByWF(0, -niv*(x[0]-getVP(0)));
+            _setVD1DivByWF(1, 0.5*niv*niv*(x[0]-getVP(0))*(x[0]-getVP(0)));
         }
     }
 

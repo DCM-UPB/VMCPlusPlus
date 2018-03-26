@@ -38,30 +38,18 @@ public:
   Notice that the corresponding probability density (sampling function) is Psi^2.
 */
 class QuadrExponential1D1POrbital: public WaveFunction{
-protected:
-    double _a, _b;
-
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
-            _a=a; _b=b;
+    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
+            setVP(0, a);
+            setVP(1, b);
         }
-
-    void setVP(const double *in){
-        _a=in[0];
-        _b=in[1];
-    }
-
-    void getVP(double *out){
-        out[0]=_a;
-        out[1]=_b;
-    }
 
     void samplingFunction(const double *x, double *out){
         /*
           Compute the sampling function proto value, used in getAcceptance()
         */
-        *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
+        *out = -2.*(getVP(1)*(x[0]-getVP(0))*(x[0]-getVP(0)));
     }
 
     double getAcceptance(const double * protoold, const double * protonew){
@@ -72,11 +60,11 @@ public:
     }
 
     void computeAllDerivatives(const double *x){
-        _setD1DivByWF(0, -2.*_b*(x[0]-_a));
-        _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
+        _setD1DivByWF(0, -2.*getVP(1)*(x[0]-getVP(0)));
+        _setD2DivByWF(0, -2.*getVP(1) + (-2.*getVP(1)*(x[0]-getVP(0)))*(-2.*getVP(1)*(x[0]-getVP(0))));
         if (hasVD1()){
-            _setVD1DivByWF(0, 2.*_b*(x[0]-_a));
-            _setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
+            _setVD1DivByWF(0, 2.*getVP(1)*(x[0]-getVP(0)));
+            _setVD1DivByWF(1, -(x[0]-getVP(0))*(x[0]-getVP(0)));
         }
     }
 
@@ -91,30 +79,15 @@ public:
 */
 class Gaussian1D1POrbital: public WaveFunction
 {
-protected:
-    double _b;
-
 public:
     Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
-        _b=b;
-    }
-
-    void setVP(const double *in)
-    {
-        _b=*in;
-        //if (_b<0.01) _b=0.01;
-        using namespace std;
-        //cout << "change b! " << _b << endl;
-    }
-    void getVP(double *out)
-    {
-        *out=_b;
+        setVP(0, b);
     }
 
     void samplingFunction(const double *in, double *out)
     {
-        *out=-2.*_b*(*in)*(*in);
+        *out=-2.*getVP(0)*(*in)*(*in);
     }
 
     double getAcceptance(const double * protoold, const double * protonew)
@@ -123,8 +96,8 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        _setD1DivByWF(0, -2.*_b*(*in));
-        _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
+        _setD1DivByWF(0, -2.*getVP(0)*(*in));
+        _setD2DivByWF(0, -2.*getVP(0)+4.*getVP(0)*getVP(0)*(*in)*(*in));
         if (hasVD1()){
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }

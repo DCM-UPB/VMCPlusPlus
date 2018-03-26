@@ -29,7 +29,7 @@ void FunctionWithVariationalParameters::setNVP(const int &nvp){
 
 void FunctionWithVariationalParameters::setVP(const double *vp){
     for (int i=0; i<getNVP(); ++i){
-        _vp[i] = vp[i];
+        setVP(i, vp[1]);
     }
 }
 
