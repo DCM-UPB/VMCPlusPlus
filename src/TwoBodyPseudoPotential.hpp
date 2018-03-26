@@ -3,15 +3,15 @@
 
 
 #include "Metric.hpp"
+#include "FunctionWithVariationalParameters.hpp"
 
 
 
-class TwoBodyPseudoPotential{
+class TwoBodyPseudoPotential: public FunctionWithVariationalParameters{
 
 private:
     Metric * _metric;
     int _ndim2;
-    int _nvp;
 
     bool _flag_vd1;
     bool _flag_d1vd1;
@@ -36,14 +36,10 @@ public:
     virtual ~TwoBodyPseudoPotential();
 
     int getNSpaceDim(){return _metric->getNSpaceDim();}
-    int getNVP(){return _nvp;}
 
 
 
     // --- Methods that must be implemented
-    // manage variational parameters
-    virtual void setVP(const double *vp) = 0;
-    virtual void getVP(double *vp) = 0;
     // functions of the distance that define the pseudopotential
     virtual double ur(const double &r) = 0;                           // e.g. -b/r^5
     virtual double urD1(const double &r) = 0;                         // e.g. 5*b/r^6
@@ -56,6 +52,10 @@ public:
 
     // -- Pair pseudopotential
     double u(const double * r1, const double * r2);
+
+
+
+    void actAfterVPChange(const int &i, const double &vp){}
 
 
 

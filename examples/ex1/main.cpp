@@ -68,6 +68,8 @@ public:
         }
     }
 
+    void actAfterVPChange(const int &i, const double &vp){}
+
 };
 
 
@@ -102,6 +104,8 @@ public:
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }
     }
+
+    void actAfterVPChange(const int &i, const double &vp){}
 };
 
 

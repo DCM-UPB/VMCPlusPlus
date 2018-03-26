@@ -21,6 +21,8 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
     - void computeAllDerivatives(const double *x)
             use the setters for derivatives values (setD1DivByWF, setD2DivByWF, etc.)
 
+    - void actAfterVPChange(const int &i, const double &vp)
+
 */
 
 

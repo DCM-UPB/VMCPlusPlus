@@ -14,28 +14,23 @@ class He3u2: public TwoBodyPseudoPotential{
     u(r) = b/r^5
 */
 
-private:
-    double _b;
-
 public:
     He3u2(EuclideanMetric * em):
     TwoBodyPseudoPotential(em, 1, true, true, true){
-        _b = -0.1;
+        setVP(0, -1.);
     }
-
-    void setVP(const double *vp){_b=vp[0];}
-    void getVP(double *vp){vp[0]=_b;}
+    ~He3u2(){}
 
     double ur(const double &dist){
-        return _b/pow(dist, 5);
+        return getVP(0)/pow(dist, 5);
     }
 
     double urD1(const double &dist){
-        return -5.*_b/pow(dist, 6);
+        return -5.*getVP(0)/pow(dist, 6);
     }
 
     double urD2(const double &dist){
-        return 30.*_b/pow(dist, 7);
+        return 30.*getVP(0)/pow(dist, 7);
     }
 
     void urVD1(const double &dist, double * vd1){
@@ -59,34 +54,24 @@ class PolynomialU2: public TwoBodyPseudoPotential{
     u(r) = a * r^2 + b * r^3
 */
 
-private:
-    double _a, _b;
-
 public:
     PolynomialU2(EuclideanMetric * em, double a, double b):
     TwoBodyPseudoPotential(em, 2, true, true, true){
-        _a = a;
-        _b = b;
+        setVP(0, a);
+        setVP(1, b);
     }
     ~PolynomialU2(){}
 
-    void setVP(const double *vp){
-        _a=vp[0]; _b=vp[1];
-    }
-    void getVP(double *vp){
-        vp[0]=_a; vp[1]=_b;
-    }
-
     double ur(const double &r){
-        return _a * pow(r, 2) + _b * pow(r, 3);
+        return getVP(0) * pow(r, 2) + getVP(1) * pow(r, 3);
     }
 
     double urD1(const double &r){
-        return 2. * _a * r + 3. * _b * pow(r, 2);
+        return 2. * getVP(0) * r + 3. * getVP(1) * pow(r, 2);
     }
 
     double urD2(const double &r){
-        return 2. * _a + 6. * _b * r;
+        return 2. * getVP(0) + 6. * getVP(1) * r;
     }
 
     void urVD1(const double &r, double * vd1){

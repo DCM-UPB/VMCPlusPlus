@@ -21,10 +21,15 @@ public:
 
 
     void addWaveFunction(WaveFunction * wf);
+    WaveFunction * getWaveFunction(const int &i){return _wfs[i];}
 
+    void setVP(const int &i, const double &vp);
     void setVP(const double *vp);
 
     void getVP(double *vp);
+    double getVP(const int &i);
+
+    void actAfterVPChange(const int &i, const double &vp){}
 
     void samplingFunction(const double * in, double * out);
 

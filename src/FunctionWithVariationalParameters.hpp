@@ -13,12 +13,15 @@ public:
     ~FunctionWithVariationalParameters();
 
     int getNVP();
+    void setNVP(const int &nvp);
+
     void getVP(double *vp);
     double getVP(const int &i);
 
-    void setNVP(const int &nvp);
     void setVP(const double *vp);
     void setVP(const int &i, const double &vp);
+
+    virtual void actAfterVPChange(const int &i, const double &vp) = 0;
 };
 
 

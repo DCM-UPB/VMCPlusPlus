@@ -15,34 +15,24 @@ class PolynomialU2: public TwoBodyPseudoPotential{
     u(r) = a * r^2 + b * r^3
 */
 
-private:
-    double _a, _b;
-
 public:
     PolynomialU2(EuclideanMetric * em, double a, double b):
     TwoBodyPseudoPotential(em, 2, true, true, true){
-        _a = a;
-        _b = b;
+        setVP(0, a);
+        setVP(1, b);
     }
     ~PolynomialU2(){}
 
-    void setVP(const double *vp){
-        _a=vp[0]; _b=vp[1];
-    }
-    void getVP(double *vp){
-        vp[0]=_a; vp[1]=_b;
-    }
-
     double ur(const double &r){
-        return _a*r*r + _b*r*r*r;
+        return getVP(0)*r*r + getVP(1)*r*r*r;
     }
 
     double urD1(const double &r){
-        return 2.*_a*r + 3.*_b*r*r;
+        return 2.*getVP(0)*r + 3.*getVP(1)*r*r;
     }
 
     double urD2(const double &r){
-        return 2.*_a + 6.*_b*r;
+        return 2.*getVP(0) + 6.*getVP(1)*r;
     }
 
     void urVD1(const double &r, double * vd1){
@@ -67,25 +57,15 @@ class FlatU2: public TwoBodyPseudoPotential{
 /*
     u(r) = K
 */
-private:
-    double _K;
-
 public:
     FlatU2(EuclideanMetric * em, const double &K):
     TwoBodyPseudoPotential(em, 1, true, true, true){
-        _K = K;
+        setVP(0, K);
     }
     ~FlatU2(){}
 
-    void setVP(const double *vp){
-        _K = vp[0];
-    }
-    void getVP(double *vp){
-        vp[0] = _K;
-    }
-
     double ur(const double &r){
-        return _K;
+        return getVP(0);
     }
 
     double urD1(const double &r){
@@ -115,28 +95,22 @@ class He3u2: public TwoBodyPseudoPotential{
     u(r) = b/r^5
 */
 
-private:
-    double _b;
-
 public:
     He3u2(EuclideanMetric * em):
     TwoBodyPseudoPotential(em, 1, true, true, true){
-        _b = -1.;
+        setVP(0, -1.);
     }
 
-    void setVP(const double *vp){_b=vp[0];}
-    void getVP(double *vp){vp[0]=_b;}
-
     double ur(const double &dist){
-        return _b/pow(dist, 5);
+        return getVP(0)/pow(dist, 5);
     }
 
     double urD1(const double &dist){
-        return -5.*_b/pow(dist, 6);
+        return -5.*getVP(0)/pow(dist, 6);
     }
 
     double urD2(const double &dist){
-        return 30.*_b/pow(dist, 7);
+        return 30.*getVP(0)/pow(dist, 7);
     }
 
     void urVD1(const double &dist, double * vd1){
@@ -177,7 +151,7 @@ int main(){
 
     // Define 4 Jastrow
     EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
-    PolynomialU2 * u2_1 = new PolynomialU2(em, -0.3, -0.1);;
+    PolynomialU2 * u2_1 = new PolynomialU2(em, -0.3, -0.1);
     PolynomialU2 * u2_2 = new PolynomialU2(em, -0.2, -0.15);
     FlatU2 * u2_3 = new FlatU2(em, 3.);
     He3u2 * u2_4 = new He3u2(em);

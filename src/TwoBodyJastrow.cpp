@@ -1,22 +1,19 @@
 #include "TwoBodyJastrow.hpp"
 
 #include <math.h>
-// #include <iostream>
-//
-//
-// using namespace std;
+
+
+
+void TwoBodyJastrow::actAfterVPChange(const int &i, const double &vp){
+    _u2->setVP(i, vp);
+}
 
 
 void TwoBodyJastrow::samplingFunction(const double * x, double * protov){
     protov[0] = 0.;
     for (int i=0; i<getNPart()-1; ++i){
         for (int j=i+1; j<getNPart(); ++j){
-            // cout << "i = " << i << "    j = " << j << endl;
-            // cout << "x = " << _pah->getParticleArray(x, i)[0] << "    " << _pah->getParticleArray(x, i)[1] << "    " << _pah->getParticleArray(x, i)[2] << endl;
-            // cout << "y = " << _pah->getParticleArray(x, j)[0] << "    " << _pah->getParticleArray(x, j)[1] << "    " << _pah->getParticleArray(x, j)[2] << endl;
             protov[0] += _u2->u(_pah->getParticleArray(x, i), _pah->getParticleArray(x, j));
-            // cout << "protov[0] = " << protov[0] << endl;
-            // cout << endl;
         }
     }
 }
@@ -111,4 +108,26 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
         d2_divbywf[i] += pow(d1_divbywf[i], 2);
     }
 
+}
+
+
+
+
+
+
+TwoBodyJastrow::TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2):
+WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()){
+    _u2 = u2;
+    _pah = new ParticleArrayHelper(u2->getNSpaceDim());
+    if (hasD1VD1() && !hasVD1()){
+        throw std::invalid_argument( "TwoBodyJastrow derivative d1vd1 requires vd1" );
+    }
+    if (hasD2VD1() && !(hasVD1() && hasD1VD1())){
+        throw std::invalid_argument( "TwoBodyJastrow derivative d2vd1 requires vd1 and d1vd1" );
+    }
+    // set the variational parameters starting from the u2 values
+    double * vp = new double[getNVP()];
+    u2->getVP(vp);
+    setVP(vp);
+    delete[] vp;
 }

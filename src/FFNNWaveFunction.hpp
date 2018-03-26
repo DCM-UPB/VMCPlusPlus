@@ -41,6 +41,9 @@ public:
     // --- computation of the derivatives
     void computeAllDerivatives(const double *in);
 
+    // variational parameters
+    void actAfterVPChange(const int &i, const double &vp){}
+
 };
 
 

@@ -67,6 +67,8 @@ public:
         }
     }
 
+    void actAfterVPChange(const int &i, const double &vp){}
+
 };
 
 

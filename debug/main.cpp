@@ -35,6 +35,8 @@ public:
             _setVD1DivByWF(1, -(in[0]-getVP(0))*(in[0]-getVP(0)));
         }
     }
+
+    void actAfterVPChange(const int &i, const double &vp){}
 };
 
 
@@ -64,6 +66,8 @@ public:
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }
     }
+
+    void actAfterVPChange(const int &i, const double &vp){}
 };
 
 

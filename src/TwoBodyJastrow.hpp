@@ -6,6 +6,8 @@
 #include "ParticleArrayHelper.hpp"
 
 #include <stdexcept>
+#include <iostream>
+using namespace std;
 
 
 /*
@@ -25,27 +27,14 @@ private:
     ParticleArrayHelper * _pah;
 
 public:
-    TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2):
-    WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()){
-        _u2 = u2;
-        _pah = new ParticleArrayHelper(u2->getNSpaceDim());
-        if (hasD1VD1() && !hasVD1()){
-            throw std::invalid_argument( "TwoBodyJastrow derivative d1vd1 requires vd1" );
-        }
-        if (hasD2VD1() && !(hasVD1() && hasD1VD1())){
-            throw std::invalid_argument( "TwoBodyJastrow derivative d2vd1 requires vd1 and d1vd1" );
-        }
-    }
+    TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2);
+
     virtual ~TwoBodyJastrow(){
         delete _pah;
     }
 
 
-
-    void setVP(const double *vp){_u2->setVP(vp);}
-    void getVP(double *vp){_u2->getVP(vp);}
-
-
+    void actAfterVPChange(const int &i, const double &vp);
 
     void samplingFunction(const double * x, double * protov);
 

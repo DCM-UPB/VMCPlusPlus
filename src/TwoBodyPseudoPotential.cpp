@@ -27,14 +27,14 @@ void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const doub
     }
 
     if (_flag_vd1){
-        for (int i=0; i<_nvp; ++i){
+        for (int i=0; i<getNVP(); ++i){
             _vd1[i] = _vfoo[i];
         }
     }
 
     if (_flag_d1vd1){
         for (int i=0; i<_ndim2; ++i){
-            for (int j=0; j<_nvp; ++j){
+            for (int j=0; j<getNVP(); ++j){
                 _d1vd1[i][j] = _foo[i] * _vfoo1[j];
             }
         }
@@ -42,7 +42,7 @@ void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const doub
 
     if (_flag_d2vd1){
         for (int i=0; i<_ndim2; ++i){
-            for (int j=0; j<_nvp; ++j){
+            for (int j=0; j<getNVP(); ++j){
                 _d2vd1[i][j] = _foo2[i] * _vfoo1[j] + _foo[i] * _foo[i] * _vfoo2[j];
             }
         }
@@ -50,10 +50,10 @@ void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const doub
 }
 
 
-TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1){
+TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1):
+FunctionWithVariationalParameters(nvp){
     _metric = metric;
     _ndim2 = 2*_metric->getNSpaceDim();
-    _nvp = nvp;
 
     _flag_vd1 = flag_vd1;
     _flag_d1vd1 = flag_d1vd1;
@@ -64,29 +64,29 @@ TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int &nvp, 
 
     _vd1 = 0;
     if (flag_vd1){
-        _vd1 = new double[_nvp];
+        _vd1 = new double[getNVP()];
     }
 
     _d1vd1 = 0;
     if (flag_d1vd1){
         _d1vd1 = new double*[_ndim2];
-        for (int id1=0; id1<_ndim2; ++id1) _d1vd1[id1] = new double[_nvp];
+        for (int id1=0; id1<_ndim2; ++id1) _d1vd1[id1] = new double[getNVP()];
     }
 
     _d2vd1 = 0;
     if (flag_d2vd1){
         _d2vd1 = new double*[_ndim2];
-        for (int id2=0; id2<_ndim2; ++id2) _d2vd1[id2] = new double[_nvp];
+        for (int id2=0; id2<_ndim2; ++id2) _d2vd1[id2] = new double[getNVP()];
     }
 
     _foo = new double[_ndim2];
     _foo2 = new double[_ndim2];
     _vfoo = 0;
-    if (flag_vd1 || flag_d1vd1 || flag_d2vd1) _vfoo = new double[_nvp];
+    if (flag_vd1 || flag_d1vd1 || flag_d2vd1) _vfoo = new double[getNVP()];
     _vfoo1 = 0;
-    if (flag_d1vd1 || flag_d2vd1) _vfoo1 = new double[_nvp];
+    if (flag_d1vd1 || flag_d2vd1) _vfoo1 = new double[getNVP()];
     _vfoo2 = 0;
-    if (flag_d2vd1) _vfoo2 = new double[_nvp];
+    if (flag_d2vd1) _vfoo2 = new double[getNVP()];
 }
 
 
