@@ -27,10 +27,6 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
 class WaveFunction: public MCISamplingFunctionInterface, public MCICallBackOnAcceptanceInterface, public FunctionWithNSpaceDimAndNPart, public FunctionWithVariationalParameters, public FunctionWithDerivatives{
 protected:
 
-
-    void _allocateVariationalDerivativesMemory();
-
-
 public:
     WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
     MCISamplingFunctionInterface(nspacedim*npart, ncomp),
@@ -43,7 +39,10 @@ public:
 
 
     // change the number of variational parameters; it will propagate to FunctionWithVariationalParameters and FunctionWithDerivatives
-    void setNVP(const int &nvp);
+    void setNVP(const int &nvp){
+        FunctionWithVariationalParameters::setNVP(nvp);
+        FunctionWithDerivatives::_allocateDerivativesMemory(getTotalNDim(), nvp);
+    }
 
 
     // --- method inherited from MCICallBackOnAcceptanceInterface, which will simply call computeAllDerivatives
