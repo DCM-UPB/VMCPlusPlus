@@ -1,9 +1,14 @@
 #ifndef TWO_BODY_PSEUDO_POTENTIAL
 #define  TWO_BODY_PSEUDO_POTENTIAL
 
-
 #include "Metric.hpp"
 #include "FunctionWithVariationalParameters.hpp"
+
+
+/*
+IMPORTANT: the setVP() functions should never be used when the pseudopotential is used within a Jastrow. In that case call the setVP() of the Jastrow.
+*/
+
 
 
 
@@ -53,8 +58,7 @@ public:
     // -- Pair pseudopotential
     double u(const double * r1, const double * r2);
 
-
-
+    // no need of any action
     void actAfterVPChange(const int &i, const double &vp){}
 
 

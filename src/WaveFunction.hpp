@@ -7,7 +7,6 @@
 #include "FunctionWithVariationalParameters.hpp"
 #include "FunctionWithDerivatives.hpp"
 
-#include <iostream>
 
 /*
 IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
@@ -22,6 +21,7 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
             use the setters for derivatives values (setD1DivByWF, setD2DivByWF, etc.)
 
     - void actAfterVPChange(const int &i, const double &vp)
+
 
 */
 

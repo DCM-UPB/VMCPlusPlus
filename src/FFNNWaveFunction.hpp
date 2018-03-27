@@ -4,8 +4,6 @@
 #include "WaveFunction.hpp"
 #include "FeedForwardNeuralNetwork.hpp"
 
-#include <stdexcept>
-
 
 
 class FFNNWaveFunction: public WaveFunction{
