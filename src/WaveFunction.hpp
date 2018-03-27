@@ -11,6 +11,12 @@
 /*
 IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
 
+    - void getVP(double *vp)
+            get the variational parameters
+
+    - void setVP(const double *vp)
+            set the variational parameters
+
     - void samplingFunction(const double * in, double * out)
             heritage from MCISamplingFunctionInterface, uses Psi^2
 
@@ -19,8 +25,6 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
 
     - void computeAllDerivatives(const double *x)
             use the setters for derivatives values (setD1DivByWF, setD2DivByWF, etc.)
-
-    - void actAfterVPChange(const int &i, const double &vp)
 
 
 */
@@ -42,7 +46,7 @@ public:
 
     // change the number of variational parameters; it will propagate to FunctionWithVariationalParameters and FunctionWithDerivatives
     void setNVP(const int &nvp){
-        FunctionWithVariationalParameters::setNVP(nvp);
+        FunctionWithVariationalParameters::_setNVP(nvp);
         FunctionWithDerivatives::_allocateDerivativesMemory(getTotalNDim(), nvp);
     }
 

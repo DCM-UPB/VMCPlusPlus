@@ -1,6 +1,7 @@
 #include "FFNNWaveFunction.hpp"
 
 #include <cmath>
+#include <stdexcept>
 
 
 

@@ -71,7 +71,7 @@ FunctionWithDerivatives::FunctionWithDerivatives(const int &totalndim, const int
     _d1vd1_divbywf = 0;
     _d2vd1_divbywf = 0;
     _totalndim = 0;
-    _nvp = 0;
+    _nvp = -1;
 
     _allocateDerivativesMemory(totalndim, nvp);
 }

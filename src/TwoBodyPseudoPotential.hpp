@@ -6,7 +6,17 @@
 
 
 /*
-IMPORTANT: the setVP() functions should never be used when the pseudopotential is used within a Jastrow. In that case call the setVP() of the Jastrow.
+IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
+
+    - double ur(const double &r)
+    - double urD1(const double &r)
+    - double urD2(const double &r)
+    - void urVD1(const double &r, double * vd1)
+    - void void urD1VD1(const double &r, double * d1vd1)
+    - void urD2VD1(const double &r, double * d1vd1)
+
+    - getVP(double * vp)
+    - setVP(const double * vp)
 */
 
 

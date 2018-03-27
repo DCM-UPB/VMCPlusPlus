@@ -6,22 +6,23 @@
 class FunctionWithVariationalParameters{
 private:
     int _nvp;  //number of variational parameters involved
-    double * _vp;
+
+protected:
+    void _setNVP(const int &nvp){_nvp = nvp;}
 
 public:
-    FunctionWithVariationalParameters(const int &nvp);
-    ~FunctionWithVariationalParameters();
+    FunctionWithVariationalParameters(const int &nvp){
+        _nvp = nvp;
+    }
+    virtual ~FunctionWithVariationalParameters(){
+        _nvp = 0;
+    }
 
-    int getNVP();
-    void setNVP(const int &nvp);
+    int getNVP(){return _nvp;}
 
-    void getVP(double *vp);
-    double getVP(const int &i);
-
-    void setVP(const double *vp);
-    void setVP(const int &i, const double &vp);
-
-    virtual void actAfterVPChange(const int &i, const double &vp) = 0;
+    // --- methods that must be implemented
+    virtual void getVP(double *vp) = 0;
+    virtual void setVP(const double *vp) = 0;
 };
 
 

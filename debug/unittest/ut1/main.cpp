@@ -87,18 +87,30 @@ public:
   Notice that the corresponding probability density (sampling function) is Psi^2.
 */
 class QuadrExponential1D1POrbital: public WaveFunction{
+private:
+    double _a, _b;
+
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
     WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
-            setVP(0, a);
-            setVP(1, b);
-        }
+            _a = a;
+            _b = b;
+    }
+
+    void getVP(double * vp){
+        vp[0] = _a;
+    }
+
+    void setVP(const double * vp){
+        _a = vp[0];
+        _b = vp[1];
+    }
 
     void samplingFunction(const double *x, double *out){
         /*
           Compute the sampling function proto value, used in getAcceptance()
         */
-        *out = -2.*(getVP(1)*(x[0]-getVP(0))*(x[0]-getVP(0)));
+        *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
     }
 
     double getAcceptance(const double * protoold, const double * protonew){
@@ -109,11 +121,11 @@ public:
     }
 
     void computeAllDerivatives(const double *x){
-        _setD1DivByWF(0, -2.*getVP(1)*(x[0]-getVP(0)));
-        _setD2DivByWF(0, -2.*getVP(1) + (-2.*getVP(1)*(x[0]-getVP(0)))*(-2.*getVP(1)*(x[0]-getVP(0))));
+        _setD1DivByWF(0, -2.*_b*(x[0]-_a));
+        _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
         if (hasVD1()){
-            _setVD1DivByWF(0, 2.*getVP(1)*(x[0]-getVP(0)));
-            _setVD1DivByWF(1, -(x[0]-getVP(0))*(x[0]-getVP(0)));
+            _setVD1DivByWF(0, 2.*_b*(x[0]-_a));
+            _setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
         }
     }
 

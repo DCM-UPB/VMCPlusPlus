@@ -33,8 +33,8 @@ public:
         delete _pah;
     }
 
-
-    void actAfterVPChange(const int &i, const double &vp);
+    void getVP(double * vp){_u2->getVP(vp);}
+    void setVP(const double * vp){_u2->setVP(vp);}
 
     void samplingFunction(const double * x, double * protov);
 

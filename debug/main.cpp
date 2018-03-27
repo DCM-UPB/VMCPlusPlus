@@ -10,16 +10,28 @@
 
 class QuadrExponential1D1POrbital: public WaveFunction
 {
-
+private:
+    double _a, _b;
 public:
-    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false){
-        setVP(0, a);
-        setVP(1, b);
+    QuadrExponential1D1POrbital(const double a, const double b):
+    WaveFunction(1, 1, 1, 2, true, false, false){
+        _a = a;
+        _b = b;
+    }
+
+    void getVP(double * vp){
+        vp[0] = _a;
+        vp[1] = _b;
+    }
+
+    void setVP(const double * vp){
+        _a = vp[0];
+        _b = vp[1];
     }
 
     void samplingFunction(const double *in, double *out)
     {
-        *out = -2.*(getVP(1)*(in[0]-getVP(0))*(in[0]-getVP(0)));
+        *out = -2.*(_b*(in[0]-_a)*(in[0]-_a));
     }
 
     double getAcceptance(const double * protoold, const double * protonew)
@@ -28,11 +40,11 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        _setD1DivByWF(0, -2.*getVP(1)*(in[0]-getVP(0)));
-        _setD2DivByWF(0, -2.*getVP(1) + (-2.*getVP(1)*(in[0]-getVP(0)))*(-2.*getVP(1)*(in[0]-getVP(0))));
+        _setD1DivByWF(0, -2.*_b*(in[0]-_a));
+        _setD2DivByWF(0, -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)));
         if (hasVD1()){
-            _setVD1DivByWF(0, 2.*getVP(1)*(in[0]-getVP(0)));
-            _setVD1DivByWF(1, -(in[0]-getVP(0))*(in[0]-getVP(0)));
+            _setVD1DivByWF(0, 2.*_b*(in[0]-_a));
+            _setVD1DivByWF(1, -(in[0]-_a)*(in[0]-_a));
         }
     }
 
@@ -43,15 +55,26 @@ public:
 
 class Gaussian1D1POrbital: public WaveFunction
 {
+private:
+    double _b;
+
 public:
     Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
-        setVP(0, b);
+        _b = b;
+    }
+
+    void getVP(double * vp){
+        vp[0] = _b;
+    }
+
+    void setVP(const double * vp){
+        _b = vp[0];
     }
 
     void samplingFunction(const double *in, double *out)
     {
-        *out=-2.*getVP(0)*(*in)*(*in);
+        *out=-2.*_b*(*in)*(*in);
     }
 
     double getAcceptance(const double * protoold, const double * protonew)
@@ -60,8 +83,8 @@ public:
     }
 
     void computeAllDerivatives(const double *in){
-        _setD1DivByWF(0, -2.*getVP(0)*(*in));
-        _setD2DivByWF(0, -2.*getVP(0)+4.*getVP(0)*getVP(0)*(*in)*(*in));
+        _setD1DivByWF(0, -2.*_b*(*in));
+        _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
         if (hasVD1()){
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }

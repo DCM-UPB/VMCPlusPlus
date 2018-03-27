@@ -4,11 +4,6 @@
 
 
 
-void TwoBodyJastrow::actAfterVPChange(const int &i, const double &vp){
-    _u2->setVP(i, vp);
-}
-
-
 void TwoBodyJastrow::samplingFunction(const double * x, double * protov){
     protov[0] = 0.;
     for (int i=0; i<getNPart()-1; ++i){

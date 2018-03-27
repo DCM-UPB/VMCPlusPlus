@@ -137,41 +137,19 @@ void MultiComponentWaveFunction::samplingFunction(const double * in, double * ou
 
 
 void MultiComponentWaveFunction::getVP(double *vp){
-    for (int i=0; i<getNVP(); ++i){
-        vp[i] = getVP(i);
-    }
-}
-
-
-double MultiComponentWaveFunction::getVP(const int &i){
     int contvp = 0;
     for (WaveFunction * wf : _wfs){
-        if (i-contvp < wf->getNVP()){
-            return wf->getVP(i-contvp);
-        } else {
-            contvp += wf->getNVP();
-        }
+        wf->getVP(vp+contvp);
+        contvp += wf->getNVP();
     }
-    throw std::invalid_argument( "index i of the MultiCompoenentWaveFunction variational parameters was not found" );
 }
 
 
 void MultiComponentWaveFunction::setVP(const double *vp){
-    for (int i=0; i<getNVP(); ++i){
-        setVP(i, vp[i]);
-    }
-}
-
-
-void MultiComponentWaveFunction::setVP(const int &i, const double &vp){
     int contvp = 0;
     for (WaveFunction * wf : _wfs){
-        if (i-contvp < wf->getNVP()){
-            wf->setVP(i-contvp, vp);
-            break;
-        } else {
-            contvp += wf->getNVP();
-        }
+        wf->setVP(vp+contvp);
+        contvp += wf->getNVP();
     }
 }
 
