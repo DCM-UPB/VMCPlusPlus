@@ -17,7 +17,7 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
     - void setVP(const double *vp)
             set the variational parameters
 
-    - void samplingFunction(const double * in, double * out)
+    - void samplingFunction(const double * x, double * proto)
             heritage from MCISamplingFunctionInterface, uses Psi^2
 
     - double getAcceptance(const double * protoold, const double * protonew)

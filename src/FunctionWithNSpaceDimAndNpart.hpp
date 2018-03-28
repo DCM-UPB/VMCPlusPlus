@@ -9,12 +9,18 @@ private:
     int _npart;
 
 public:
-    FunctionWithNSpaceDimAndNPart(const int &nspacedim, const int &npart);
-    ~FunctionWithNSpaceDimAndNPart();
+    FunctionWithNSpaceDimAndNPart(const int &nspacedim, const int &npart){
+        _nspacedim = nspacedim;
+        _npart = npart;
+    }
+    ~FunctionWithNSpaceDimAndNPart(){
+        _nspacedim = 0;
+        _npart = 0;
+    }
 
-    int getNSpaceDim();
-    int getTotalNDim();
-    int getNPart();
+    int getNSpaceDim(){return _nspacedim;}
+    int getTotalNDim(){return _nspacedim * _npart;}
+    int getNPart(){return _npart;}
 };
 
 
