@@ -32,7 +32,12 @@
 
 
 
-
 ## Unit Test 6
 
 `ut6/`: check the MultiComponentWaveFunction.
+
+
+
+## Unit Test 7
+
+`ut7/`: check the kernel of the shadow wave function, i.e. the ShadowWaveFunction without any PureShadowWaveFunction.

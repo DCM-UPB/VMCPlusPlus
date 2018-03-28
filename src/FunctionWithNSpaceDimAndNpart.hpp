@@ -1,6 +1,8 @@
 #ifndef FUNCTION_WITH_NSPACEDIM_AND_NPART
 #define FUNCTION_WITH_NSPACEDIM_AND_NPART
 
+#include <stdexcept>
+
 
 
 class FunctionWithNSpaceDimAndNPart{
@@ -10,6 +12,13 @@ private:
 
 public:
     FunctionWithNSpaceDimAndNPart(const int &nspacedim, const int &npart){
+        if (nspacedim <= 0){
+            throw std::invalid_argument( "nspacedim must be strictly greater than zero" );
+        }
+        if (npart <= 0){
+            throw std::invalid_argument( "npart must be strictly greater than zero" );
+        }
+        
         _nspacedim = nspacedim;
         _npart = npart;
     }

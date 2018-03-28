@@ -1,5 +1,6 @@
 #include "ShadowWaveFunction.hpp"
 
+#include <stdexcept>
 #include <cmath>
 
 
@@ -160,4 +161,42 @@ void ShadowWaveFunction::addPureShadowWaveFunction(PureShadowWaveFunction * pswf
     }
     _pswfs.push_back(pswf);
     setNVP( getNVP() + pswf->getNVP() );
+}
+
+
+
+
+
+ShadowWaveFunction::ShadowWaveFunction(const double &tau, const int &num_swf_sampling, const int &nspacedim, const int &npart, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1):
+WaveFunction(nspacedim, npart, 1, 1, flag_vd1, flag_d1vd1, flag_d2vd1){
+    if (tau <= 0.){
+        throw std::invalid_argument( "The Shadow Wave Function parameter tau must be strictly greater than zero" );
+    }
+    if (num_swf_sampling <= 0){
+        throw std::invalid_argument( "The Shadow Wave Function parameter num_swf_sampling must be strictly greater than zero" );
+    }
+    if (hasD1VD1() && !hasVD1()){
+        throw std::invalid_argument( "ShadowWaveFunction derivative d1vd1 requires vd1" );
+    }
+    if (hasD2VD1() && !hasVD1()){
+        throw std::invalid_argument( "ShadowWaveFunction derivative d2vd1 requires vd1 and d1vd1" );
+    }
+
+    _tau = tau;
+    _num_swf_sampling = num_swf_sampling;
+    _s1 = new double*[_num_swf_sampling];
+    for (int i=0; i<_num_swf_sampling; ++i) _s1[i] = new double[getTotalNDim()];
+    _s2 = new double*[_num_swf_sampling];
+    for (int i=0; i<_num_swf_sampling; ++i) _s2[i] = new double[getTotalNDim()];
+    _rgen = std::mt19937_64(_rdev());
+}
+
+
+
+ShadowWaveFunction::~ShadowWaveFunction(){
+    for (int i=0; i<_num_swf_sampling; ++i) delete[] _s1[i];
+    delete[] _s1;
+    for (int i=0; i<_num_swf_sampling; ++i) delete[] _s2[i];
+    delete[] _s2;
+    _pswfs.clear();
 }

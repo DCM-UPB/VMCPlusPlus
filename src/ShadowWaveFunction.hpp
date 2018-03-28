@@ -5,7 +5,6 @@
 #include "PureShadowWaveFunction.hpp"
 
 #include <vector>
-#include <stdexcept>
 #include <random>
 
 /*
@@ -25,31 +24,8 @@ private:
     std::mt19937_64 _rgen;
 
 public:
-    ShadowWaveFunction(const double &tau, const int &num_swf_sampling, const int &nspacedim, const int &npart, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
-    WaveFunction(nspacedim, npart, 1, 1, flag_vd1, flag_d1vd1, flag_d2vd1){
-        _tau = tau;
-        _num_swf_sampling = num_swf_sampling;
-        _s1 = new double*[_num_swf_sampling];
-        for (int i=0; i<_num_swf_sampling; ++i) _s1[i] = new double[getTotalNDim()];
-        _s2 = new double*[_num_swf_sampling];
-        for (int i=0; i<_num_swf_sampling; ++i) _s2[i] = new double[getTotalNDim()];
-        _rgen = std::mt19937_64(_rdev());
-
-        if (hasD1VD1() && !hasVD1()){
-            throw std::invalid_argument( "ShadowWaveFunction derivative d1vd1 requires vd1" );
-        }
-        if (hasD2VD1() && !(hasVD1() && hasD1VD1())){
-            throw std::invalid_argument( "ShadowWaveFunction derivative d2vd1 requires vd1 and d1vd1" );
-        }
-    }
-
-    ~ShadowWaveFunction(){
-        for (int i=0; i<_num_swf_sampling; ++i) delete[] _s1[i];
-        delete[] _s1;
-        for (int i=0; i<_num_swf_sampling; ++i) delete[] _s2[i];
-        delete[] _s2;
-        _pswfs.clear();
-    }
+    ShadowWaveFunction(const double &tau, const int &num_swf_sampling, const int &nspacedim, const int &npart, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
+    ~ShadowWaveFunction();
 
 
     // --- manage the pure shadow component
