@@ -5,6 +5,11 @@
 
 
 void ShadowWaveFunction::computeAllDerivatives(const double *x){
+    /*
+    It assumes that, since this function is called on acceptance, the x here is the same as
+    the one passed to samplingFunction() last time that it was called.
+    Therefore, we can/should use the same shadows coordinates sampled in samplinfFunction().
+    */
     const double div2NumSWFSampling = 1./(2.*_num_swf_sampling);
     const double two_div_tau = 2./_tau;
     const double invtau = 1./_tau;
@@ -23,9 +28,10 @@ void ShadowWaveFunction::computeAllDerivatives(const double *x){
     for (int i=0; i<getTotalNDim(); ++i){
         d2[i] = 0.;
         for (int isampling=0; isampling<_num_swf_sampling; ++isampling){
-            d2[i] += pow(two_div_tau * (x[i] - _s1[isampling][i]), 2);
-            d2[i] += pow(two_div_tau * (x[i] - _s2[isampling][i]), 2);
+            d2[i] += pow(x[i] - _s1[isampling][i], 2);
+            d2[i] += pow(x[i] - _s2[isampling][i], 2);
         }
+        d2[i] *= pow(two_div_tau, 2);
         d2[i] *= div2NumSWFSampling;
         d2[i] -= two_div_tau;
     }
@@ -80,7 +86,33 @@ void ShadowWaveFunction::computeAllDerivatives(const double *x){
             for (int ivp=0; ivp<getNVP(); ++ivp){
                 d2vd1[i][ivp] = getD2DivByWF(i) * getVD1DivByWF(ivp);
             }
-            d2vd1[i][0] += invtau * (two_div_tau - 8.*getVD1DivByWF(0));
+            // only Tau term
+            d2vd1[i][0] += - 2.*pow(getD1DivByWF(i), 2)*invtau + two_div_tau*invtau;
+            // SLOWER AND SAME RESULT
+            // double xisi2 = 0.;
+            // double xs = 0.;
+            // double xisi2xs2 = 0.;
+            // for (int isampling=0; isampling<_num_swf_sampling; ++isampling){
+            //     const double xisi12 = pow(x[i] - _s1[isampling][i], 2);
+            //     const double xisi22 = pow(x[i] - _s2[isampling][i], 2);
+            //     xisi2 += xisi12;
+            //     xisi2 += xisi22;
+            //     double xs1 = 0.;
+            //     double xs2 = 0.;
+            //     for (int idim=0; idim<getTotalNDim(); ++idim){
+            //         xs1 += pow(x[idim] - _s1[isampling][idim], 2);
+            //         xs2 += pow(x[idim] - _s2[isampling][idim], 2);
+            //     }
+            //     xs += xs1;
+            //     xs += xs2;
+            //     xisi2xs2 += xisi12 * xs1;
+            //     xisi2xs2 += xisi22 * xs2;
+            // }
+            // xisi2 *= div2NumSWFSampling;
+            // xs *= div2NumSWFSampling;
+            // xisi2xs2 *= div2NumSWFSampling;
+            //
+            // d2vd1[i][0] += pow(two_div_tau, 2)*pow(invtau, 2)*xisi2xs2 - two_div_tau*xs*pow(invtau, 2) - 2.*pow(two_div_tau, 2)*xisi2 + two_div_tau*invtau;
         }
     }
 }
@@ -89,12 +121,14 @@ void ShadowWaveFunction::computeAllDerivatives(const double *x){
 
 void ShadowWaveFunction::samplingFunction(const double * x, double * proto){
     using namespace std;
-    // normal distribution
-    normal_distribution<double> norm;
-    const double sigma = sqrt(0.5*_tau);
+
     // sum of the pure shadow wave functions
     double sum_wf_s1 = 0.;
     double sum_wf_s2 = 0.;
+
+    // normal distribution
+    normal_distribution<double> norm;
+    const double sigma = sqrt(0.5*_tau);
 
     // sample and store the shadows (will be used for computing the derivatives)
     for (int isampling=0; isampling<_num_swf_sampling; ++isampling){
@@ -105,11 +139,17 @@ void ShadowWaveFunction::samplingFunction(const double * x, double * proto){
         }
     }
 
-    // compute the pure shadow wf values and sum them up
-    for (int isampling=0; isampling<_num_swf_sampling; ++isampling){
-        for (PureShadowWaveFunction * pswf : _pswfs){
-            sum_wf_s1 += pswf->value(_s1[isampling]);
-            sum_wf_s2 += pswf->value(_s2[isampling]);
+    if (_pswfs.size() < 1){
+        // if there are no pure shadow wf, set the sums to 1
+        sum_wf_s1 = 1.;
+        sum_wf_s2 = 1.;
+    } else {
+        // compute the pure shadow wf values and sum them up
+        for (int isampling=0; isampling<_num_swf_sampling; ++isampling){
+            for (PureShadowWaveFunction * pswf : _pswfs){
+                sum_wf_s1 += pswf->value(_s1[isampling]);
+                sum_wf_s2 += pswf->value(_s2[isampling]);
+            }
         }
     }
 
@@ -118,11 +158,6 @@ void ShadowWaveFunction::samplingFunction(const double * x, double * proto){
 
 
 double ShadowWaveFunction::getAcceptance(const double * protoold, const double * protonew){
-    if (_pswfs.size() < 1){
-        // if there are no pure shadow components, always accept the move
-        return 1.;
-    }
-
     return protonew[0]/protoold[0];
 }
 

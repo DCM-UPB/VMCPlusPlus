@@ -28,6 +28,11 @@ public:
     ~ShadowWaveFunction();
 
 
+    void setSeed(const long seed){
+        _rgen.seed(seed);
+    }
+
+
     // --- manage the pure shadow component
     void addPureShadowWaveFunction(PureShadowWaveFunction * pswf);
     PureShadowWaveFunction * getPureShadowWaveFunction(const int &i){return _pswfs[i];}
