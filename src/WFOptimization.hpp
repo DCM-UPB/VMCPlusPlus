@@ -1,6 +1,8 @@
 #ifndef WF_OPTIMIZATION
 #define WF_OPTIMIZATION
 
+#include "WaveFunction.hpp"
+#include "Hamiltonian.hpp"
 #include "MCIntegrator.hpp"
 
 
@@ -20,6 +22,8 @@ public:
     ~WFOptimization(){}
 
     // getters
+    WaveFunction * getWF(){return _wf;}
+    Hamiltonian * getH(){return _H;}
     MCI * getMCI(){return _mci;};
 
     // optimize the wf
