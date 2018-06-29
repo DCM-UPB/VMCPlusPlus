@@ -32,3 +32,9 @@ void VMC::simulatedAnnealingOptimization(const long &Nmc, const double &iota, co
     opt->optimizeWF();
     delete opt;
 };
+
+void VMC::nmsimplexOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda){
+    NMSimplexOptimization * opt = new NMSimplexOptimization(_wf, _H, _mci, Nmc, iota, kappa, lambda);
+    opt->optimizeWF();
+    delete opt;
+};

@@ -22,4 +22,9 @@
 
 ## Example 4
 
-`ex4/`: as `ex2`, but using the Simulated Annealing method instead of the conjugate gradient
+`ex4/`: as `ex2`, but using the Simulated Annealing method
+
+
+## Example 5
+
+`ex5/`: as `ex2`, but using the Nelder-Mead Simplex algorithm.
