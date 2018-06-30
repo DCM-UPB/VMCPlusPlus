@@ -35,7 +35,7 @@ LIBNFM="-lnfm"
 
 #FFNN Library (used in ex3)
 FFNN_FOLDER="/...../FeedForwardNeuralNetwork"
-IFFNN="-I${FFNN_FOLDER}/src/"
+IFFNN="-I${FFNN_FOLDER}/include/"
 LFFNN="-L${FFNN_FOLDER}"
 LIBNAMEFFNN="ffnn"
 LIBFFNN="-lffnn"
