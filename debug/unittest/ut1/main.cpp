@@ -154,8 +154,8 @@ int main(){
     FeedForwardNeuralNetwork * ffnn = new FeedForwardNeuralNetwork(2, 2, 2);
     GaussianActivationFunction * gss_actf = new GaussianActivationFunction();
     IdentityActivationFunction * id_actf = new IdentityActivationFunction();
-    ffnn->setLayerActivationFunction(1, gss_actf);
-    ffnn->setLayerActivationFunction(2, id_actf);
+    ffnn->setNNLayerActivationFunction(0, gss_actf);
+    ffnn->setNNLayerActivationFunction(1, id_actf);
     ffnn->connectFFNN();
 
     ffnn->setBeta(0, p1);

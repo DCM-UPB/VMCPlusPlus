@@ -22,21 +22,21 @@ echo "Rebuilt the library with the debugging flags"
 echo
 
 #runtime dynamic library path
-RPATH="${LIBFOLDER}:${MCI_FOLDER}:${NFM_FOLDER}"
+RPATH="${LIBFOLDER}:${MCI_FOLDER}:${NFM_FOLDER}:${FFNN_FOLDER}"
 
 # Build the debugging main executable
-echo "$CC $FLAGS $DEBUGFLAGS $IMCI $INFM -I$LIBFOLDER/src/ -c *.cpp"
-$CC $FLAGS $DEBUGFLAGS -Wall $IMCI $INFM -I$LIBFOLDER/src/ -c *.cpp
+echo "$CC $FLAGS $DEBUGFLAGS $IMCI $INFM $IFFNN -I$LIBFOLDER/src/ -c *.cpp"
+$CC $FLAGS $DEBUGFLAGS -Wall $IMCI $INFM $IFFNN -I$LIBFOLDER/src/ -c *.cpp
 
 # For Mac OS, the install name is wrong and must be corrected
 case ${OS_NAME} in
     "Darwin")
-        echo "$CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL"
-        $CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL
+        echo "$CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL $LFFNN -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL $LIBFFNN"
+        $CC $FLAGS $DEBUGFLAGS -L$LIBFOLDER $LMCI $LNFM $LGSL $LFFNN -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBGSL $LIBFFNN
         ;;
     "Linux")
-        echo "$CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src -L$(pwd)/.. -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME}" $LIBMCI $LIBNFM $LIBGSL
-        $CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL -I$(pwd)/../src/ -L$(pwd)/../ -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBGSL
+        echo "$CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL $LFFNN -I$(pwd)/../src -L$(pwd)/.. -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBGSL $LIBFFNN"
+        $CC $FLAGS $DEBUGFLAGS $LMCI $LNFM $LGSL $LFFNN -I$(pwd)/../src/ -L$(pwd)/../ -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBGSL $LIBFFNN
         ;;
 esac
 
