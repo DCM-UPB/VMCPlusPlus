@@ -123,6 +123,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
+
     // simulated annealing parameters
     int N_TRIES = 20;
     int ITERS_FIXED_T = 20;
@@ -132,7 +133,9 @@ int main(){
     double MU_T = 1.1;
     double T_MIN = 0.00001;
     gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL, MU_T, T_MIN};
+
     vmc->simulatedAnnealingOptimization(NMC, 1., 1., 0., params);
+
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;

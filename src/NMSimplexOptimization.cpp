@@ -27,7 +27,7 @@ double vmc_cost(const gsl_vector *v, void *params)
     WaveFunction * const wf = ((struct vmc_workspace *)params)->wf;
     Hamiltonian * const H = ((struct vmc_workspace *)params)->H;
     MCI * const mci = ((struct vmc_workspace *)params)->mci;
-    const int Nmc = ((struct vmc_workspace *)params)->Nmc;
+    const long Nmc = ((struct vmc_workspace *)params)->Nmc;
     const double iota = ((struct vmc_workspace *)params)->iota;
     const double kappa = ((struct vmc_workspace *)params)->kappa;
     const double lambda = ((struct vmc_workspace *)params)->lambda;

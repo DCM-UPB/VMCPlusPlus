@@ -2,12 +2,9 @@
 #define STOCHASTIC_RECONFIGURATION_OPTIMIZATION
 
 #include "WFOptimization.hpp"
-#include "StochasticReconfigurationTargetFunction.hpp"
-#include "DynamicDescent.hpp"
-
 #include "MCIntegrator.hpp"
 
-
+#include <gsl/gsl_vector.h>
 
 class StochasticReconfigurationOptimization: public WFOptimization{
 
@@ -20,31 +17,27 @@ public:
     }
     virtual ~StochasticReconfigurationOptimization(){}
 
-    // optimization
-    void optimizeWF(){
-        // create targetfunction
-        StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, _Nmc, getMCI());
-        // declare the Dynamic Descent object
-        DynamicDescent * ddesc = new DynamicDescent(targetf);
-        // allocate an array that will contain the wave function variational parameters
-        double * wfpar = new double[_wf->getNVP()];
-        // get the variational parameters
-        _wf->getVP(wfpar);
-        // set the actual variational parameters as starting point for the Conjugate Gradient algorithm
-        ddesc->setX(wfpar);
-        // find the optimal parameters by minimizing the energy with the Conjugate Gradient algorithm
-        ddesc->findMin();
-        // set the found parameters in the wave function
-        ddesc->getX(wfpar);
-        _wf->setVP(wfpar);
-        // free memory
-        delete[] wfpar;
-        delete ddesc;
-        delete targetf;
-    }
+    long getNmc(){return _Nmc;}
 
+    // optimization
+    void optimizeWF();
 };
 
+namespace sropt_details {
+    struct vmc_workspace
+    {
+        WaveFunction * wf;
+        Hamiltonian * H;
+        MCI * mci;
+        long Nmc;
 
+        void initFromOptimizer(StochasticReconfigurationOptimization * wfopt);
+    };
+
+    double vmc_cost(const gsl_vector *v, void *params);
+
+    void f(vmc_workspace &w, const double *vp, double &f, double &df);
+    void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E);
+};
 
 #endif

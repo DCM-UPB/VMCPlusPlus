@@ -19,7 +19,7 @@ public:
         _mci = mci;
     }
 
-    ~WFOptimization(){}
+    virtual ~WFOptimization(){}
 
     // getters
     WaveFunction * getWF(){return _wf;}
