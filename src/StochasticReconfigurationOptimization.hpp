@@ -34,9 +34,7 @@ namespace sropt_details {
         void initFromOptimizer(StochasticReconfigurationOptimization * wfopt);
     };
 
-    double vmc_cost(const gsl_vector *v, void *params);
-
-    void f(vmc_workspace &w, const double *vp, double &f, double &df);
+    void fval(vmc_workspace &w, const double *vp, double &f, double &df);
     void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E);
 };
 

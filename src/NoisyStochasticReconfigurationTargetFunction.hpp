@@ -38,7 +38,7 @@ public:
         w.H = _H;
         w.mci = _mci;
         w.Nmc = _Nmc;
-        sropt_details::f(w, vp, f, df);
+        sropt_details::fval(w, vp, f, df);
 
     }
 
