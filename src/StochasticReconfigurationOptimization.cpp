@@ -8,6 +8,8 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_multimin.h>
 
+#include <iostream>
+
 namespace sropt_details {
     void vmc_workspace::initFromOptimizer(StochasticReconfigurationOptimization * wfopt)
     {
@@ -28,10 +30,19 @@ namespace sropt_details {
 
         w.mci->clearObservables();
         w.mci->addObservable(w.H);
-        if(flag_grad) w.mci->addObservable(new StochasticReconfigurationMCObservable(w.wf, w.H));
+
+        StochasticReconfigurationMCObservable * grad_obs = NULL;
+        if(flag_grad) {
+            grad_obs = new StochasticReconfigurationMCObservable(w.wf, w.H);
+            w.mci->addObservable(grad_obs);
+        }
 
         // perform the integral and store the values
         w.mci->integrate(w.Nmc, obs, dobs);
+
+        // clear
+        w.mci->clearObservables();
+        if(grad_obs) delete grad_obs;
     }
 
     void vmc_calcobs(vmc_workspace &w, const double * const vp, double &f, double &df, double * const grad_E = NULL , double * const dgrad_E = NULL)
@@ -111,7 +122,7 @@ namespace sropt_details {
                 dgrad_E[i] = 0.;
                 for (int k=0; k<nvp; ++k){
                     foo = gsl_vector_get(fi, k)*gsl_matrix_get(Isij, k, i);
-                    grad_E[i] -= foo;  // the minus sign is there beacuse the NoisyFunMin library will follow 'minus the gradient'
+                    grad_E[i] -= foo;
                     dgrad_E[i] += abs(foo) * ( gsl_vector_get(rdfi, k) + gsl_matrix_get(rdsij, k, i) );  // not correct, just a rough estimation
                 }
             }
@@ -129,18 +140,66 @@ namespace sropt_details {
         }
     }
 
-    // NoisyFunctionWithGradient implementation
-    void fval(vmc_workspace &w, const double *vp, double &f, double &df){
-        vmc_calcobs(w, vp, f, df);
+    #define SR_LAMBDA 0.0
+
+    double norm_f(const double * const vp, const int &nvp)
+    {
+        // compute the normalization term
+        double norm = 0.;
+        for (int i=0; i<nvp; ++i) norm += pow(vp[i], 2);
+
+        return SR_LAMBDA*sqrt(norm)/nvp;
     }
 
-    void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E){
+    void norm_f(const double * const vp, const int &nvp, double &f)
+    {
+        // add the normalization term
+        f += norm_f(vp, nvp);
+    }
+
+    void norm_grad(const double * const vp, const int &nvp, double * const grad_E)
+    {
+        // compute the normalization term
+        double norm = 0.;
+        for (int i=0; i<nvp; ++i) norm += pow(vp[i], 2);
+        double normd = SR_LAMBDA/sqrt(norm)/nvp; // outer derivative part
+
+        // add the normalization gradient
+        for (int i=0; i<nvp; ++i) grad_E[i] += 2*vp[i] * normd;
+    }
+
+    void norm_fgrad(const double * const vp, const int &nvp, double &f, double * const grad_E)
+    {
+        // compute the normalization term
+        double norm = 0.;
+        for (int i=0; i<nvp; ++i) norm += pow(vp[i], 2);
+        double normd = SR_LAMBDA/sqrt(norm)/nvp;
+        norm = SR_LAMBDA*sqrt(norm)/nvp;
+
+        // add the normalization value and gradient
+        f += norm;
+        for (int i=0; i<nvp; ++i) grad_E[i] += 2*vp[i] * normd;
+    }
+
+
+    // NoisyFunctionWithGradient implementation
+    void fval(vmc_workspace &w, const double *vp, double &f, double &df)
+    {
+        vmc_calcobs(w, vp, f, df);
+        if (SR_LAMBDA > 0) norm_f(vp, w.wf->getNVP(), f);
+    }
+
+    void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E)
+    {
         double f, df;
         vmc_calcobs(w, vp, f, df, grad_E, dgrad_E);
+        if (SR_LAMBDA > 0) norm_grad(vp, w.wf->getNVP(), grad_E);
     }
 
-    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E){
+    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E)
+    {
         vmc_calcobs(w, vp, f, df, grad_E, dgrad_E);
+        if (SR_LAMBDA > 0) norm_fgrad(vp, w.wf->getNVP(), f, grad_E);
     }
 
 
@@ -194,13 +253,14 @@ void StochasticReconfigurationOptimization::optimizeWF()
 {
     using namespace sropt_details;
 
-    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
+    //const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
+    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
     gsl_multimin_fdfminimizer *s = NULL;
     gsl_vector *x;
     gsl_multimin_function_fdf target_func;
 
     size_t iter = 0;
-    int status;
+    int status, count_nwomin = 0; // count steps without new minimum
 
     vmc_workspace w;
     w.initFromOptimizer(this);
@@ -225,22 +285,30 @@ void StochasticReconfigurationOptimization::optimizeWF()
     s = gsl_multimin_fdfminimizer_alloc(T, npar);
     gsl_multimin_fdfminimizer_set(s, &target_func, x, 0.5, 0.1);
 
+    using namespace std;
     do
         {
             iter++;
             status = gsl_multimin_fdfminimizer_iterate(s);
+            if (status == 27) ++count_nwomin;
+            else count_nwomin = 0;
 
-            if (status)
+            cout << "After iterate with status " << status << " and nwomin " << count_nwomin << endl;
+            if ((status!=0 && status!=27) || count_nwomin >= 50) {
+                cout << "Stopping optimization." << endl;
                 break;
+            }
 
-            status = gsl_multimin_test_gradient(s->gradient, 1e-3);
+            status = gsl_multimin_test_gradient(s->gradient, 1e-2);
+
+            cout << "After test_gradient with status " << status << endl;
 
             if (status == GSL_SUCCESS)
                 {
                     printf ("converged to minimum at:\n");
                 }
 
-            printf ("%5zu f() = %7.3f, ", iter, s->f);
+            printf ("%5zu f() = %7.3f\n", iter, s->f);
             for (int i=0; i<npar; ++i) {
                 printf("grad %3d = %.3f\n", i, gsl_vector_get(s->gradient, i));
             }
@@ -250,24 +318,5 @@ void StochasticReconfigurationOptimization::optimizeWF()
     gsl_vector_free(x);
     gsl_multimin_fdfminimizer_free (s);
 
-    /*// create targetfunction
-      StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, _Nmc, getMCI());
-      // declare the Dynamic Descent object
-      DynamicDescent * ddesc = new DynamicDescent(targetf);
-      // allocate an array that will contain the wave function variational parameters
-      double * wfpar = new double[_wf->getNVP()];
-      // get the variational parameters
-      _wf->getVP(wfpar);
-      // set the actual variational parameters as starting point for the Conjugate Gradient algorithm
-      ddesc->setX(wfpar);
-      // find the optimal parameters by minimizing the energy with the Conjugate Gradient algorithm
-      ddesc->findMin();
-      // set the found parameters in the wave function
-      ddesc->getX(wfpar);
-      _wf->setVP(wfpar);
-      // free memory
-      delete[] wfpar;
-      delete ddesc;
-      delete targetf;*/
     _Nmc = _Nmc;
 }

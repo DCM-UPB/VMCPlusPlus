@@ -36,7 +36,7 @@ public:
         const double Hloc = _H->localPBKineticEnergy(in) + _H->localPotentialEnergy(in);
 
         // variational derivatives
-        double * vd1 = new double[nvp];
+        double vd1[nvp];
         for (int i=0; i<nvp; ++i){
             vd1[i] = _wf->getVD1DivByWF(i);
         }
@@ -51,8 +51,6 @@ public:
                 out[2*nvp + j + i*nvp] = vd1[i]*vd1[j];   // OiOj
             }
         }
-        // free resources
-        delete[] vd1;
     }
 
 };

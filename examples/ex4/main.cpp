@@ -151,8 +151,6 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl << endl;
 
 
-
-
     delete[] vp;
     delete[] d_energy;
     delete[] energy;

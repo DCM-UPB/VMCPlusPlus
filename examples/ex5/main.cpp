@@ -57,14 +57,17 @@ int main(){
    ffnn->connectFFNN();
 
    //Set ACTFs for hidden units
-   for (int i=0; i<NHIDDENLAYERS-1; ++i) {
+   for (int i=0; i<NHIDDENLAYERS; ++i) {
        for (int j=0; j<HIDDENLAYERSIZE[i]-1; ++j) {
            ffnn->getNNLayer(i)->getNNUnit(j)->setActivationFunction(std_actf::provideActivationFunction("TANS"));
        }
    }
 
    //Set ACTF for output unit
-   ffnn->getNNLayer(NHIDDENLAYERS-1)->getNNUnit(1)->setActivationFunction(std_actf::provideActivationFunction("LGS"));
+   ffnn->getNNLayer(NHIDDENLAYERS)->getNNUnit(0)->setActivationFunction(std_actf::provideActivationFunction("LGS"));
+
+   ffnn->getOutputLayer()->getOffsetUnit()->setProtoValue(0.); // disable output offset
+   ffnn->getOutputLayer()->getOutputNNUnit(0)->setScale(1.05); // allow the lgs a bit of freedom
 
    cout << "Created FFNN with " << NHIDDENLAYERS << " hidden layer(s) of " << HIDDENLAYERSIZE[0] << ", " << HIDDENLAYERSIZE[1] << " units each." << endl << endl;
 
@@ -78,8 +81,7 @@ int main(){
    const double min = -5.;
    const double max = 5.;
    const int npoints = 100;
-   writePlotFile(psi->getBareFFNN(), base_input, 0, 0, min, max, npoints, "getOutput", "plot_init_wf_r1.txt");
-   //writePlotFile(psi->getBareFFNN(), base_input, 1, 0, min, max, npoints, "getOutput", "plot_init_wf_r2.txt");
+   writePlotFile(psi->getBareFFNN(), base_input, 0, 0, min, max, npoints, "getOutput", "plot_init_wf.txt");
    psi->getBareFFNN()->storeOnFile("wf_init.txt");
 
 
@@ -130,8 +132,7 @@ int main(){
    // Store in two files the the initial wf, one for plotting, and for recovering it as nn
 
    cout << "Writing the plot file of the optimised wave function in (plot_)opt_wf.txt" << endl << endl;
-   writePlotFile(psi->getBareFFNN(), base_input, 0, 0, min, max, npoints, "getOutput", "plot_opt_wf_r1.txt");
-   //writePlotFile(psi->getBareFFNN(), base_input, 1, 0, min, max, npoints, "getOutput", "plot_opt_wf_r2.txt");
+   writePlotFile(psi->getBareFFNN(), base_input, 0, 0, min, max, npoints, "getOutput", "plot_opt_wf.txt");
    psi->getBareFFNN()->storeOnFile("wf_opt.txt");
 
 

@@ -103,7 +103,7 @@ void NMSimplexOptimization::optimizeWF()
         break;
 
       size = gsl_multimin_fminimizer_size(s);
-      status = gsl_multimin_test_size(size, 1e-3);
+      status = gsl_multimin_test_size(size, 0.01);
 
       if (status == GSL_SUCCESS)
         {

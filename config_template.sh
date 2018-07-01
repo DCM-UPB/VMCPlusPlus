@@ -12,7 +12,7 @@ CC="g++"
 FLAGS="-std=c++11 -Wall"
 
 # Optimization flags
-OPTFLAGS="-O3"
+OPTFLAGS="-O3 -flto"
 
 # Debuggin flags
 DEBUGFLAGS="-g -O0"
