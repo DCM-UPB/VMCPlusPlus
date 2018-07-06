@@ -47,6 +47,7 @@ int main(){
         ffnn->pushHiddenLayer(HIDDENLAYERSIZE);
     }
     ffnn->connectFFNN();
+    ffnn->assignVariationalParameters();
 
     // Declare the trial wave functions
     FFNNWaveFunction * psi = new FFNNWaveFunction(1, 1, ffnn, true, false, false);

@@ -154,14 +154,15 @@ int main(){
     FeedForwardNeuralNetwork * ffnn = new FeedForwardNeuralNetwork(2, 2, 2);
     GaussianActivationFunction * gss_actf = new GaussianActivationFunction();
     IdentityActivationFunction * id_actf = new IdentityActivationFunction();
-    ffnn->setLayerActivationFunction(1, gss_actf);
-    ffnn->setLayerActivationFunction(2, id_actf);
+    ffnn->setNNLayerActivationFunction(0, gss_actf);
+    ffnn->setNNLayerActivationFunction(1, id_actf);
     ffnn->connectFFNN();
+    ffnn->assignVariationalParameters(); // make all betas variational
 
-    ffnn->setBeta(0, p1);
-    ffnn->setBeta(1, p2);
-    ffnn->setBeta(2, 0.);
-    ffnn->setBeta(3, 1.);
+    ffnn->setVariationalParameter(0, p1);
+    ffnn->setVariationalParameter(1, p2);
+    ffnn->setVariationalParameter(2, 0.);
+    ffnn->setVariationalParameter(3, 1.);
 
     // printFFNNStructure(ffnn);
     // printFFNNStructureWithBeta(ffnn);

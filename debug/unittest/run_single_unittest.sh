@@ -11,14 +11,14 @@ DEBUGFLAGS="-g -O0"
 \rm -f *.o
 
 ROOT_FOLDER=$(dirname $(dirname $(dirname $(pwd))))
-
+RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}:${FFNN_FOLDER}"
 
 ## Build the debugging main executable
 $CC $FLAGS $DEBUGFLAGS -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp
 
 case ${OS_NAME} in
     "Linux")
-        $CC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src/ -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
+        $CC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
         ;;
     "Darwin")
         $CC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
