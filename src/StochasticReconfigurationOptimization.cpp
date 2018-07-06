@@ -38,7 +38,7 @@ namespace sropt_details {
         }
 
         // perform the integral and store the values
-        w.mci->integrate(w.Nmc, obs, dobs);
+        w.mci->integrate(w.Nmc, obs, dobs, true, true);
 
         // clear
         w.mci->clearObservables();
@@ -253,8 +253,8 @@ void StochasticReconfigurationOptimization::optimizeWF()
 {
     using namespace sropt_details;
 
-    //const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
-    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
+    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
+    //const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
     gsl_multimin_fdfminimizer *s = NULL;
     gsl_vector *x;
     gsl_multimin_function_fdf target_func;
