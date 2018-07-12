@@ -1,38 +1,31 @@
 # LEGEND OF THE UNIT TESTS
 
 
-
 ## Unit Test 1
 
-`ut1/`: check that the FFNNWaveFunction behaves correctly making a comparison between a very simple neural network and a plain written wf that reproduces the neural network.
+`ut1/`: check the ParticleArrayHelper class.
 
 
 
 ## Unit Test 2
 
-`ut2/`: check the ParticleArrayHelper class.
+`ut2/`: check the EuclidianParticleDistance class.
 
 
 
 ## Unit Test 3
 
-`ut3/`: check the EuclidianParticleDistance class.
+`ut3/`: check the TwoBodyPseudoPotential.
 
 
 
 ## Unit Test 4
 
-`ut4/`: check the TwoBodyPseudoPotential.
+`ut4/`: check the TwoBodyJastrow.
+
 
 
 
 ## Unit Test 5
 
-`ut5/`: check the TwoBodyJastrow.
-
-
-
-
-## Unit Test 6
-
-`ut6/`: check the MultiComponentWaveFunction.
+`ut5/`: check the MultiComponentWaveFunction.
