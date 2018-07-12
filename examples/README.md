@@ -16,30 +16,10 @@
 
 ## Example 3
 
-`ex3/`: as `ex2`, but using a FFNN as wave function. It outputs some files that can be used to plot the wave function.
-WARNING: Sometimes the conjugate gradient method get stuck and fails. Not always the optimisation method find a good minimum, depending on the starting variational parameters of the NN. (One could use always the same NN, but it can be instructive to see what happens with different starting points)
-INFO: This example need the FFNN library.
+`ex3/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
 
 
 
 ## Example 4
 
-`ex4/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
-
-
-
-## Example 5
-
-`ex5/`: as `ex2`, but using the Simulated Annealing method instead of the conjugate gradient
-
-
-
-## Example 6
-
-`ex6/`: Compute the variational energy of Gaussian vs. NN fitted to Gaussian, for 1D1P harmonic oscillator
-
-
-
-## Example 7
-
-`ex7/`: solve the 1 dimension 1 particle harmonic oscillator using a Neural Network Wave Function. The optimization is achieved with the Simulated Annealing algorithm.
+`ex4/`: as `ex2`, but using the Simulated Annealing method instead of the conjugate gradient
