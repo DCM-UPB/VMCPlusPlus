@@ -48,7 +48,8 @@ namespace sropt_details {
     void vmc_calcobs(vmc_workspace &w, const double * const vp, double &f, double &df, double * const grad_E = NULL , double * const dgrad_E = NULL)
     {
         const int nvp = w.wf->getNVP();
-        const bool flag_grad = (grad_E && dgrad_E);
+        const bool flag_grad = (grad_E != 0);
+        const bool flag_dgrad = (dgrad_E != 0);
 
         double obs[flag_grad ? 4 + 2*nvp + nvp*nvp : 4];
         double dobs[flag_grad ? 4 + 2*nvp + nvp*nvp : 4];
@@ -72,20 +73,20 @@ namespace sropt_details {
 
             // --- compute direction (or gradient) to follow
             gsl_matrix * sij = gsl_matrix_alloc(nvp, nvp);
-            gsl_matrix * rdsij = gsl_matrix_alloc(nvp, nvp);   // relative error, i.e. error/value
+            gsl_matrix * rdsij = flag_dgrad ? gsl_matrix_alloc(nvp, nvp) : NULL;   // relative error, i.e. error/value
             for (int i=0; i<nvp; ++i){
                 for (int j=0; j<nvp; ++j){
                     gsl_matrix_set(sij, i, j, OiOj[i*nvp + j] - Oi[i] * Oi[j]);
-                    gsl_matrix_set(rdsij, i, j,
+                    if (flag_dgrad) gsl_matrix_set(rdsij, i, j,
                                    (dOiOj[i*nvp + j] + abs(Oi[i]*Oi[j])*( (dOi[i]/Oi[i]) + (dOi[j]/Oi[j]) ))
                                    /  gsl_matrix_get(sij, i, j) );
                 }
             }
             gsl_vector * fi = gsl_vector_alloc(nvp);
-            gsl_vector * rdfi = gsl_vector_alloc(nvp);   // relative error, i.e. error/value
+            gsl_vector * rdfi = flag_dgrad ? gsl_vector_alloc(nvp) : NULL;   // relative error, i.e. error/value
             for (int i=0; i<nvp; ++i){
                 gsl_vector_set(fi, i, H[0]*Oi[i] - HOi[i]);
-                gsl_vector_set(rdfi, i,
+                if (flag_dgrad) gsl_vector_set(rdfi, i,
                                (abs(H[0]*Oi[i])*( (dH[0]/H[0]) + (dOi[i]/Oi[i]) ) + dHOi[i])
                                / gsl_vector_get(fi, i)  );
             }
@@ -119,11 +120,11 @@ namespace sropt_details {
             double foo;
             for (int i=0; i<nvp; ++i){
                 grad_E[i] = 0.;
-                dgrad_E[i] = 0.;
+                if (flag_dgrad) dgrad_E[i] = 0.;
                 for (int k=0; k<nvp; ++k){
                     foo = gsl_vector_get(fi, k)*gsl_matrix_get(Isij, k, i);
                     grad_E[i] -= foo;
-                    dgrad_E[i] += abs(foo) * ( gsl_vector_get(rdfi, k) + gsl_matrix_get(rdsij, k, i) );  // not correct, just a rough estimation
+                    if (flag_dgrad) dgrad_E[i] += abs(foo) * ( gsl_vector_get(rdfi, k) + gsl_matrix_get(rdsij, k, i) );  // not correct, just a rough estimation
                 }
             }
 
@@ -133,9 +134,9 @@ namespace sropt_details {
             gsl_vector_free(S);
             gsl_matrix_free(V);
             gsl_matrix_free(Isij);
-            gsl_vector_free(rdfi);
+            if (flag_dgrad) gsl_vector_free(rdfi);
             gsl_vector_free(fi);
-            gsl_matrix_free(rdsij);
+            if (flag_dgrad) gsl_matrix_free(rdsij);
             gsl_matrix_free(sij);
         }
     }
@@ -196,7 +197,7 @@ namespace sropt_details {
         if (SR_LAMBDA > 0) norm_grad(vp, w.wf->getNVP(), grad_E);
     }
 
-    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E)
+    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E = NULL)
     {
         vmc_calcobs(w, vp, f, df, grad_E, dgrad_E);
         if (SR_LAMBDA > 0) norm_fgrad(vp, w.wf->getNVP(), f, grad_E);
@@ -225,11 +226,11 @@ namespace sropt_details {
             fval(*(struct vmc_workspace *)params, vpar, *f, err);
         }
         else {
-            double grad_E[wf->getNVP()], dgrad_E[wf->getNVP()];
-            if (!f && df) grad(*(struct vmc_workspace *)params, vpar, grad_E, dgrad_E);
+            double grad_E[wf->getNVP()];
+            if (!f && df) grad(*(struct vmc_workspace *)params, vpar, grad_E);
             else {
                 double en;
-                fgrad(*(struct vmc_workspace *)params, vpar, en, err, grad_E, dgrad_E);
+                fgrad(*(struct vmc_workspace *)params, vpar, en, err, grad_E);
                 *f = en;
             }
             for (int i=0; i<wf->getNVP(); ++i) gsl_vector_set(df, i, grad_E[i]);
@@ -283,7 +284,7 @@ void StochasticReconfigurationOptimization::optimizeWF()
     target_func.params = &w;
 
     s = gsl_multimin_fdfminimizer_alloc(T, npar);
-    gsl_multimin_fdfminimizer_set(s, &target_func, x, 0.5, 0.1);
+    gsl_multimin_fdfminimizer_set(s, &target_func, x, 1.0, 0.5);
 
     using namespace std;
     do
