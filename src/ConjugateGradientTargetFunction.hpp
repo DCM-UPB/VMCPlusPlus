@@ -20,7 +20,6 @@ protected:
     long _grad_E_Nmc;
     MCI * _mci;
 
-
 public:
     ConjugateGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & E_Nmc, const long &grad_E_Nmc, MCI * mci):
         NoisyFunctionWithGradient(wf->getNVP()){
@@ -48,8 +47,8 @@ public:
         f = obs[0];
         df = dobs[0];
         // free resources
-        delete dobs;
-        delete obs;
+        delete [] dobs;
+        delete [] obs;
     }
 
     void grad(const double *vp, double *grad_E, double *dgrad_E){
@@ -77,6 +76,7 @@ public:
             dgrad_E[i] = 2.*( dHOi[i] + abs(H[0]*Oi[i])*(dH[0]/H[0]+dOi[i]/Oi[i]) );
         }
         // free resources
+        delete mc_obs;
         delete[] dobs;
         delete[] obs;
     }

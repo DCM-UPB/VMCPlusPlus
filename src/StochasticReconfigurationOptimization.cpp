@@ -284,7 +284,7 @@ void StochasticReconfigurationOptimization::optimizeWF()
     target_func.params = &w;
 
     s = gsl_multimin_fdfminimizer_alloc(T, npar);
-    gsl_multimin_fdfminimizer_set(s, &target_func, x, 1.0, 0.5);
+    gsl_multimin_fdfminimizer_set(s, &target_func, x, 0.1, 0.1);
 
     using namespace std;
     do
@@ -295,7 +295,7 @@ void StochasticReconfigurationOptimization::optimizeWF()
             else count_nwomin = 0;
 
             cout << "After iterate with status " << status << " and nwomin " << count_nwomin << endl;
-            if ((status!=0 && status!=27) || count_nwomin >= 50) {
+            if ((status!=0 && status!=27) || count_nwomin >= 10) {
                 cout << "Stopping optimization." << endl;
                 break;
             }
@@ -318,6 +318,4 @@ void StochasticReconfigurationOptimization::optimizeWF()
 
     gsl_vector_free(x);
     gsl_multimin_fdfminimizer_free (s);
-
-    _Nmc = _Nmc;
 }
