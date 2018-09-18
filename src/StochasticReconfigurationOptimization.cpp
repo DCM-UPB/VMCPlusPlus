@@ -42,6 +42,7 @@ namespace sropt_details {
 
         // clear
         w.mci->clearObservables();
+        w.mci->clearSamplingFunctions();
         if(grad_obs) delete grad_obs;
     }
 
