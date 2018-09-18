@@ -2,12 +2,10 @@
 #define SIMULATED_ANNEALING_OPTIMIZATION
 
 #include "WFOptimization.hpp"
+#include "MPIVMC.hpp"
 
 #include <gsl/gsl_siman.h>
 #include <cmath>
-
-
-
 
 namespace vmc_siman{
 
@@ -45,7 +43,7 @@ namespace vmc_siman{
         double * d_energy = new double[4]; // energy error bar
         mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
         mci->clearObservables(); mci->addObservable(H);
-        mci->integrate(Nmc, energy, d_energy);
+        MPIMCI::integrate(mci, Nmc, energy, d_energy, true, true);
 
         // compute the normalization
         double norm = 0.;

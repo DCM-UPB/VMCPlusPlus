@@ -6,6 +6,15 @@ OS_NAME=$(uname)
 
 FLAG_TO_USE="${OPTFLAGS}"
 
+case ${USE_MPI} in
+    "0")
+        MYCC=$CC
+        ;;
+    "1")
+        MYCC=$MPICC
+        ;;
+esac
+
 \rm -f exe
 \rm -f *.o
 
@@ -16,18 +25,18 @@ ROOT_FOLDER=$(dirname $(dirname $(pwd)))
 RPATH="${ROOT_FOLDER}:${MCI_FOLDER}:${NFM_FOLDER}:${FFNN_FOLDER}"
 
 # Build the debugging main executable
-echo "$CC $FLAGS $FLAG_TO_USE $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp"
-$CC $FLAGS $FLAG_TO_USE -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp
+echo "$MYCC $FLAGS $FLAG_TO_USE $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp"
+$MYCC $FLAGS $FLAG_TO_USE -Wall $IMCI $INFM $IFFNN -I${ROOT_FOLDER}/src/ -I/usr/local/include -c *.cpp
 
 # For Mac OS, the install name is wrong and must be corrected
 case ${OS_NAME} in
     "Darwin")
-        echo "$CC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL"
-        $CC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
+        echo "$MYCC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL"
+        $MYCC $FLAGS $FLAG_TO_USE -L${ROOT_FOLDER} $LMCI $LNFM $LFFNN $LGSL -o exe *.o -l$LIBNAME $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
         ;;
     "Linux")
-        echo "$CC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME}" $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
-        $CC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src/ -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
+        echo "$MYCC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME}" $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
+        $MYCC $FLAGS $FLAG_TO_USE $LMCI $LNFM $LFFNN $LGSL -I${ROOT_FOLDER}/src/ -L${ROOT_FOLDER} -Wl,-rpath=${RPATH} -o exe *.o -l${LIBNAME} $LIBMCI $LIBNFM $LIBFFNN $LIBGSL
         ;;
 esac
 

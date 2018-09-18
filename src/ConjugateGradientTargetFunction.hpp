@@ -8,8 +8,7 @@
 
 #include "MCIntegrator.hpp"
 #include "NoisyFunction.hpp"
-
-
+#include "MPIVMC.hpp"
 
 class ConjugateGradientTargetFunction: public NoisyFunctionWithGradient
 {
@@ -43,7 +42,7 @@ public:
         // perform the integral and store the values
         double * obs = new double[4];
         double * dobs = new double[4];
-        _mci->integrate(_E_Nmc, obs, dobs);
+        MPIMCI::integrate(_mci, _E_Nmc, obs, dobs, true, true);
         f = obs[0];
         df = dobs[0];
         // free resources
@@ -62,7 +61,7 @@ public:
         // perform the integral and store the values
         double * obs = new double[4 + 2*_wf->getNVP()];
         double * dobs = new double[4 + 2*_wf->getNVP()];
-        _mci->integrate(_grad_E_Nmc, obs, dobs);
+        MPIMCI::integrate(_mci, _grad_E_Nmc, obs, dobs, true, true);
         // create pointers for ease of use and readability
         double * H = obs;
         double * dH = dobs;

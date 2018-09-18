@@ -1,5 +1,6 @@
 #include "StochasticReconfigurationOptimization.hpp"
 #include "StochasticReconfigurationMCObservable.hpp"
+#include "MPIVMC.hpp"
 
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
@@ -38,7 +39,7 @@ namespace sropt_details {
         }
 
         // perform the integral and store the values
-        w.mci->integrate(w.Nmc, obs, dobs, true, true);
+        MPIMCI::integrate(w.mci, w.Nmc, obs, dobs, true, true);
 
         // clear
         w.mci->clearObservables();

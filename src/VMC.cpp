@@ -1,16 +1,13 @@
 #include "VMC.hpp"
-
-
-
+#include "MPIVMC.hpp"
 
 // --- compute quantities
 
 void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE){
     getMCI()->clearSamplingFunctions(); getMCI()->addSamplingFunction(_wf);
     getMCI()->clearObservables(); getMCI()->addObservable(_H);
-    getMCI()->integrate(Nmc, E, dE);
+    MPIMCI::integrate(getMCI(), Nmc, E, dE, true, true);
 }
-
 
 
 // --- Optimization methods
