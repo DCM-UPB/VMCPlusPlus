@@ -6,7 +6,7 @@
 void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE){
     getMCI()->clearSamplingFunctions(); getMCI()->addSamplingFunction(_wf);
     getMCI()->clearObservables(); getMCI()->addObservable(_H);
-    MPIMCI::integrate(getMCI(), Nmc, E, dE, true, true);
+    MPIVMC::Integrate(getMCI(), Nmc, E, dE, true, true);
 }
 
 

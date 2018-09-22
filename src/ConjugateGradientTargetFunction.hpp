@@ -42,7 +42,7 @@ public:
         // perform the integral and store the values
         double * obs = new double[4];
         double * dobs = new double[4];
-        MPIMCI::integrate(_mci, _E_Nmc, obs, dobs, true, true);
+        MPIVMC::Integrate(_mci, _E_Nmc, obs, dobs, true, true);
         f = obs[0];
         df = dobs[0];
         // free resources
@@ -61,7 +61,7 @@ public:
         // perform the integral and store the values
         double * obs = new double[4 + 2*_wf->getNVP()];
         double * dobs = new double[4 + 2*_wf->getNVP()];
-        MPIMCI::integrate(_mci, _grad_E_Nmc, obs, dobs, true, true);
+        MPIVMC::Integrate(_mci, _grad_E_Nmc, obs, dobs, true, true);
         // create pointers for ease of use and readability
         double * H = obs;
         double * dH = dobs;

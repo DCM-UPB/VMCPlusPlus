@@ -39,7 +39,7 @@ namespace sropt_details {
         }
 
         // perform the integral and store the values
-        MPIMCI::integrate(w.mci, w.Nmc, obs, dobs, true, true);
+        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, true, true);
 
         // clear
         w.mci->clearObservables();

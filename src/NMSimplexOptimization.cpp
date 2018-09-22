@@ -1,6 +1,5 @@
 #include "NMSimplexOptimization.hpp"
 #include "MPIVMC.hpp"
-extern const bool useMPI;
 
 struct vmc_workspace
 {
@@ -46,7 +45,7 @@ double vmc_cost(const gsl_vector *v, void *params)
     double d_energy[4]; // energy error bar
     mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
     mci->clearObservables(); mci->addObservable(H);
-    MPIMCI::integrate(mci, Nmc, energy, d_energy, true, true);
+    MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
 
     // compute the normalization
     double norm = 0.;

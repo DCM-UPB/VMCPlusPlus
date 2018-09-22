@@ -43,7 +43,7 @@ namespace vmc_siman{
         double * d_energy = new double[4]; // energy error bar
         mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
         mci->clearObservables(); mci->addObservable(H);
-        MPIMCI::integrate(mci, Nmc, energy, d_energy, true, true);
+        MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
 
         // compute the normalization
         double norm = 0.;
