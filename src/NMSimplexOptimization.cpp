@@ -70,6 +70,8 @@ void NMSimplexOptimization::optimizeWF()
   int status;
   double size;
 
+  int myrank = MPIVMC::Rank();
+
   vmc_workspace w;
   w.initFromOptimizer(this);
 
@@ -106,12 +108,13 @@ void NMSimplexOptimization::optimizeWF()
       size = gsl_multimin_fminimizer_size(s);
       status = gsl_multimin_test_size(size, 0.01);
 
-      if (status == GSL_SUCCESS)
-        {
-          printf ("converged to minimum at\n");
-        }
+      if (myrank==0) {
+          if (status == GSL_SUCCESS) {
+              printf ("converged to minimum at\n");
+          }
 
-      printf ("%5zu f() = %7.3f size = %.3f\n", iter, s->fval, size);
+          printf ("%5zu f() = %7.3f size = %.3f\n", iter, s->fval, size);
+      }
     }
   while (status == GSL_CONTINUE && iter < 1000);
 

@@ -32,6 +32,12 @@ namespace sropt_details {
         w.mci->clearObservables();
         w.mci->addObservable(w.H);
 
+        // find MRT2/decorrelate without grads
+        MPIVMC::Integrate(w.mci, 2, obs, dobs, true, true);
+
+        w.mci->clearObservables();
+        w.mci->addObservable(w.H);
+
         StochasticReconfigurationMCObservable * grad_obs = NULL;
         if(flag_grad) {
             grad_obs = new StochasticReconfigurationMCObservable(w.wf, w.H);
@@ -39,7 +45,7 @@ namespace sropt_details {
         }
 
         // perform the integral and store the values
-        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, true, true);
+        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, false, false);
 
         // clear
         w.mci->clearObservables();
@@ -256,6 +262,8 @@ void StochasticReconfigurationOptimization::optimizeWF()
 {
     using namespace sropt_details;
 
+    int myrank = MPIVMC::Rank();
+
     const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
     //const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
     gsl_multimin_fdfminimizer *s = NULL;
@@ -296,28 +304,29 @@ void StochasticReconfigurationOptimization::optimizeWF()
             if (status == 27) ++count_nwomin;
             else count_nwomin = 0;
 
-            cout << "After iterate with status " << status << " and nwomin " << count_nwomin << endl;
+            if (myrank==0) cout << "After iterate with status " << status << " and nwomin " << count_nwomin << endl;
             if ((status!=0 && status!=27) || count_nwomin >= 10) {
-                cout << "Stopping optimization." << endl;
+                if (myrank==0) cout << "Stopping optimization." << endl;
                 break;
             }
 
             status = gsl_multimin_test_gradient(s->gradient, 1e-2);
 
-            cout << "After test_gradient with status " << status << endl;
+            if (myrank==0) {
+                cout << "After test_gradient with status " << status << endl;
 
-            if (status == GSL_SUCCESS)
-                {
+                if (status == GSL_SUCCESS) {
                     printf ("converged to minimum at:\n");
                 }
 
-            printf ("%5zu f() = %7.3f\n", iter, s->f);
-            for (int i=0; i<npar; ++i) {
-                printf("grad %3d = %.3f\n", i, gsl_vector_get(s->gradient, i));
+                printf ("%5zu f() = %7.3f\n", iter, s->f);
+                for (int i=0; i<npar; ++i) {
+                    printf("grad %3d = %.3f\n", i, gsl_vector_get(s->gradient, i));
+                }
             }
         }
     while (status == GSL_CONTINUE && iter < 1000);
 
     gsl_vector_free(x);
-    gsl_multimin_fdfminimizer_free (s);
+    gsl_multimin_fdfminimizer_free(s);
 }

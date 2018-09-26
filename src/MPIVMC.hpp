@@ -7,14 +7,45 @@
 #include "MCIntegrator.hpp"
 #endif
 
+#include <iostream>
+#include <string>
+
 namespace MPIVMC
 {
+    int Rank()
+    {
+        #if USE_MPI==1
+        return MPIMCI::rank();
+        #else
+        return 0;
+        #endif
+    }
+
+    int Size()
+    {
+        #if USE_MPI==1
+        return MPIMCI::size();
+        #else
+        return 1;
+        #endif
+    }
+
     int Init()
     {
         #if USE_MPI==1
         return MPIMCI::init();
         #else
         return 0;
+        #endif
+    }
+
+    void SetSeed(MCI * const mci, const std::string &filename, const int &offset = 0)
+    {
+        #if USE_MPI==1
+        MPIMCI::setSeed(mci, filename, offset);
+        #else
+        std::cout << "Warning: In non-MPI mode MPIVMC::SetSeed ignores the seedfile and sets the seed to offset (default 0)." << std::endl;
+        mci->setSeed(offset);
         #endif
     }
 
