@@ -26,6 +26,13 @@ void VMC::stochasticReconfigurationOptimization(const long &Nmc, const bool flag
     delete opt;
 };
 
+void VMC::adamStochasticReconfigurationOptimization(const long &Nmc, const long &grad_E_Nmc, const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon){
+    AdamStochasticReconfigurationOptimization * opt = new AdamStochasticReconfigurationOptimization(_wf, _H, getMCI(), Nmc, grad_E_Nmc, lambda, alpha, beta1, beta2, epsilon);
+    opt->optimizeWF();
+    delete opt;
+};
+
+
 void VMC::simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params){
     SimulatedAnnealingOptimization * opt = new SimulatedAnnealingOptimization(_wf, _H, Nmc, getMCI(), iota, kappa, lambda, params);
     opt->optimizeWF();

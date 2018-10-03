@@ -18,14 +18,16 @@ protected:
     Hamiltonian * _H;
     long _Nmc;
     MCI * _mci;
+    bool _calcDGrad; // allows to disable calculation of gradient error
 
 public:
-    NoisyStochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & Nmc, MCI * mci):
+    NoisyStochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & Nmc, MCI * mci, const bool calcDGrad = true):
         NoisyFunctionWithGradient(wf->getNVP()){
         _wf = wf;
         _H = H;
         _Nmc = Nmc;
         _mci = mci;
+        _calcDGrad = calcDGrad;
     }
 
     virtual ~NoisyStochasticReconfigurationTargetFunction(){}
@@ -49,7 +51,7 @@ public:
         w.H = _H;
         w.mci = _mci;
         w.Nmc = _Nmc;
-        sropt_details::grad(w, vp, grad_E, dgrad_E);
+        sropt_details::grad(w, vp, grad_E, _calcDGrad ? dgrad_E : NULL);
     }
 };
 
