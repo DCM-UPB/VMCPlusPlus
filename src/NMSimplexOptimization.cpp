@@ -10,6 +10,8 @@ struct vmc_workspace
     double iota;
     double kappa;
     double lambda;
+    double rstart;
+    double rend;
 
     void initFromOptimizer(NMSimplexOptimization * wfopt)
     {
@@ -20,6 +22,8 @@ struct vmc_workspace
         iota = wfopt->getIota();
         kappa = wfopt->getKappa();
         lambda = wfopt->getLambda();
+        rstart = wfopt->getRStart();
+        rend = wfopt->getREnd();
     }
 };
 
@@ -87,7 +91,7 @@ void NMSimplexOptimization::optimizeWF()
 
   // Set initial step sizes to 1
   ss = gsl_vector_alloc (npar);
-  gsl_vector_set_all(ss, 1.0);
+  gsl_vector_set_all(ss, _rstart);
 
   // Initialize method and iterate
   minex_func.n = npar;
@@ -106,7 +110,7 @@ void NMSimplexOptimization::optimizeWF()
         break;
 
       size = gsl_multimin_fminimizer_size(s);
-      status = gsl_multimin_test_size(size, 0.01);
+      status = gsl_multimin_test_size(size, _rend);
 
       if (myrank==0) {
           if (status == GSL_SUCCESS) {
