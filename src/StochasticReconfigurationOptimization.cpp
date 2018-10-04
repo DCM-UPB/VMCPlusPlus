@@ -32,12 +32,6 @@ namespace sropt_details {
         w.mci->clearObservables();
         w.mci->addObservable(w.H);
 
-        // find MRT2/decorrelate without grads
-        MPIVMC::Integrate(w.mci, 2, obs, dobs, true, true);
-
-        w.mci->clearObservables();
-        w.mci->addObservable(w.H);
-
         StochasticReconfigurationMCObservable * grad_obs = NULL;
         if(flag_grad) {
             grad_obs = new StochasticReconfigurationMCObservable(w.wf, w.H);
@@ -45,7 +39,7 @@ namespace sropt_details {
         }
 
         // perform the integral and store the values
-        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, false, false);
+        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, true, true);
 
         // clear
         w.mci->clearObservables();

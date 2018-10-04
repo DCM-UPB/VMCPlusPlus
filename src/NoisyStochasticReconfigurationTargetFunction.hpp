@@ -21,13 +21,13 @@ protected:
     bool _calcDGrad; // allows to disable calculation of gradient error
 
 public:
-    NoisyStochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const long &grad_E_Nmc = -1, const bool calcDGrad = true):
+    NoisyStochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const long &grad_E_Nmc = 0, const bool calcDGrad = true):
         NoisyFunctionWithGradient(wf->getNVP()){
         _wf = wf;
         _H = H;
         _mci = mci;
         _Nmc = Nmc;
-        _grad_E_Nmc = grad_E_Nmc > -1 ? grad_E_Nmc : Nmc; // use same number of steps for gradient if no extra number provided
+        _grad_E_Nmc = (grad_E_Nmc > 0) ? grad_E_Nmc : Nmc; // use same number of steps for gradient if no extra number provided
         _calcDGrad = calcDGrad;
     }
 
