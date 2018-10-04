@@ -35,7 +35,7 @@ public:
     // optimization
     void optimizeWF(){
         // create targetfunction
-        NoisyStochasticReconfigurationTargetFunction * targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, _Nmc, getMCI(), false);
+        NoisyStochasticReconfigurationTargetFunction * targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _grad_E_Nmc, false);
         // declare the Adam object
         Adam * adam = new Adam(targetf, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters
