@@ -1,41 +1,46 @@
-#ifndef ADAM_STOCHASTIC_RECONFIGURATION_OPTIMIZATION
-#define ADAM_STOCHASTIC_RECONFIGURATION_OPTIMIZATION
+#ifndef ADAM_OPTIMIZATION
+#define ADAM_OPTIMIZATION
 
 #include "WFOptimization.hpp"
 #include "NoisyStochasticReconfigurationTargetFunction.hpp"
+#include "ConjugateGradientTargetFunction.hpp"
 #include "Adam.hpp"
 
 #include "MCIntegrator.hpp"
 
 
 
-class AdamStochasticReconfigurationOptimization: public WFOptimization{
+class AdamOptimization: public WFOptimization{
 
 private:
     long _Nmc;
     long _grad_E_Nmc;
+    bool _useSR;
     double _lambda;
     double _alpha;
     double _beta1, _beta2;
     double _epsilon;
 
 public:
-    AdamStochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const long &grad_E_Nmc, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8)
+    AdamOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const long &grad_E_Nmc, const bool &useSR = false, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8)
         : WFOptimization(wf, H, mci){
         _Nmc = Nmc;
         _grad_E_Nmc = grad_E_Nmc;
+        _useSR = useSR;
         _lambda = lambda;
         _alpha = alpha;
         _beta1 = beta1;
         _beta2 = beta2;
         _epsilon = epsilon;
     }
-    virtual ~AdamStochasticReconfigurationOptimization(){}
+    virtual ~AdamOptimization(){}
 
     // optimization
     void optimizeWF(){
         // create targetfunction
-        NoisyStochasticReconfigurationTargetFunction * targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _grad_E_Nmc, false);
+        NoisyFunctionWithGradient * targetf;
+	if (_useSR) targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _grad_E_Nmc, false);
+        else targetf = new ConjugateGradientTargetFunction(_wf, _H, _Nmc, _grad_E_Nmc, getMCI());
         // declare the Adam object
         Adam * adam = new Adam(targetf, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters

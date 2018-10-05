@@ -26,8 +26,8 @@ void VMC::stochasticReconfigurationOptimization(const long &Nmc, const bool flag
     delete opt;
 };
 
-void VMC::adamStochasticReconfigurationOptimization(const long &Nmc, const long &grad_E_Nmc, const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon){
-    AdamStochasticReconfigurationOptimization * opt = new AdamStochasticReconfigurationOptimization(_wf, _H, getMCI(), Nmc, grad_E_Nmc, lambda, alpha, beta1, beta2, epsilon);
+void VMC::adamOptimization(const long &Nmc, const long &grad_E_Nmc, const bool &useSR, const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon){
+    AdamOptimization * opt = new AdamOptimization(_wf, _H, getMCI(), Nmc, grad_E_Nmc, useSR, lambda, alpha, beta1, beta2, epsilon);
     opt->optimizeWF();
     delete opt;
 };

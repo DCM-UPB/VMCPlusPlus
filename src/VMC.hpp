@@ -6,7 +6,7 @@
 #include "ConjugateGradientOptimization.hpp"
 #include "StochasticReconfigurationOptimization.hpp"
 #include "NoisyStochasticReconfigurationOptimization.hpp"
-#include "AdamStochasticReconfigurationOptimization.hpp"
+#include "AdamOptimization.hpp"
 #include "SimulatedAnnealingOptimization.hpp"
 #include "NMSimplexOptimization.hpp"
 
@@ -52,7 +52,7 @@ public:
 
     void stochasticReconfigurationOptimization(const long &Nmc, const bool flag_noisy = false); // use noisy function library? else gsl
 
-    void adamStochasticReconfigurationOptimization(const long &Nmc, const long &grad_E_Nmc, const double &lambda = 0, const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8);
+    void adamOptimization(const long &Nmc, const long &grad_E_Nmc, const bool &useSR = false, const double &lambda = 0, const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8);
 
     void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params);
 
