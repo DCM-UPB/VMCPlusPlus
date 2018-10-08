@@ -5,6 +5,8 @@
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VMC.hpp"
+#include "AdamOptimization.hpp"
+
 
 
 /*
@@ -40,7 +42,7 @@ protected:
 
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
+    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
             _a=a; _b=b;
         }
 
@@ -71,6 +73,10 @@ public:
     void computeAllDerivatives(const double *x){
         _setD1DivByWF(0, -2.*_b*(x[0]-_a));
         _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
+        if (hasVD1()){
+            _setVD1DivByWF(0, 2.*_b*(x[0]-_a));
+            _setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
+        }
     }
 
 };
@@ -96,7 +102,8 @@ int main(){
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
     VMC * vmc; // VMC object we will resuse
-    const long E_NMC = 10000l; // MC samplings to use for computing the energy
+    const long E_NMC = 4000l; // MC samplings to use for computing the energy
+    const long G_NMC = 10000l; // MC samplings to use for computing the energy gradient
     double * energy = new double[4]; // energy
     double * d_energy = new double[4]; // energy error bar
     double * vp = new double[psi->getNVP()];
@@ -118,8 +125,9 @@ int main(){
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
+    const double stepSize = 0.1; // in this low-dim case we should set a larger step size than default (0.001)
     cout << "   Optimization . . ." << endl;
-    vmc->nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
+    vmc->adamOptimization(E_NMC, G_NMC, false /* don't use SR */, 0 /* no parameter regularization */, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -154,7 +162,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
+    vmc->adamOptimization(E_NMC, G_NMC, false, 0, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;

@@ -16,7 +16,7 @@
 
 ## Example 3
 
-`ex3/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
+`ex3/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient (defunct!)
 
 
 
@@ -25,6 +25,12 @@
 `ex4/`: as `ex2`, but using the Simulated Annealing method
 
 
+
 ## Example 5
 
 `ex5/`: as `ex2`, but using the Nelder-Mead Simplex algorithm.
+
+
+## Example 6
+
+`ex6/`: as `ex2`, but using the Adam algorithm.
