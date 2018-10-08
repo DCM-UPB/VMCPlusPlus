@@ -36,6 +36,7 @@ namespace sropt_details {
 
     void fval(vmc_workspace &w, const double *vp, double &f, double &df);
     void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E = NULL);
+    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E = NULL);
 };
 
 #endif

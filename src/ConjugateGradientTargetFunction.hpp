@@ -50,7 +50,13 @@ public:
         delete [] obs;
     }
 
-    void grad(const double *vp, double *grad_E, double *dgrad_E){
+    void grad(const double *vp, double *grad_E, double *dgrad_E)
+    {
+        double f, df;
+        fgrad(vp, f, df, grad_E, dgrad_E);
+    }
+
+    void fgrad(const double *vp, double &f, double &df, double *grad_E, double *dgrad_E){
         // set the variational parameters given as input
         _wf->setVP(vp);
         // set up the MC integrator
@@ -69,6 +75,8 @@ public:
         double * dOi = dobs+4;
         double * HOi = obs+4+_wf->getNVP();
         double * dHOi = dobs+4+_wf->getNVP();
+        f = H[0];
+        df = dH[0];
         // compute direction (or gradient) to follow
         for (int i=0; i<_wf->getNVP(); ++i){
             grad_E[i] = 2.*( HOi[i] - H[0]*Oi[i] );
@@ -79,7 +87,6 @@ public:
         delete[] dobs;
         delete[] obs;
     }
-
 };
 
 

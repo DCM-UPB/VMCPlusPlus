@@ -102,8 +102,8 @@ int main(){
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
     VMC * vmc; // VMC object we will resuse
-    const long E_NMC = 4000l; // MC samplings to use for computing the energy
-    const long G_NMC = 10000l; // MC samplings to use for computing the energy gradient
+    const long E_NMC = 10000l; // MC samplings to use for computing the energy
+    const long G_NMC = 10000l; // MC samplings to use for computing the energy & gradient
     double * energy = new double[4]; // energy
     double * d_energy = new double[4]; // energy error bar
     double * vp = new double[psi->getNVP()];
@@ -127,7 +127,7 @@ int main(){
 
     const double stepSize = 0.1; // in this low-dim case we should set a larger step size than default (0.001)
     cout << "   Optimization . . ." << endl;
-    vmc->adamOptimization(E_NMC, G_NMC, false /* don't use SR */, 0 /* no parameter regularization */, stepSize);
+    vmc->adamOptimization(E_NMC, false /* don't use SR */, false /* don't use/calculate gradient error */, 20 /* stop after 20 constant values */, 0 /* no parameter regularization */, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -162,7 +162,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->adamOptimization(E_NMC, G_NMC, false, 0, stepSize);
+    vmc->adamOptimization(E_NMC, false, false, 20, 0, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;

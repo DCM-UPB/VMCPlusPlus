@@ -199,7 +199,7 @@ namespace sropt_details {
         if (SR_LAMBDA > 0) norm_grad(vp, w.wf->getNVP(), grad_E);
     }
 
-    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E = NULL)
+    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E)
     {
         vmc_calcobs(w, vp, f, df, grad_E, dgrad_E);
         if (SR_LAMBDA > 0) norm_fgrad(vp, w.wf->getNVP(), f, grad_E);
