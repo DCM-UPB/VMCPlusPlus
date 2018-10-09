@@ -12,6 +12,7 @@ struct vmc_workspace
     double lambda;
     double rstart;
     double rend;
+    size_t max_n_iter;
 
     void initFromOptimizer(NMSimplexOptimization * wfopt)
     {
@@ -24,6 +25,7 @@ struct vmc_workspace
         lambda = wfopt->getLambda();
         rstart = wfopt->getRStart();
         rend = wfopt->getREnd();
+        max_n_iter = wfopt->getMaxNIter();
     }
 };
 
@@ -109,7 +111,7 @@ void NMSimplexOptimization::optimizeWF()
       if (status)
         break;
 
-      size = gsl_multimin_fminimizer_size(s);
+      double size = gsl_multimin_fminimizer_size(s);
       status = gsl_multimin_test_size(size, _rend);
 
       if (myrank==0) {
@@ -120,7 +122,7 @@ void NMSimplexOptimization::optimizeWF()
           printf ("%5zu f() = %7.3f size = %.3f\n", iter, s->fval, size);
       }
     }
-  while (status == GSL_CONTINUE && iter < 1000);
+  while (status == GSL_CONTINUE && (_max_n_iter <= 0 || iter < _max_n_iter));
 
   gsl_vector_free(x);
   gsl_vector_free(ss);
