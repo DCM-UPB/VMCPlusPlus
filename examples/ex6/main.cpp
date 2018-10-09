@@ -1,13 +1,11 @@
 #include <iostream>
 #include <cmath>
-#include <gsl/gsl_siman.h>
 #include <stdexcept>
 
 #include "WaveFunction.hpp"
 #include "Hamiltonian.hpp"
 #include "VMC.hpp"
-#include "ConjGrad.hpp"
-#include "LogNFM.hpp"
+#include "AdamOptimization.hpp"
 
 
 
@@ -44,7 +42,7 @@ protected:
 
 public:
     QuadrExponential1D1POrbital(const double a, const double b):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
+    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
             _a=a; _b=b;
         }
 
@@ -94,21 +92,26 @@ int main(){
 
     // Declare an Hamiltonian
     // We use the harmonic oscillator with w=1 and w=2
-    const double w = 1.;
-    HarmonicOscillator1D1P * ham = new HarmonicOscillator1D1P(w, psi);
+    const double w1 = 1.;
+    HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(w1, psi);
+    const double w2 = 2.;
+    HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(w2, psi);
+
 
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const long NMC = 4000l; // MC samplings to use for computing the energy
+    VMC * vmc; // VMC object we will resuse
+    const long E_NMC = 10000l; // MC samplings to use for computing the energy
+    const long G_NMC = 10000l; // MC samplings to use for computing the energy & gradient
     double * energy = new double[4]; // energy
     double * d_energy = new double[4]; // energy error bar
     double * vp = new double[psi->getNVP()];
 
 
-
-    VMC * vmc = new VMC(psi, ham);
-    cout << "-> ham:    w = " << w << endl << endl;
+    // Case 1
+    cout << "-> ham1:    w = " << w1 << endl << endl;
+    vmc = new VMC(psi, ham1);
 
     cout << "   Initial Wave Function parameters:" << endl;
     psi->getVP(vp);
@@ -116,26 +119,15 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Starting energy:" << endl;
-    vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
+    const double stepSize = 0.1; // in this low-dim case we should set a larger step size than default (0.001)
     cout << "   Optimization . . ." << endl;
-
-    // simulated annealing parameters
-    int N_TRIES = 20;
-    int ITERS_FIXED_T = 20;
-    double STEP_SIZE = 0.1;
-    double K = 1.;
-    double T_INITIAL = 10.;
-    double MU_T = 1.1;
-    double T_MIN = 0.00001;
-    gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL, MU_T, T_MIN};
-
-    vmc->simulatedAnnealingOptimization(NMC, 1., 1., 0., params);
-
+    vmc->adamOptimization(E_NMC, false /* don't use SR */, false /* don't use/calculate gradient error */, 20 /* stop after 20 constant values */, 0 /* no parameter regularization */, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -144,19 +136,59 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Optimized energy:" << endl;
-    vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl << endl;
 
 
+
+    // Case 2
+    cout << "-> ham2:    w = " << w2 << endl << endl;
+    delete vmc;
+    vmc = new VMC(psi, ham2);
+
+    cout << "   Initial Wave Function parameters:" << endl;
+    psi->getVP(vp);
+    cout << "       a = " << vp[0] << endl;
+    cout << "       b = " << vp[1] << endl;
+
+    cout << "   Starting energy:" << endl;
+    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+
+    cout << "   Optimization . . ." << endl;
+    vmc->adamOptimization(E_NMC, false, false, 20, 0, stepSize);
+    cout << "   . . . Done!" << endl << endl;
+
+    cout << "   Optimized Wave Function parameters:" << endl;
+    psi->getVP(vp);
+    cout << "       a = " << vp[0] << endl;
+    cout << "       b = " << vp[1] << endl;
+
+    cout << "   Optimized energy:" << endl;
+    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+    cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+    cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+    cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+
+
+
+
     delete[] vp;
     delete[] d_energy;
     delete[] energy;
     delete vmc;
-    delete ham;
+
+    delete ham2;
+    delete ham1;
     delete psi;
+
 
 
     return 0;

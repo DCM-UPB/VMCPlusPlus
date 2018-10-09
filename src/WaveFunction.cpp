@@ -23,6 +23,7 @@ void WaveFunction::_allocateVariationalDerivativesMemory(){
             delete[] _vd1_divbywf;
         }
         _vd1_divbywf = new double[getNVP()];
+        for (int i=0; i<getNVP(); ++i) _vd1_divbywf[i] = 0.;
     }
     if (hasD1VD1()){
         if (_d1vd1_divbywf != 0){
@@ -34,6 +35,7 @@ void WaveFunction::_allocateVariationalDerivativesMemory(){
         _d1vd1_divbywf = new double*[getTotalNDim()];
         for (int i=0; i<getTotalNDim(); ++i){
             _d1vd1_divbywf[i] = new double[getNVP()];
+            for (int j=0; j<getNVP(); ++j) _d1vd1_divbywf[i][j] = 0.;
         }
     }
     if (hasD1VD1()){
@@ -46,6 +48,7 @@ void WaveFunction::_allocateVariationalDerivativesMemory(){
         _d2vd1_divbywf = new double*[getTotalNDim()];
         for (int i=0; i<getTotalNDim(); ++i){
             _d2vd1_divbywf[i] = new double[getNVP()];
+            for (int j=0; j<getNVP(); ++j) _d2vd1_divbywf[i][j] = 0.;
         }
     }
 }
@@ -64,6 +67,11 @@ MCICallBackOnAcceptanceInterface(nspacedim*npart){
 
     _d1_divbywf = new double[nspacedim*npart];
     _d2_divbywf = new double[nspacedim*npart];
+
+    for (int i=0; i<nspacedim*npart; ++i){
+        _d1_divbywf[i] = 0.;
+        _d2_divbywf[i] = 0.;
+    }
 
     _vd1_divbywf = 0;
     _d1vd1_divbywf = 0;

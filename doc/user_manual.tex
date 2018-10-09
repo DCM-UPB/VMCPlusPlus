@@ -380,7 +380,11 @@ public:
 
    void stochasticReconfigurationOptimization(const long &Nmc);
 
+   void adamOptimization(const long &Nmc, const bool useSR = false);
+
    void simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params);
+
+   void nmsimplexOptimization(const long &Nmc);
 
 };
 \end{lstlisting}
@@ -399,19 +403,53 @@ The minimisation can be achieved by using several optimisation algorithms. At th
 \item \verb+computeVariationalEnergy+: Compute the total, kinetic, and potential energies for the given wave function. In fact \verb+E+ is expected to be an array of size 4, where \verb+E[0]+ is the total energy, \verb+E[1]+ is is the potential energy, \verb+E[2]+ is the Pandharipande-Bethe kinetic energy (i.e. the "real" kinetic energy), and \verb+E[3]+ is the Jackson-Feenberg kinetic energy;
 \item \verb+conjugateGradientOptimization+: Optimise the trial wave function using the conjugate gradient method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library. It requires the number of sampling points for computing the energy during the linear search, and the number of samplings to use for computing the energy gradient;
 \item \verb+stochasticReconfigurationOptimization+: Optimise the trial wave function using the Dynamic Descent method of the \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library using as direction the one obtained using the Stochastic Reconfiguration (SR) approach. It requires the number of sampling points for computing the SR direction;
+\item \verb+adamOptimization+: Optimise the trial wave function using the Adam optimization implementation of the  \href{https://github.com/francesco086/NoisyFunMin}{NoisyFunMin} library using as direction either the regular gradient or the one obtained using the Stochastic Reconfiguration (SR) approach.
 \item \verb+simulatedAnnealingOptimization+: Optimise the trial wave function using the Simulated Annealing algorithm contained in the GSL library (read \href{https://www.gnu.org/software/gsl/doc/html/siman.html}{here}). The simulated annealing will try to minimise the target function
   $$
   \iota E + \kappa \sigma_E + \lambda \frac{\sqrt{ \sum_{i=1}^{N_{\alpha}} \alpha_i^2 }}{N_{\alpha}}
   $$
   where $E$ is the energy, $\sigma_E$ is the energy's standard deviation, and the last term represents a normalization factor, often used in Machine Learning. The weight of each term is controlled by the three parameters $\iota$ (\verb+iota+), $\kappa$ (\verb+kappa+), and $\lambda$ (\verb+lambda+), which must be provided to the method. Furthermore the method requires \verb+Nmc+, the number of sampling points for computing the target function integrals ($E$ and $\sigma_E$), and the GSL siman library parameters.
+\item \verb+nmsimplexOptimization+: Optimise the trial wave function using the gradient-free Nelder-Mead-Simplex algorithm nmsimplex2, contained in the GSL library (see \href{https://www.gnu.org/software/gsl/doc/html/siman.html}{here}).
+  
 \end{itemize}
 
 Examples can be found in the folder \verb+examples+.
 
 % section vmc (end)
 
+\section{MPI-VMC} % (fold)
+\label{sec:mpivmc}
 
+It is possible to use Message Passing Interface (MPI) for evaluating the MC integrals
+in parallel. The library provides a namespace \verb+MPIVMC+ that contains a few
+simple methods to use for creating a parallel VMC program. It contains two
+versions of code, one for regular single thread execution and one actual MPI
+version, which are switched by the \verb+USE_MPI+ pre-processor flag. This way
+you can compile the library without having MPI installed and you can use the same
+executable code for MPI and non-MPI library version.
+\\\\The use of MPI code can conveniently be enabled by setting \verb+USE_MPI+ to $1$ in your
+config.sh before compiling. In that case an MPI implementation is expected to be
+found on your system. Afterwards, do the following in your executable code:
 
+\begin{lstlisting}
+#include "MPIVMC.hpp"
+// start of main
+const int myrank = MPIVMC::Init();
+// ...
+MPIVMC::Integrate(mci, Nmc, average, error);
+// ...
+if (myrank==0) { /* printout etc. */ }
+// ...
+MPIVMC::Finalize();
+// end of main
+\end{lstlisting}
+Remember not to encapsulate any code within \verb+if (myrank==0){}+ clauses,
+that is actually relevant to all threads. Typically this means only file and
+console output belongs there.
+\\\\Finally, compile the executable with a MPI compiler wrapper and execute it with
+\verb+mpirun+ or similar software on your system.
+
+% section mpivmc (end)
 
 \printindex
 

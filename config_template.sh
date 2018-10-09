@@ -8,11 +8,15 @@ LIBNAME="vmc"
 # C++ compiler
 CC="g++"
 
+# MPI compiler wrapper
+MPICC="mpic++"
+USE_MPI=0
+
 # C++ flags (std=c++11 is necessary)
 FLAGS="-std=c++11 -Wall"
 
 # Optimization flags
-OPTFLAGS="-O3"
+OPTFLAGS="-O3 -flto"
 
 # Debuggin flags
 DEBUGFLAGS="-g -O0"

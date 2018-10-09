@@ -15,7 +15,6 @@ class ConjugateGradientOptimization: public WFOptimization{
 private:
     long _E_Nmc;
     long _grad_E_Nmc;
-    MCI * _mci;
 
 public:
     ConjugateGradientOptimization(WaveFunction * wf, Hamiltonian * H, const long &E_Nmc, const long &grad_E_Nmc, MCI * mci): WFOptimization(wf, H, mci){
