@@ -86,6 +86,13 @@ public:
     // It requires the positions as input
     virtual void computeAllDerivatives(const double *x) = 0;    // --- MUST BE IMPLEMENTED
 
+    // --- computation of the wavefunction value
+    // As the sampling function routine doesn't provide the actual
+    // wavefunction value, you have to provide a method to reconstruct
+    // the wactual wavefunction value (not squared) from the sampling
+    // function values, in case it is required e.g. by a wrapper.
+    virtual double computeWFValue(const double * protovalues) = 0;    // --- MUST BE IMPLEMENTED
+
 
     // --- method herited from MCICallBackOnAcceptanceInterface, that will simply call computeAllDerivatives
     void callBackFunction(const double *x, const bool flag_observation);

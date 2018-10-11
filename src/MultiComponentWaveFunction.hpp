@@ -8,7 +8,7 @@
 
 
 
-class MultiComponentWaveFunction: public WaveFunction{
+class MultiComponentWaveFunction: virtual public WaveFunction{
 private:
     std::vector<WaveFunction *> _wfs;
 
@@ -32,6 +32,7 @@ public:
 
     void computeAllDerivatives(const double *x);
 
+    double computeWFValue(const double * protovalues);
 };
 
 

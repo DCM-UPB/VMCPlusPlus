@@ -53,6 +53,7 @@ public:
 
     void computeAllDerivatives(const double *x);
 
+    double computeWFValue(const double * protovalues);
 };
 
 

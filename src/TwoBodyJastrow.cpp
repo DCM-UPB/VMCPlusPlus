@@ -112,3 +112,8 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
     }
 
 }
+
+double TwoBodyJastrow::computeWFValue(const double * protovalues)
+{
+    return exp(2.0 * protovalues[0]);
+}
