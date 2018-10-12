@@ -80,6 +80,9 @@ public:
         }
     }
 
+    double computeWFValue(const double * protovalues){
+        return exp(0.5*protovalues[0]);
+    }
 };
 
 
@@ -122,7 +125,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->stochasticReconfigurationOptimization(NMC);
+    vmc->stochasticReconfigurationOptimization(NMC, false);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;

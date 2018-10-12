@@ -80,6 +80,10 @@ public:
         }
     }
 
+    double computeWFValue(const double * protovalues)
+    {
+        return exp(0.5*protovalues[0]);
+    }
 };
 
 
@@ -128,6 +132,11 @@ public:
         if (hasVD1()){
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }
+    }
+
+    double computeWFValue(const double * protovalues)
+    {
+        return exp(0.5*protovalues[0]);
     }
 };
 

@@ -73,6 +73,9 @@ public:
         _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
     }
 
+    double computeWFValue(const double * protovalues){
+        return exp(0.5*protovalues[0]);
+    }
 };
 
 

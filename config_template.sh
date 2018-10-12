@@ -13,7 +13,7 @@ MPICC="mpic++"
 USE_MPI=0
 
 # C++ flags (std=c++11 is necessary)
-FLAGS="-std=c++11 -Wall"
+FLAGS="-std=c++11 -Wall -Wno-unused-function"
 
 # Optimization flags
 OPTFLAGS="-O3 -flto"
