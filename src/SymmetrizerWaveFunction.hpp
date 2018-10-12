@@ -33,11 +33,9 @@ protected:
 
 public:
     SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
-        WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()), _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
+        WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()), _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
 
-    virtual ~SymmetrizerWaveFunction(){
-        delete _wf;
-    }
+    virtual ~SymmetrizerWaveFunction(){}
 
     void setVP(const double * vp);
 
@@ -48,6 +46,8 @@ public:
     double getAcceptance(const double * protoold, const double * protonew);
 
     void computeAllDerivatives(const double * x);
+
+    double computeWFValue(const double * protovalues);
 
     bool isAntiSymmetric() {return _flag_antisymmetric;}
 };

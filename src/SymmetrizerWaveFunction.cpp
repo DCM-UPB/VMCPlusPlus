@@ -1,6 +1,7 @@
 #include "SymmetrizerWaveFunction.hpp"
 
 #include <stdexcept>
+#include <cmath>
 
 size_t SymmetrizerWaveFunction::_npart_factorial()
 {
@@ -111,11 +112,12 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
         if (counts[iter] < iter) {
             if (iter % 2 == 0) {
                 _swapParticles(xh, 0, iter);
+                isOdd = false;
             }
             else {
                 _swapParticles(xh, counts[iter], iter);
+                isOdd = true;
             }
-            isOdd = !isOdd; // flip parity
 
             // evaluate and add swap wf
             if (!_flag_antisymmetric || !isOdd) _addSwapDerivatives(xh, normf);
@@ -131,12 +133,17 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
     }
 }
 
+double SymmetrizerWaveFunction::computeWFValue(const double * protovalues)
+{
+    return protovalues[0]; // sign is important here so we calculate the unsquared wf in samplingFunction
+}
 
 double SymmetrizerWaveFunction::getAcceptance(const double * protoold, const double * protonew)
 {
-    if (protoold[0] == 0 && protonew[0] != 0) return 1.;
-    else if (protoold[0] != 0 && protonew[0] == 0) return 0.;
-    else return protonew[0] / protoold[0];
+    double po2 = protoold[0]*protoold[0], pn2 = protonew[0]*protonew[0];
+    if (po2 == 0 && pn2 != 0) return 1.;
+    else if (po2 != 0 && pn2 == 0) return 0.;
+    else return pn2 / po2;
 }
 
 
@@ -162,11 +169,12 @@ void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
         if (counts[iter] < iter) {
             if (iter % 2 == 0) {
                 _swapParticles(inh, 0, iter);
+                isOdd = false;
             }
             else {
                 _swapParticles(inh, counts[iter], iter);
+                isOdd = true;
             }
-            isOdd = !isOdd; // flip parity
 
             // evaluate and add swap wf
             _wf->samplingFunction(inh, outh);
@@ -181,7 +189,6 @@ void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
             ++iter;
         }
     }
-    out[0] = out[0] * out[0]; // sampling function is wf squared
 }
 
 
