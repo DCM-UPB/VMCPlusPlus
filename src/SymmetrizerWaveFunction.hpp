@@ -14,10 +14,10 @@ class SymmetrizerWaveFunction: virtual public WaveFunction {
       exchange.
 
       NOTE 1: These general Symmetrizer operators are not Slater determinants, so they don't
-      rely on single particle orbitals, but instead a single arbitrary n-particle wavefunction.
+      rely on N single particle orbitals, but instead a single N-particle wavefunction.
 
       NOTE 2: Be aware that the time to evaluate the samplingFunction or derivatives of the
-      SymmetrizerWaveFunction requires at least n! as much time as the corresponding evaluations
+      SymmetrizerWaveFunction requires at least N! as much time as the corresponding evaluations
       of the original WaveFunction, where n is the number of particles. Therefore it cannot be used
       in practice for more than a handful of particles.
     */
@@ -41,13 +41,13 @@ public:
 
     void getVP(double * vp);
 
-    void samplingFunction(const double * in, double * out);
+    virtual void samplingFunction(const double * in, double * out);
 
     double getAcceptance(const double * protoold, const double * protonew);
 
-    void computeAllDerivatives(const double * x);
+    virtual void computeAllDerivatives(const double * x);
 
-    double computeWFValue(const double * protovalues);
+    virtual double computeWFValue(const double * protovalues);
 
     bool isAntiSymmetric() {return _flag_antisymmetric;}
 };

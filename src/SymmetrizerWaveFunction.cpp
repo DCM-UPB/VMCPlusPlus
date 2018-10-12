@@ -7,7 +7,7 @@ size_t SymmetrizerWaveFunction::_npart_factorial()
 {
     size_t fac = 1;
     const size_t npart = (size_t)_npart;
-    for (size_t i=2; i<=npart; ++i) fac += i;
+    for (size_t i=2; i<=npart; ++i) fac *= i;
     return fac;
 }
 
@@ -101,7 +101,7 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
 
     // initialize
     iter = 0;
-    for (int i=0; i<_npart; ++i) counts[i] = 0.;
+    for (int i=0; i<_npart; ++i) counts[i] = 0;
     for (int i=0; i<ndim; ++i) xh[i] = x[i];
 
     // evaluate unswapped wf
