@@ -8,7 +8,7 @@
 
 
 
-class MultiComponentWaveFunction: virtual public WaveFunction{
+class MultiComponentWaveFunction: public WaveFunction{
 private:
     std::vector<WaveFunction *> _wfs;
 

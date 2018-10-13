@@ -3,11 +3,11 @@
 #include <stdexcept>
 #include <cmath>
 
-size_t SymmetrizerWaveFunction::_npart_factorial()
+unsigned long SymmetrizerWaveFunction::_npart_factorial()
 {
-    size_t fac = 1;
-    const size_t npart = (size_t)_npart;
-    for (size_t i=2; i<=npart; ++i) fac *= i;
+    unsigned long fac = 1;
+    const unsigned long npart = static_cast<unsigned long>(_npart);
+    for (unsigned long i=2; i<=npart; ++i) fac *= i;
     return fac;
 }
 

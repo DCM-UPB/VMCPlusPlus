@@ -5,13 +5,13 @@
 #include "WaveFunction.hpp"
 
 
-class SymmetrizerWaveFunction: virtual public WaveFunction {
+class SymmetrizerWaveFunction: public WaveFunction {
     /*
       This class wraps around an arbitrary WaveFunction and applies by default the
       general Symmetrizer operator or by optional second constructor argument instead
       the general AntiSymmetrizer operator to the given wavefunction. The result is
-      a wavefunction that is either symmetric or antisymmetric with respect to particle
-      exchange.
+      a wavefunction that is either symmetric or antisymmetric with respect to arbitrary
+      particle exchange permutations.
 
       NOTE 1: These general Symmetrizer operators are not Slater determinants, so they don't
       rely on N single particle orbitals, but instead a single N-particle wavefunction.
@@ -26,7 +26,7 @@ protected:
     const bool _flag_antisymmetric; // should we use the antisymmetrizer instead of symmetrizer?
 
     // internal helpers
-    size_t _npart_factorial();
+    unsigned long _npart_factorial();
     void _swapParticles(double * x, const int &i, const int &j);
     void _computeStandardDerivatives(const double * x, const double &normf);
     void _addSwapDerivatives(const double * x, const double &normf);
@@ -43,7 +43,7 @@ public:
 
     virtual void samplingFunction(const double * in, double * out);
 
-    double getAcceptance(const double * protoold, const double * protonew);
+    virtual double getAcceptance(const double * protoold, const double * protonew);
 
     virtual void computeAllDerivatives(const double * x);
 
