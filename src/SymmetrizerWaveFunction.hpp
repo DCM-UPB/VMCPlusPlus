@@ -27,9 +27,10 @@ protected:
 
     // internal helpers
     unsigned long _npart_factorial();
-    void _swapParticles(double * x, const int &i, const int &j);
+    void _swapPositions(double * x, const int &i, const int &j);
+    void _swapIndices(int * ids, const int &i, const int &j);
     void _computeStandardDerivatives(const double * x, const double &normf);
-    void _addSwapDerivatives(const double * x, const double &normf);
+    void _addSwapDerivatives(const double * x, const double &normf, const int * ids);
 
 public:
     SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):

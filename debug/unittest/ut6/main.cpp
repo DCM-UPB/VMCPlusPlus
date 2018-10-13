@@ -91,7 +91,7 @@ int main(){
     const int NTOTALDIM = NPART*NSPACEDIM; 
     const double GAUSS_EXPF = 0.9;
     const double DX = 0.0001;
-    const double TINY = 0.01;
+    const double TINY = 0.02;
     const double SUPERTINY = 0.0000001;
 
     // random generator
