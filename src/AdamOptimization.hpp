@@ -16,6 +16,7 @@ private:
     long _Nmc;
     bool _useSR;
     bool _useGradientError;
+    bool _useAveraging;
     size_t _max_n_const_values;
     double _lambda;
     double _alpha;
@@ -24,13 +25,14 @@ private:
 
 public:
     AdamOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20,
-        const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8)
+        const bool useAveraging = false, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8)
         : WFOptimization(wf, H, mci)
     {
         _Nmc = Nmc;
         _useSR = useSR;
         _useGradientError = useGradientError;
         _max_n_const_values = max_n_const_values;
+        _useAveraging = useAveraging;
         _lambda = lambda;
         _alpha = alpha;
         _beta1 = beta1;
@@ -46,7 +48,7 @@ public:
 	if (_useSR) targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, false);
         else targetf = new ConjugateGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI());
         // declare the Adam object
-        Adam * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _alpha, _beta1, _beta2, _epsilon);
+        Adam * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters
         double wfpar[_wf->getNVP()];
         // get the variational parameters

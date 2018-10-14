@@ -29,10 +29,10 @@ void VMC::stochasticReconfigurationOptimization(const long &Nmc, const bool flag
     delete opt;
 };
 
-void VMC::adamOptimization(const long &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values,
+void VMC::adamOptimization(const long &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values, const bool useAveraging,
     const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon)
 {
-    AdamOptimization * opt = new AdamOptimization(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, lambda, alpha, beta1, beta2, epsilon);
+    AdamOptimization * opt = new AdamOptimization(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, useAveraging, lambda, alpha, beta1, beta2, epsilon);
     opt->optimizeWF();
     delete opt;
 };
