@@ -16,18 +16,17 @@ class NoisyStochasticReconfigurationTargetFunction: public NoisyFunctionWithGrad
 protected:
     WaveFunction * _wf;
     Hamiltonian * _H;
-    long _Nmc, _grad_E_Nmc;
     MCI * _mci;
-    bool _calcDGrad; // allows to disable calculation of gradient error
+    const long _Nmc;
+    const double _lambda_reg;
+    const bool _calcDGrad; // allows to disable calculation of gradient error
 
 public:
-    NoisyStochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const bool calcDGrad = false):
-        NoisyFunctionWithGradient(wf->getNVP()){
+    NoisyStochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):
+        NoisyFunctionWithGradient(wf->getNVP()), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {
         _wf = wf;
         _H = H;
         _mci = mci;
-        _Nmc = Nmc;
-        _calcDGrad = calcDGrad;
     }
 
     virtual ~NoisyStochasticReconfigurationTargetFunction(){}
@@ -40,6 +39,7 @@ public:
         w.H = _H;
         w.mci = _mci;
         w.Nmc = _Nmc;
+        w.lambda_reg = _lambda_reg;
         sropt_details::fval(w, vp, f, df);
 
     }
@@ -51,6 +51,7 @@ public:
         w.H = _H;
         w.mci = _mci;
         w.Nmc = _Nmc;
+        w.lambda_reg = _lambda_reg;
         sropt_details::grad(w, vp, grad_E, _calcDGrad ? dgrad_E : NULL);
     }
 
@@ -61,6 +62,7 @@ public:
         w.H = _H;
         w.mci = _mci;
         w.Nmc = _Nmc;
+        w.lambda_reg = _lambda_reg;
         sropt_details::fgrad(w, vp, f, df, grad_E, _calcDGrad ? dgrad_E : NULL);
     }
 

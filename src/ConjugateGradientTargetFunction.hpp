@@ -15,17 +15,16 @@ class ConjugateGradientTargetFunction: public NoisyFunctionWithGradient
 protected:
     WaveFunction * _wf;
     Hamiltonian * _H;
-    long _E_Nmc;
-    long _grad_E_Nmc;
     MCI * _mci;
+    const long _E_Nmc;
+    const long _grad_E_Nmc;
+    const double _lambda_reg;
 
 public:
-    ConjugateGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & E_Nmc, const long &grad_E_Nmc, MCI * mci):
-        NoisyFunctionWithGradient(wf->getNVP()){
+    ConjugateGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & E_Nmc, const long &grad_E_Nmc, MCI * mci, const double &lambda_reg = 0.):
+        NoisyFunctionWithGradient(wf->getNVP()), _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc), _lambda_reg(lambda_reg) {
         _wf = wf;
         _H = H;
-        _E_Nmc = E_Nmc;
-        _grad_E_Nmc = grad_E_Nmc;
         _mci = mci;
     }
 
@@ -45,6 +44,13 @@ public:
         MPIVMC::Integrate(_mci, _E_Nmc, obs, dobs, true, true);
         f = obs[0];
         df = dobs[0];
+
+        if (_lambda_reg > 0.) { // compute the regularization term
+            double norm = 0.;
+            for (int i=0; i<_wf->getNVP(); ++i) norm += vp[i]*vp[i];
+            f += _lambda_reg*norm/_wf->getNVP();
+        }
+
         // free resources
         delete [] dobs;
         delete [] obs;
@@ -82,6 +88,12 @@ public:
             grad_E[i] = 2.*( HOi[i] - H[0]*Oi[i] );
             dgrad_E[i] = 2.*( dHOi[i] + abs(H[0]*Oi[i])*(dH[0]/H[0]+dOi[i]/Oi[i]) );
         }
+
+        if (_lambda_reg > 0.) { // compute the regularization derivative
+            const double fac = 2.*_lambda_reg/_wf->getNVP();
+            for (int i=0; i<_wf->getNVP(); ++i) grad_E[i] += fac*vp[i];
+        }
+
         // free resources
         delete mc_obs;
         delete[] dobs;

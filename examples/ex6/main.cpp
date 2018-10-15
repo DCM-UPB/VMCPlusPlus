@@ -131,7 +131,7 @@ int main(){
     const double stepSize = 0.1; // in this low-dim case we should set a larger step size than default (0.001)
     cout << "   Optimization . . ." << endl;
     vmc->adamOptimization(G_NMC, false /* don't use SR */, false /* don't use/calculate gradient error */, 20 /* stop after 20 constant values */, 
-                          true /* use averaging for final parameters */, 0 /* no parameter regularization */, stepSize);
+                          true /* use averaging for final parameters */, 0.01 /* parameter regularization */, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -166,7 +166,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->adamOptimization(G_NMC, false, false, 20, true, 0, stepSize);
+    vmc->adamOptimization(G_NMC, false, false, 20, true, 0.01, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;

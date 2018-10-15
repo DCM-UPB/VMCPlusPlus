@@ -9,15 +9,16 @@
 class StochasticReconfigurationOptimization: public WFOptimization{
 
 private:
-    long _Nmc;
+    const long _Nmc;
+    const double _lambda_reg;
 
 public:
-    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci): WFOptimization(wf, H, mci){
-        _Nmc = Nmc;
-    }
+    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double &lambda_reg = 0)
+        : WFOptimization(wf, H, mci), _Nmc(Nmc), _lambda_reg(lambda_reg) {}
     virtual ~StochasticReconfigurationOptimization(){}
 
     long getNmc(){return _Nmc;}
+    double getLambdaReg(){return _lambda_reg;}
 
     // optimization
     void optimizeWF();
@@ -30,6 +31,7 @@ namespace sropt_details {
         Hamiltonian * H;
         MCI * mci;
         long Nmc;
+        double lambda_reg; // L2 regularization lambda
 
         void initFromOptimizer(StochasticReconfigurationOptimization * wfopt);
     };

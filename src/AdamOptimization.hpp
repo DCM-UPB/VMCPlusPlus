@@ -45,8 +45,8 @@ public:
     void optimizeWF(){
         // create targetfunction
         NoisyFunctionWithGradient * targetf;
-	if (_useSR) targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, false);
-        else targetf = new ConjugateGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI());
+        if (_useSR) targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
+        else targetf = new ConjugateGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda);
         // declare the Adam object
         Adam * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters

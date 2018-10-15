@@ -18,6 +18,7 @@ namespace sropt_details {
         H = wfopt->getH();
         mci = wfopt->getMCI();
         Nmc = wfopt->getNmc();
+        lambda_reg = wfopt->getLambdaReg();
     }
 
     void vmc_integrate(vmc_workspace &w, const double * const vp, double * const obs, double * const dobs, const bool flag_grad = false)
@@ -143,45 +144,39 @@ namespace sropt_details {
         }
     }
 
-    #define SR_LAMBDA 0.0
-
-    double norm_f(const double * const vp, const int &nvp)
+    double norm_f(const double * const vp, const int &nvp, const double &lambda)
     {
         // compute the normalization term
         double norm = 0.;
-        for (int i=0; i<nvp; ++i) norm += pow(vp[i], 2);
+        for (int i=0; i<nvp; ++i) norm += vp[i]*vp[i];
 
-        return SR_LAMBDA*sqrt(norm)/nvp;
+        return lambda*norm/nvp;
     }
 
-    void norm_f(const double * const vp, const int &nvp, double &f)
+    void norm_f(const double * const vp, const int &nvp, double &f, const double &lambda)
     {
         // add the normalization term
-        f += norm_f(vp, nvp);
+        f += norm_f(vp, nvp, lambda);
     }
 
-    void norm_grad(const double * const vp, const int &nvp, double * const grad_E)
+    void norm_grad(const double * const vp, const int &nvp, double * const grad_E, const double &lambda)
     {
-        // compute the normalization term
-        double norm = 0.;
-        for (int i=0; i<nvp; ++i) norm += pow(vp[i], 2);
-        double normd = SR_LAMBDA/sqrt(norm)/nvp; // outer derivative part
-
+        const double fac = lambda/nvp;
         // add the normalization gradient
-        for (int i=0; i<nvp; ++i) grad_E[i] += 2*vp[i] * normd;
+        for (int i=0; i<nvp; ++i) grad_E[i] += 2.*vp[i] * fac;
     }
 
-    void norm_fgrad(const double * const vp, const int &nvp, double &f, double * const grad_E)
+    void norm_fgrad(const double * const vp, const int &nvp, double &f, double * const grad_E, const double &lambda)
     {
+        const double fac = lambda/nvp;
+
         // compute the normalization term
         double norm = 0.;
-        for (int i=0; i<nvp; ++i) norm += pow(vp[i], 2);
-        double normd = SR_LAMBDA/sqrt(norm)/nvp;
-        norm = SR_LAMBDA*sqrt(norm)/nvp;
+        for (int i=0; i<nvp; ++i) norm += vp[i]*vp[i];
 
         // add the normalization value and gradient
-        f += norm;
-        for (int i=0; i<nvp; ++i) grad_E[i] += 2*vp[i] * normd;
+        f += norm*fac;
+        for (int i=0; i<nvp; ++i) grad_E[i] += 2.*vp[i] * fac;
     }
 
 
@@ -189,20 +184,20 @@ namespace sropt_details {
     void fval(vmc_workspace &w, const double *vp, double &f, double &df)
     {
         vmc_calcobs(w, vp, f, df);
-        if (SR_LAMBDA > 0) norm_f(vp, w.wf->getNVP(), f);
+        if (w.lambda_reg > 0) norm_f(vp, w.wf->getNVP(), f, w.lambda_reg);
     }
 
     void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E)
     {
         double f, df;
         vmc_calcobs(w, vp, f, df, grad_E, dgrad_E);
-        if (SR_LAMBDA > 0) norm_grad(vp, w.wf->getNVP(), grad_E);
+        if (w.lambda_reg > 0) norm_grad(vp, w.wf->getNVP(), grad_E, w.lambda_reg);
     }
 
     void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E)
     {
         vmc_calcobs(w, vp, f, df, grad_E, dgrad_E);
-        if (SR_LAMBDA > 0) norm_fgrad(vp, w.wf->getNVP(), f, grad_E);
+        if (w.lambda_reg > 0) norm_fgrad(vp, w.wf->getNVP(), f, grad_E, w.lambda_reg);
     }
 
 
