@@ -8,9 +8,9 @@ void PairSymmetrizerWaveFunction::computeAllDerivatives(const double * x)
     double xh[ndim]; // helper array for positions
     int idh[ndim]; // helper array for indices
 
-    double protov;
-    samplingFunction(x, &protov);
-    const double normf = 1. / ((_npart*(_npart-1)/2 + 1)*computeWFValue(&protov)); // normalizing factor
+    double protov[_wf->getNProto()];
+    samplingFunction(x, protov);
+    const double normf = 1. / ((_npart*(_npart-1)/2 + 1)*computeWFValue(protov)); // normalizing factor
     const double normf2 = -normf; // negative factor for odd permutations in antisym case
 
     // initialize

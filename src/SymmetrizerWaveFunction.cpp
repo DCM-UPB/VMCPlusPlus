@@ -37,9 +37,9 @@ void SymmetrizerWaveFunction::_swapIndices(int * ids, const int &i, const int &j
 
 void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, const double &normf)
 {
-    double protov;
-    _wf->samplingFunction(x, &protov);
-    const double wfvalue = _wf->computeWFValue(&protov);
+    double protov[_wf->getNProto()];
+    _wf->samplingFunction(x, protov);
+    const double wfvalue = _wf->computeWFValue(protov);
     const double normf2 = normf * wfvalue;
 
     _wf->computeAllDerivatives(x);
@@ -75,9 +75,9 @@ void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, cons
 
 void SymmetrizerWaveFunction::_addSwapDerivatives(const double * x, const double &normf, const int * ids)
 {
-    double protov;
-    _wf->samplingFunction(x, &protov);
-    const double wfvalue = _wf->computeWFValue(&protov);
+    double protov[_wf->getNProto()];
+    _wf->samplingFunction(x, protov);
+    const double wfvalue = _wf->computeWFValue(protov);
     const double normf2 = normf * wfvalue;
 
     _wf->computeAllDerivatives(x);
@@ -121,9 +121,9 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
     int counts[_npart], iter; // counters for heaps algorithm
     bool isOdd = false; // flip for permutation parity
 
-    double protov;
-    samplingFunction(x, &protov);
-    const double normf = 1. / (_npart_factorial()*computeWFValue(&protov)); // normalizing factor
+    double protov[_wf->getNProto()];
+    samplingFunction(x, protov);
+    const double normf = 1. / (_npart_factorial()*computeWFValue(protov)); // normalizing factor
     const double normf2 = -normf; // negative factor for odd permutations in antisym case
 
     // initialize
