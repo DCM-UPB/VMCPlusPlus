@@ -86,7 +86,7 @@ public:
         // compute direction (or gradient) to follow
         for (int i=0; i<_wf->getNVP(); ++i){
             grad_E[i] = 2.*( HOi[i] - H[0]*Oi[i] );
-            dgrad_E[i] = 2.*( dHOi[i] + abs(H[0]*Oi[i])*(dH[0]/H[0]+dOi[i]/Oi[i]) );
+            dgrad_E[i] = 2.*( dHOi[i] + fabs(H[0]*Oi[i])*(dH[0]/H[0]+dOi[i]/Oi[i]) );
         }
 
         if (_lambda_reg > 0.) { // compute the regularization derivative

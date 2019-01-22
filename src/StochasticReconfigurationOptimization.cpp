@@ -40,7 +40,7 @@ namespace sropt_details {
         }
 
         // perform the integral and store the values
-        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, true, true);
+        MPIVMC::Integrate(w.mci, w.Nmc, obs, dobs, true, false);
 
         // clear
         w.mci->clearObservables();
@@ -81,7 +81,7 @@ namespace sropt_details {
                 for (int j=0; j<nvp; ++j){
                     gsl_matrix_set(sij, i, j, OiOj[i*nvp + j] - Oi[i] * Oi[j]);
                     if (flag_dgrad) gsl_matrix_set(rdsij, i, j,
-                                   (dOiOj[i*nvp + j] + abs(Oi[i]*Oi[j])*( (dOi[i]/Oi[i]) + (dOi[j]/Oi[j]) ))
+                                   (dOiOj[i*nvp + j] + fabs(Oi[i]*Oi[j])*( (dOi[i]/Oi[i]) + (dOi[j]/Oi[j]) ))
                                    /  gsl_matrix_get(sij, i, j) );
                 }
             }
@@ -90,7 +90,7 @@ namespace sropt_details {
             for (int i=0; i<nvp; ++i){
                 gsl_vector_set(fi, i, H[0]*Oi[i] - HOi[i]);
                 if (flag_dgrad) gsl_vector_set(rdfi, i,
-                               (abs(H[0]*Oi[i])*( (dH[0]/H[0]) + (dOi[i]/Oi[i]) ) + dHOi[i])
+                               (fabs(H[0]*Oi[i])*( (dH[0]/H[0]) + (dOi[i]/Oi[i]) ) + dHOi[i])
                                / gsl_vector_get(fi, i)  );
             }
             // invert matrix using SVD
@@ -127,7 +127,7 @@ namespace sropt_details {
                 for (int k=0; k<nvp; ++k){
                     foo = gsl_vector_get(fi, k)*gsl_matrix_get(Isij, k, i);
                     grad_E[i] -= foo;
-                    if (flag_dgrad) dgrad_E[i] += abs(foo) * ( gsl_vector_get(rdfi, k) + gsl_matrix_get(rdsij, k, i) );  // not correct, just a rough estimation
+                    if (flag_dgrad) dgrad_E[i] += fabs(foo) * ( gsl_vector_get(rdfi, k) + gsl_matrix_get(rdsij, k, i) );  // not correct, just a rough estimation
                 }
             }
 

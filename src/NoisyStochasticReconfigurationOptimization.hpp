@@ -23,7 +23,7 @@ public:
     // optimization
     void optimizeWF(){
         // create targetfunction
-        NoisyStochasticReconfigurationTargetFunction * targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc);
+        NoisyStochasticReconfigurationTargetFunction * targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, 0., true);
         // declare the Dynamic Descent object
         DynamicDescent * ddesc = new DynamicDescent(targetf);
         // allocate an array that will contain the wave function variational parameters

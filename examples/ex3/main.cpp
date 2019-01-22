@@ -102,7 +102,7 @@ int main(){
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const long NMC = 2000l; // MC samplings to use for computing the energy
+    const long NMC = 20000l; // MC samplings to use for computing the energy
     double * energy = new double[4]; // energy
     double * d_energy = new double[4]; // energy error bar
     double * vp = new double[psi->getNVP()];
