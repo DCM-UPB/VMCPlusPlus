@@ -1,5 +1,5 @@
-#include "VMC.hpp"
-#include "MPIVMC.hpp"
+#include "vmc/VMC.hpp"
+#include "vmc/MPIVMC.hpp"
 
 // --- compute quantities
 

@@ -1,6 +1,6 @@
-#include "StochasticReconfigurationOptimization.hpp"
-#include "StochasticReconfigurationMCObservable.hpp"
-#include "MPIVMC.hpp"
+#include "vmc/StochasticReconfigurationOptimization.hpp"
+#include "vmc/StochasticReconfigurationMCObservable.hpp"
+#include "vmc/MPIVMC.hpp"
 
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>

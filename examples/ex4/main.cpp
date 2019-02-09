@@ -3,11 +3,11 @@
 #include <gsl/gsl_siman.h>
 #include <stdexcept>
 
-#include "WaveFunction.hpp"
-#include "Hamiltonian.hpp"
-#include "VMC.hpp"
-#include "ConjGrad.hpp"
-#include "LogNFM.hpp"
+#include "vmc/WaveFunction.hpp"
+#include "vmc/Hamiltonian.hpp"
+#include "vmc/VMC.hpp"
+#include "nfm/ConjGrad.hpp"
+#include "nfm/LogNFM.hpp"
 
 
 

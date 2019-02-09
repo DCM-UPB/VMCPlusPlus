@@ -1,4 +1,4 @@
-#include "WaveFunction.hpp"
+#include "vmc/WaveFunction.hpp"
 
 
 

@@ -1,4 +1,4 @@
-#include "SymmetrizerWaveFunction.hpp"
+#include "vmc/SymmetrizerWaveFunction.hpp"
 
 #include <stdexcept>
 #include <cmath>

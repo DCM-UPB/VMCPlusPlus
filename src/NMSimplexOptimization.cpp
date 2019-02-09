@@ -1,5 +1,5 @@
-#include "NMSimplexOptimization.hpp"
-#include "MPIVMC.hpp"
+#include "vmc/NMSimplexOptimization.hpp"
+#include "vmc/MPIVMC.hpp"
 
 struct vmc_workspace
 {
@@ -74,7 +74,6 @@ void NMSimplexOptimization::optimizeWF()
 
   size_t iter = 0;
   int status;
-  double size;
 
   int myrank = MPIVMC::Rank();
 

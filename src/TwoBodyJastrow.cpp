@@ -1,4 +1,4 @@
-#include "TwoBodyJastrow.hpp"
+#include "vmc/TwoBodyJastrow.hpp"
 
 #include <math.h>
 // #include <iostream>

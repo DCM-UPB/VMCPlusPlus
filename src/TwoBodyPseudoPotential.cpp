@@ -1,4 +1,4 @@
-#include "TwoBodyPseudoPotential.hpp"
+#include "vmc/TwoBodyPseudoPotential.hpp"
 
 
 

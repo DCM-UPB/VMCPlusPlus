@@ -2,9 +2,9 @@
 #include <cmath>
 #include <stdexcept>
 
-#include "WaveFunction.hpp"
-#include "Hamiltonian.hpp"
-#include "VMC.hpp"
+#include "vmc/WaveFunction.hpp"
+#include "vmc/Hamiltonian.hpp"
+#include "vmc/VMC.hpp"
 
 
 /*

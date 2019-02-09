@@ -1,4 +1,4 @@
-#include "MultiComponentWaveFunction.hpp"
+#include "vmc/MultiComponentWaveFunction.hpp"
 
 #include <stdexcept>
 
