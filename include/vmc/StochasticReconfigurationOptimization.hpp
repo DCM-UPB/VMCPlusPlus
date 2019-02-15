@@ -11,10 +11,11 @@ class StochasticReconfigurationOptimization: public WFOptimization{
 private:
     const long _Nmc;
     const double _lambda_reg;
+    const double _stepSize;
 
 public:
-    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double &lambda_reg = 0)
-        : WFOptimization(wf, H, mci), _Nmc(Nmc), _lambda_reg(lambda_reg) {}
+    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double stepSize = 1., const double &lambda_reg = 0)
+        : WFOptimization(wf, H, mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _stepSize(stepSize) {}
     virtual ~StochasticReconfigurationOptimization(){}
 
     long getNmc(){return _Nmc;}

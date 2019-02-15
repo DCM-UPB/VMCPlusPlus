@@ -13,10 +13,12 @@ class NoisyStochasticReconfigurationOptimization: public WFOptimization{
 
 private:
     long _Nmc;
+    double _stepSize;
 
 public:
-    NoisyStochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci): WFOptimization(wf, H, mci){
+    NoisyStochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double stepSize = 1.): WFOptimization(wf, H, mci){
         _Nmc = Nmc;
+        _stepSize = stepSize;
     }
     virtual ~NoisyStochasticReconfigurationOptimization(){}
 
@@ -25,21 +27,19 @@ public:
         // create targetfunction
         NoisyStochasticReconfigurationTargetFunction * targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, 0., true);
         // declare the Dynamic Descent object
-        DynamicDescent * ddesc = new DynamicDescent(targetf);
+        DynamicDescent ddesc(targetf, _stepSize);
         // allocate an array that will contain the wave function variational parameters
-        double * wfpar = new double[_wf->getNVP()];
+        double wfpar[_wf->getNVP()];
         // get the variational parameters
         _wf->getVP(wfpar);
         // set the actual variational parameters as starting point for the Conjugate Gradient algorithm
-        ddesc->setX(wfpar);
+        ddesc.setX(wfpar);
         // find the optimal parameters by minimizing the energy with the Conjugate Gradient algorithm
-        ddesc->findMin();
+        ddesc.findMin();
         // set the found parameters in the wave function
-        ddesc->getX(wfpar);
+        ddesc.getX(wfpar);
         _wf->setVP(wfpar);
-        // free memory
-        delete[] wfpar;
-        delete ddesc;
+
         delete targetf;
     }
 };

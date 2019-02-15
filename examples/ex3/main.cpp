@@ -99,13 +99,15 @@ int main(){
     const double w = 1.;
     HarmonicOscillator1D1P * ham = new HarmonicOscillator1D1P(w, psi);
 
+    NFMLogManager log;
+    log.setLogLevel(1); // use this to enable log printout
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
     const long NMC = 20000l; // MC samplings to use for computing the energy
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
-    double * vp = new double[psi->getNVP()];
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
+    double vp[psi->getNVP()];
 
 
 
@@ -125,7 +127,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->stochasticReconfigurationOptimization(NMC, false);
+    vmc->stochasticReconfigurationOptimization(NMC, 0.5, true);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -143,9 +145,6 @@ int main(){
 
 
 
-    delete[] vp;
-    delete[] d_energy;
-    delete[] energy;
     delete vmc;
     delete ham;
     delete psi;
