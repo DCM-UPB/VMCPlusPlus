@@ -9,20 +9,22 @@
 class Hamiltonian: public MCIObservableFunctionInterface
 {
 protected:
-    int _nspacedim;
-    int _npart;
-    WaveFunction * _wf;
+    const int _nspacedim;
+    const int _npart;
+    WaveFunction * const _wf;
+
+    const bool _flag_PBKE;
 
 public:
-    Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf): MCIObservableFunctionInterface(nspacedim*npart, 4)
-    {
-        _nspacedim=nspacedim; _npart=npart; _wf = wf;
-    }
+    Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf, const bool usePBKE = true /* use JF+PB KE or only JF */)
+        : MCIObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
     virtual ~Hamiltonian(){}
 
     int getNSpaceDim(){return _nspacedim;}
     int getTotalNDim(){return getNDim();}
     int getNPart(){return _npart;}
+
+    bool hasPBKE(){return _flag_PBKE;}
 
     // Potential energy --- MUST BE IMPLEMENTED
     virtual double localPotentialEnergy(const double *r) = 0;
@@ -53,9 +55,9 @@ public:
     void observableFunction(const double * in, double *out)
     {
         out[3]=localJFKineticEnergy(in);
-        out[2]=localPBKineticEnergy(in);
+        out[2]= _flag_PBKE ? localPBKineticEnergy(in) : 0.;
         out[1]=localPotentialEnergy(in);
-        out[0]=out[1]+out[2];
+        out[0]= _flag_PBKE ? out[1]+out[2] : out[1]+out[3];
     }
 };
 

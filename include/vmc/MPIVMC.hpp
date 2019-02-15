@@ -1,21 +1,18 @@
 #ifndef MPIVMC
 #define MPIVMC
 
-#if USE_MPI==1
 #include "mci/MPIMCI.hpp"
-#else
 #include "mci/MCIntegrator.hpp"
-#endif
 
 #include <iostream>
 #include <string>
 
 namespace MPIVMC
 {
-    int Rank()
+    int MyRank()
     {
         #if USE_MPI==1
-        return MPIMCI::rank();
+        return MPIMCI::myrank();
         #else
         return 0;
         #endif
@@ -49,29 +46,13 @@ namespace MPIVMC
         #endif
     }
 
-    void Integrate(MCI * const mci, const long &Nmc, double * average, double * error, int NfindMRT2stepIterations, int NdecorrelationSteps, bool randomizeWalkers = false, int nblocks=-1)
+    void Integrate(MCI * const mci, const long &Nmc, double * average, double * error, const bool findMRT2step=true, const bool initialdecorrelation=true, const bool randomizeWalkers = false)
     {
-        if (randomizeWalkers) {
-            mci->newRandomX();
-        }
+        if (randomizeWalkers) mci->newRandomX();
         #if USE_MPI==1
-        MPIMCI::integrate(mci, Nmc, average, error, NfindMRT2stepIterations, NdecorrelationSteps, nblocks < 0 ? 16 : nblocks); // if compiling with USE_MPI, set default block count to 16
+        MPIMCI::integrate(mci, Nmc, average, error, findMRT2step, initialdecorrelation);
         #else
-        mci->integrate(Nmc, average, error, NfindMRT2stepIterations, NdecorrelationSteps, nblocks < 0 ? 0 : nblocks);
-        #endif
-    }
-
-    void Integrate(MCI * const mci, const long &Nmc, double * average, double * error, bool findMRT2step=true, bool initialdecorrelation=true, int nblocks=-1)
-    {
-        #if USE_MPI==1
-        // if compiling with USE_MPI, set fixed defaults (totaling 5000 quick no-sample steps)
-        int stepsMRT2 = findMRT2step ? 25 : 0;
-        int stepsDecorr = initialdecorrelation ? 2500 : 0;
-        Integrate(mci, Nmc, average, error, stepsMRT2, stepsDecorr, true, nblocks < 0 ? 16 : nblocks); // if compiling with USE_MPI, also use random initial walker positions and fixed blocking
-        #else
-        int stepsMRT2 = findMRT2step ? -1 : 0;
-        int stepsDecorr = initialdecorrelation ? -1 : 0;
-        Integrate(mci, Nmc, average, error, stepsMRT2, stepsDecorr, false, nblocks < 0 ? 0 : nblocks);
+        mci->integrate(Nmc, average, error, findMRT2step, initialdecorrelation);
         #endif
 
     }

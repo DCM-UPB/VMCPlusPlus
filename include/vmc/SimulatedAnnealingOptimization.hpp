@@ -39,8 +39,8 @@ namespace vmc_siman{
         wf->setVP(x);
 
         // compute the energy and its standard deviation
-        double * energy = new double[4]; // energy
-        double * d_energy = new double[4]; // energy error bar
+        double energy[4]; // energy
+        double d_energy[4]; // energy error bar
         mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
         mci->clearObservables(); mci->addObservable(H);
         MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
@@ -54,10 +54,6 @@ namespace vmc_siman{
         // assemble the target function
         const double target = iota * energy[0] + kappa * d_energy[0] + lambda * norm;
 
-        // free resources
-        delete[] d_energy;
-        delete[] energy;
-
         return target;
     }
 
@@ -66,15 +62,16 @@ namespace vmc_siman{
         double * x = ((double *) xp);
 
         // how many parameters should be changed? a random number between 1 and 1 + 2*log(N)
-        const int numVariablesToChange = 1 + 2 * round( gsl_rng_uniform(r) * log(wf->getNVP()) );
+        int numVariablesToChange = 1 + 2 * round( gsl_rng_uniform(r) * log(wf->getNVP()) );
+        numVariablesToChange = (numVariablesToChange > wf->getNVP()) ? wf->getNVP() : numVariablesToChange;
+        const double rdThreshold = ((double)numVariablesToChange) / wf->getNVP();
 
         // compute new variational parameters
-        double eta;
         const double double_step_size = 2. * step_size;
-        for (int i=0; i<numVariablesToChange; ++i){
-            const int index = floor(gsl_rng_uniform(r) * wf->getNVP());
-            eta = gsl_rng_uniform(r);
-            x[index] = x[index] + (eta-0.5) * double_step_size;
+        for (int i=0; i<wf->getNVP(); ++i){
+            if (gsl_rng_uniform(r)<rdThreshold) {
+                x[i] = x[i] + (gsl_rng_uniform(r)-0.5) * double_step_size;
+            }
         }
     }
 
@@ -91,6 +88,15 @@ namespace vmc_siman{
         dist = sqrt(dist);
 
         return dist;
+    }
+
+    void simanPrint(void *xp) {
+        double *vp = (double *) xp;
+        printf("  [");
+        for (int i=0; i<wf->getNVP(); ++i) {
+            printf(" %f ", vp[i]);
+        }
+        printf("]  ");
     }
 
 }
@@ -127,7 +133,7 @@ public:
         _wf->getVP(vp);
 
         // run the simulated annealing algorithm
-        gsl_siman_solve(r, vp, vmc_siman::simanTarget, vmc_siman::simanStep, vmc_siman::simanDistance, NULL, NULL, NULL, NULL, _wf->getNVP()*sizeof(double), vmc_siman::params);
+        gsl_siman_solve(r, vp, vmc_siman::simanTarget, vmc_siman::simanStep, vmc_siman::simanDistance, vmc_siman::simanPrint, NULL, NULL, NULL, _wf->getNVP()*sizeof(double), vmc_siman::params);
 
         // set the optimal variational parameters
         _wf->setVP(vp);

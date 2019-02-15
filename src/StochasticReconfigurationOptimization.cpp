@@ -251,7 +251,7 @@ void StochasticReconfigurationOptimization::optimizeWF()
 {
     using namespace sropt_details;
 
-    int myrank = MPIVMC::Rank();
+    int myrank = MPIVMC::MyRank();
 
     const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
     //const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;

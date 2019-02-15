@@ -1,5 +1,5 @@
 #!/bin/bash
 ORIGDIR=$(pwd)
 cd ../../build/examples
-mpirun -np $1 ./ex7.exe
+./ex3.exe
 cd "${ORIGDIR}"

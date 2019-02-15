@@ -93,44 +93,48 @@ int main(){
     cout << "Hello from rank " << myrank << endl;
 
     // Declare some trial wave functions
-    Gaussian1D1POrbital * psi2 = new Gaussian1D1POrbital(0.5);
+    Gaussian1D1POrbital psi(0.6);
 
-    // Declare an Hamiltonian for each wave function (keep in mind that the kinetic energy is strictly bound to it)
+    // Declare an Hamiltonian for each wave function
     // We use the harmonic oscillator with w=1
-    HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(1., psi2);
+    HarmonicOscillator1D1P ham(1., &psi);
 
 
-    cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
+    const long E_NMC = 50000l; // MC samplings to use for computing the energy
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
 
-    VMC * vmc; // VMC object we will resuse
-    const long E_NMC = 10000l; // MC samplings to use for computing the energy
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
+    VMC vmc(&psi, &ham);
 
-    // Case 2
-    cout << "-> psi2: " << endl;
-    delete vmc;
-    vmc = new VMC(psi2, ham2);
+    // example of file out with MPI
+    auto obsfile = "obsfile" + std::to_string(myrank);
+    auto wlkfile = "wlkfile" + std::to_string(myrank);;
+    vmc.getMCI()->storeObservablesOnFile(obsfile.c_str(), 1);
+    vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile.c_str(), 1);
 
-    auto obsfile = "obsfile";
-    auto wlkfile = "wlkfile";
-    vmc->getMCI()->storeObservablesOnFile(obsfile, 1);
-    vmc->getMCI()->storeWalkerPositionsOnFile(wlkfile, 1);
+    if (myrank==0) cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
 
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
-    cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
-    cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
-    cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
-    cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    // First compute the energy with auto-mode findMRT2step/initialDecorr/blocking
+    if (myrank==0) cout << "Computing energy in parallel with auto-mode findMRT2step/initialDecorr (inconsistent time per CPU)." << endl;
+    vmc.computeVariationalEnergy(E_NMC, energy, d_energy);
+    if (myrank==0) {
+        cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+        cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+        cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+        cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    }
 
-    delete[] d_energy;
-    delete[] energy;
-    delete vmc;
-
-
-    delete ham2;
-
-    delete psi2;
+    // Now fix the number of steps for findMRT2step/initialDecorr
+    vmc.getMCI()->setNfindMRT2steps(20);
+    vmc.getMCI()->setNdecorrelationSteps(2000);
+    if (myrank==0) cout << "Computing energy in parallel with fixed-mode findMRT2step/initialDecorr (consistent time per CPU)." << endl;
+    vmc.computeVariationalEnergy(E_NMC, energy, d_energy);
+    if (myrank==0) {
+        cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
+        cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
+        cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
+        cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
+    }
 
     MPIVMC::Finalize();
 

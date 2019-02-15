@@ -35,6 +35,7 @@ public:
     void samplingFunction(const double *in, double *out)
     {
         *out = -2.*(_b*(in[0]-_a)*(in[0]-_a));
+        std::cout << "out " << *out << std::endl;
     }
 
     double getAcceptance(const double * protoold, const double * protonew)
@@ -124,11 +125,13 @@ public:
 int main(){
     using namespace std;
 
+    MPIVMC::Init();
+
     const long NMC = 4000l;
     double ** irange = new double*[1];
     *irange = new double[2];
-    irange[0][0] = -25.;
-    irange[0][1] = 25.;
+    irange[0][0] = -10.;
+    irange[0][1] = 10.;
 
     Gaussian1D1POrbital * gauss = new Gaussian1D1POrbital(1.2);
     HarmonicOscillator1D1P * harm_osc = new HarmonicOscillator1D1P(1., gauss);
@@ -136,14 +139,14 @@ int main(){
     // HarmonicOscillator1D1P * harm_osc2 = new HarmonicOscillator1D1P(1., qexp);
 
     cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
-    double * b1 = new double;
-    gauss->getVP(b1);
-    cout << "Wave Function b     = " << *b1 << endl;
+    double b1;
+    gauss->getVP(&b1);
+    cout << "Wave Function b     = " << b1 << endl;
     VMC * vmc = new VMC(gauss, harm_osc);
     vmc->getMCI()->setIRange(irange);
-    double * energy = new double[4];
-    double * d_energy = new double[4];
-    vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    double energy[4];
+    double d_energy[4];
+    vmc->computeVariationalEnergy(NMC, energy, d_energy, false, false);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -193,19 +196,17 @@ int main(){
     //delete[] a;
     //delete vmc2;
 
-    delete[] energy;
-    delete[] d_energy;
-
     delete vmc;
-    delete b1;
 
     delete harm_osc;
     // delete harm_osc2;
     delete gauss;
     // delete qexp;
 
-    delete[] *irange;
+    delete[] irange[0];
     delete[] irange;
+
+    MPIVMC::Finalize();
 
     return 0;
 }

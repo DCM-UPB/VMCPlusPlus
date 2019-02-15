@@ -3,11 +3,11 @@
 
 // --- compute quantities
 
-void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE)
+void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE, const bool doFindMRT2step, const bool doDecorrelation)
 {
     getMCI()->clearSamplingFunctions(); getMCI()->addSamplingFunction(_wf);
     getMCI()->clearObservables(); getMCI()->addObservable(_H);
-    MPIVMC::Integrate(getMCI(), Nmc, E, dE, true, true);
+    MPIVMC::Integrate(getMCI(), Nmc, E, dE, doFindMRT2step, doDecorrelation);
 }
 
 

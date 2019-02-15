@@ -44,7 +44,7 @@ public:
 
 
     // Computation of the variational energy
-    void computeVariationalEnergy(const long & Nmc, double * E, double * dE);
+    void computeVariationalEnergy(const long & Nmc, double * E, double * dE, const bool doFindMRT2step = true, const bool doDecorrelation = true);
 
 
     // Wave Function Optimization Methods

@@ -75,7 +75,7 @@ void NMSimplexOptimization::optimizeWF()
   size_t iter = 0;
   int status;
 
-  int myrank = MPIVMC::Rank();
+  int myrank = MPIVMC::MyRank();
 
   vmc_workspace w;
   w.initFromOptimizer(this);

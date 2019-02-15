@@ -104,13 +104,21 @@ int main(){
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
     const long NMC = 4000l; // MC samplings to use for computing the energy
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
-    double * vp = new double[psi->getNVP()];
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
+    double vp[psi->getNVP()];
 
 
 
     VMC * vmc = new VMC(psi, ham);
+
+    // set an integration range
+    double ** irange = new double*[1];
+    irange[0] = new double[2];
+    irange[0][0] = -10.;
+    irange[0][1] = 10.;
+    vmc->getMCI()->setIRange(irange);
+
     cout << "-> ham:    w = " << w << endl << endl;
 
     cout << "   Initial Wave Function parameters:" << endl;
@@ -127,17 +135,20 @@ int main(){
 
     cout << "   Optimization . . ." << endl;
 
+    //vmc->getMCI()->setNfindMRT2steps(10);
+    //vmc->getMCI()->setNdecorrelationSteps(1000);
+
     // simulated annealing parameters
     int N_TRIES = 20;
     int ITERS_FIXED_T = 20;
-    double STEP_SIZE = 0.1;
+    double STEP_SIZE = 0.5;
     double K = 1.;
-    double T_INITIAL = 10.;
+    double T_INITIAL = 1.0;
     double MU_T = 1.1;
-    double T_MIN = 0.00001;
+    double T_MIN = 0.005;
     gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL, MU_T, T_MIN};
 
-    vmc->simulatedAnnealingOptimization(NMC, 1., 1., 0., params);
+    vmc->simulatedAnnealingOptimization(NMC, 1., 0.1, 0., params);
 
     cout << "   . . . Done!" << endl << endl;
 
@@ -154,9 +165,6 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl << endl;
 
 
-    delete[] vp;
-    delete[] d_energy;
-    delete[] energy;
     delete vmc;
     delete ham;
     delete psi;
