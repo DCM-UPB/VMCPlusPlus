@@ -1,8 +1,8 @@
-#ifndef CONJUGATE_GRADIENT_TARGET_FUNCTION
-#define CONJUGATE_GRADIENT_TARGET_FUNCTION
+#ifndef ENERGY_GRADIENT_TARGET_FUNCTION
+#define ENERGY_GRADIENT_TARGET_FUNCTION
 
 
-#include "vmc/ConjugateGradientMCObservable.hpp"
+#include "vmc/EnergyGradientMCObservable.hpp"
 #include "vmc/WaveFunction.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
@@ -10,7 +10,7 @@
 #include "mci/MCIntegrator.hpp"
 #include "nfm/NoisyFunction.hpp"
 
-class ConjugateGradientTargetFunction: public NoisyFunctionWithGradient
+class EnergyGradientTargetFunction: public NoisyFunctionWithGradient
 {
 protected:
     WaveFunction * _wf;
@@ -21,14 +21,14 @@ protected:
     const double _lambda_reg;
 
 public:
-    ConjugateGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & E_Nmc, const long &grad_E_Nmc, MCI * mci, const double &lambda_reg = 0.):
+    EnergyGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const long & E_Nmc, const long &grad_E_Nmc, MCI * mci, const double &lambda_reg = 0.):
         NoisyFunctionWithGradient(wf->getNVP()), _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc), _lambda_reg(lambda_reg) {
         _wf = wf;
         _H = H;
         _mci = mci;
     }
 
-    virtual ~ConjugateGradientTargetFunction(){}
+    virtual ~EnergyGradientTargetFunction(){}
 
 
     // NoisyFunctionWithGradient implementation
@@ -68,7 +68,7 @@ public:
         // set up the MC integrator
         _mci->clearSamplingFunctions(); _mci->addSamplingFunction(_wf);
         _mci->clearObservables(); _mci->addObservable(_H);
-        ConjugateGradientMCObservable * mc_obs = new ConjugateGradientMCObservable(_wf, _H);
+        EnergyGradientMCObservable * mc_obs = new EnergyGradientMCObservable(_wf, _H);
         _mci->addObservable(mc_obs);
         // perform the integral and store the values
         double * obs = new double[4 + 2*_wf->getNVP()];

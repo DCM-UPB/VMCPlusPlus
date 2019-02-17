@@ -20,13 +20,10 @@ void VMC::conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nm
     delete opt;
 };
 
-void VMC::stochasticReconfigurationOptimization(const long &Nmc, const double stepSize, const bool flag_noisy)
+void VMC::stochasticReconfigurationOptimization(const long &Nmc, const double stepSize, const bool flag_dgrad)
 {
-    WFOptimization * opt;
-    if (flag_noisy) opt = new NoisyStochasticReconfigurationOptimization(_wf, _H, Nmc, getMCI(), stepSize);
-    else opt = new StochasticReconfigurationOptimization(_wf, _H, Nmc, getMCI(), stepSize);
-    opt->optimizeWF();
-    delete opt;
+    StochasticReconfigurationOptimization opt(_wf, _H, Nmc, getMCI(), stepSize, flag_dgrad);
+    opt.optimizeWF();
 };
 
 void VMC::adamOptimization(const long &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values, const bool useAveraging,

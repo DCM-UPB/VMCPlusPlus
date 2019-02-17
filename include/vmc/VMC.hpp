@@ -5,7 +5,7 @@
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/ConjugateGradientOptimization.hpp"
 #include "vmc/StochasticReconfigurationOptimization.hpp"
-#include "vmc/NoisyStochasticReconfigurationOptimization.hpp"
+#include "vmc/StochasticReconfigurationOptimization.hpp"
 #include "vmc/AdamOptimization.hpp"
 #include "vmc/SimulatedAnnealingOptimization.hpp"
 #include "vmc/NMSimplexOptimization.hpp"
@@ -50,7 +50,7 @@ public:
     // Wave Function Optimization Methods
     void conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc);
 
-    void stochasticReconfigurationOptimization(const long &Nmc, const double stepSize = 1., const bool flag_noisy = false); // use noisy function library? else gsl
+    void stochasticReconfigurationOptimization(const long &Nmc, const double stepSize = 1., const bool flag_dgrad = false); // calc&use gradient error?
 
     void adamOptimization(const long &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20, const bool useAveraging = false,
         const double &lambda = 0, const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8);

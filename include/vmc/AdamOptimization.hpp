@@ -2,8 +2,8 @@
 #define ADAM_OPTIMIZATION
 
 #include "vmc/WFOptimization.hpp"
-#include "vmc/NoisyStochasticReconfigurationTargetFunction.hpp"
-#include "vmc/ConjugateGradientTargetFunction.hpp"
+#include "vmc/StochasticReconfigurationTargetFunction.hpp"
+#include "vmc/EnergyGradientTargetFunction.hpp"
 #include "nfm/Adam.hpp"
 
 #include "mci/MCIntegrator.hpp"
@@ -45,8 +45,8 @@ public:
     void optimizeWF(){
         // create targetfunction
         NoisyFunctionWithGradient * targetf;
-        if (_useSR) targetf = new NoisyStochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
-        else targetf = new ConjugateGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda);
+        if (_useSR) targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
+        else targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda);
         // declare the Adam object
         Adam * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters

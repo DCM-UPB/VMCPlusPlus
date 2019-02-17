@@ -2,7 +2,7 @@
 #define CONJUGATE_GRADIENT_OPTIMIZATION
 
 #include "vmc/WFOptimization.hpp"
-#include "vmc/ConjugateGradientTargetFunction.hpp"
+#include "vmc/EnergyGradientTargetFunction.hpp"
 #include "nfm/ConjGrad.hpp"
 
 #include "mci/MCIntegrator.hpp"
@@ -26,7 +26,7 @@ public:
     // optimization
     void optimizeWF(){
         // create targetfunction
-        ConjugateGradientTargetFunction * targetf = new ConjugateGradientTargetFunction(_wf, _H, _E_Nmc, _grad_E_Nmc, getMCI());
+        EnergyGradientTargetFunction * targetf = new EnergyGradientTargetFunction(_wf, _H, _E_Nmc, _grad_E_Nmc, getMCI());
         // declare the Conjugate Gradient object
         ConjGrad * cjgrad = new ConjGrad(targetf);
         // allocate an array that will contain the wave function variational parameters

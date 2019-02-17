@@ -1,5 +1,5 @@
-#ifndef CONJUGATE_GRADIENT_MC_OBSERVABLE
-#define CONJUGATE_GRADIENT_MC_OBSERVABLE
+#ifndef ENERGY_GRADIENT_MC_OBSERVABLE
+#define ENERGY_GRADIENT_MC_OBSERVABLE
 
 #include "mci/MCIObservableFunctionInterface.hpp"
 #include "vmc/WaveFunction.hpp"
@@ -9,20 +9,20 @@
 
 
 
-class ConjugateGradientMCObservable: public MCIObservableFunctionInterface
+class EnergyGradientMCObservable: public MCIObservableFunctionInterface
 {
 protected:
     WaveFunction * _wf;
     Hamiltonian * _H;
 
 public:
-    ConjugateGradientMCObservable(WaveFunction * wf, Hamiltonian * H):
+    EnergyGradientMCObservable(WaveFunction * wf, Hamiltonian * H):
         MCIObservableFunctionInterface(H->getTotalNDim(), 2*wf->getNVP()){
         _wf = wf;
         _H = H;
     }
 
-    virtual ~ConjugateGradientMCObservable(){}
+    virtual ~EnergyGradientMCObservable(){}
 
 
 

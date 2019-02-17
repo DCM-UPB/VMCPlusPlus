@@ -2,44 +2,47 @@
 #define STOCHASTIC_RECONFIGURATION_OPTIMIZATION
 
 #include "vmc/WFOptimization.hpp"
+#include "vmc/StochasticReconfigurationTargetFunction.hpp"
+#include "nfm/DynamicDescent.hpp"
+
 #include "mci/MCIntegrator.hpp"
 
-#include <gsl/gsl_vector.h>
+
 
 class StochasticReconfigurationOptimization: public WFOptimization{
 
 private:
     const long _Nmc;
-    const double _lambda_reg;
     const double _stepSize;
+    const bool _flag_dgrad;
 
 public:
-    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double stepSize = 1., const double &lambda_reg = 0)
-        : WFOptimization(wf, H, mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _stepSize(stepSize) {}
+    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double stepSize = 1., const bool flag_dgrad = false): WFOptimization(wf, H, mci), _Nmc(Nmc), _stepSize(stepSize), _flag_dgrad(flag_dgrad) {}
+
     virtual ~StochasticReconfigurationOptimization(){}
 
-    long getNmc(){return _Nmc;}
-    double getLambdaReg(){return _lambda_reg;}
-
     // optimization
-    void optimizeWF();
+    void optimizeWF(){
+        // create targetfunction
+        StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, 0., _flag_dgrad);
+        // declare the Dynamic Descent object
+        DynamicDescent ddesc(targetf, _stepSize);
+        // allocate an array that will contain the wave function variational parameters
+        double wfpar[_wf->getNVP()];
+        // get the variational parameters
+        _wf->getVP(wfpar);
+        // set the actual variational parameters as starting point for the Conjugate Gradient algorithm
+        ddesc.setX(wfpar);
+        // find the optimal parameters by minimizing the energy with the Conjugate Gradient algorithm
+        ddesc.findMin();
+        // set the found parameters in the wave function
+        ddesc.getX(wfpar);
+        _wf->setVP(wfpar);
+
+        delete targetf;
+    }
 };
 
-namespace sropt_details {
-    struct vmc_workspace
-    {
-        WaveFunction * wf;
-        Hamiltonian * H;
-        MCI * mci;
-        long Nmc;
-        double lambda_reg; // L2 regularization lambda
 
-        void initFromOptimizer(StochasticReconfigurationOptimization * wfopt);
-    };
-
-    void fval(vmc_workspace &w, const double *vp, double &f, double &df);
-    void grad(vmc_workspace &w, const double *vp, double *grad_E, double *dgrad_E = NULL);
-    void fgrad(vmc_workspace &w, const double *vp, double &f, double &df, double *grad_E, double *dgrad_E = NULL);
-};
 
 #endif

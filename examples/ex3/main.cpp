@@ -127,7 +127,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->stochasticReconfigurationOptimization(NMC, 0.5, true);
+    vmc->stochasticReconfigurationOptimization(NMC, 0.5, false);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
