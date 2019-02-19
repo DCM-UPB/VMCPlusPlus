@@ -145,6 +145,8 @@ public:
 int main(){
     using namespace std;
 
+    MPIVMC::Init(); // make this usable with a MPI-compiled library
+
     // Declare some trial wave functions
     Gaussian1D1POrbital * psi1 = new Gaussian1D1POrbital(1.2);
     Gaussian1D1POrbital * psi2 = new Gaussian1D1POrbital(0.5);
@@ -222,7 +224,7 @@ int main(){
     delete psi2;
     delete psi1;
 
-
+    MPIVMC::Finalize();
 
     return 0;
 }

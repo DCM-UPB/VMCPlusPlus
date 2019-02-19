@@ -91,6 +91,8 @@ public:
 int main(){
     using namespace std;
 
+    MPIVMC::Init(); // make this usable with a MPI-compiled library
+
     // Declare some trial wave functions
     QuadrExponential1D1POrbital * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
 
@@ -104,11 +106,10 @@ int main(){
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const long NMC = 20000l; // MC samplings to use for computing the energy
+    const long NMC = 10000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
     double vp[psi->getNVP()];
-
 
 
     VMC * vmc = new VMC(psi, ham);
@@ -126,8 +127,12 @@ int main(){
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
+    // settings for better performance
+    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNdecorrelationSteps(1000);
+
     cout << "   Optimization . . ." << endl;
-    vmc->stochasticReconfigurationOptimization(NMC, 0.5, false);
+    vmc->stochasticReconfigurationOptimization(NMC, 0.5, true);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -149,6 +154,7 @@ int main(){
     delete ham;
     delete psi;
 
+    MPIVMC::Finalize();
 
     return 0;
 }

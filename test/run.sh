@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 VALGRIND="valgrind --leak-check=full --track-origins=yes"
 
-ORIGDIR=$(pwd)
 cd ../build/test/
 ${VALGRIND} ./check
 for exe in ./ut*.exe; do
@@ -11,4 +10,3 @@ for exe in ./ut*.exe; do
     ${VALGRIND} ${exe}
     echo
 done
-cd ${ORIGDIR}

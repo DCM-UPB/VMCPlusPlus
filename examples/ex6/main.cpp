@@ -90,6 +90,8 @@ public:
 int main(){
     using namespace std;
 
+    MPIVMC::Init(); // make this usable with a MPI-compiled library
+
     // Declare some trial wave functions
     QuadrExponential1D1POrbital * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
 
@@ -105,16 +107,18 @@ int main(){
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
     VMC * vmc; // VMC object we will resuse
-    const long E_NMC = 10000l; // MC samplings to use for computing the energy
+    const long E_NMC = 4000l; // MC samplings to use for computing the energy
     const long G_NMC = 10000l; // MC samplings to use for computing the energy & gradient
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
-    double * vp = new double[psi->getNVP()];
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
+    double vp[psi->getNVP()];
 
 
     // Case 1
     cout << "-> ham1:    w = " << w1 << endl << endl;
     vmc = new VMC(psi, ham1);
+
+    const double stepSize = 0.1; // in this case we should set a larger ADAM step size than default (0.001)
 
     cout << "   Initial Wave Function parameters:" << endl;
     psi->getVP(vp);
@@ -128,9 +132,13 @@ int main(){
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
-    const double stepSize = 0.1; // in this low-dim case we should set a larger step size than default (0.001)
     cout << "   Optimization . . ." << endl;
-    vmc->adamOptimization(G_NMC, false /* don't use SR */, false /* don't use/calculate gradient error */, 20 /* stop after 20 constant values */, 
+
+    // settings for better performance
+    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNdecorrelationSteps(1000);
+
+    vmc->adamOptimization(G_NMC, false /* don't use SR */, false /* don't use/calculate gradient error */, 10 /* stop after 10 constant values */, 
                           true /* use averaging for final parameters */, 0.01 /* parameter regularization */, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
@@ -166,7 +174,12 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
-    vmc->adamOptimization(G_NMC, false, false, 20, true, 0.01, stepSize);
+
+    // settings for better performance
+    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNdecorrelationSteps(1000);
+
+    vmc->adamOptimization(G_NMC, false, false, 10, true, 0.01, stepSize);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
@@ -183,17 +196,13 @@ int main(){
 
 
 
-
-    delete[] vp;
-    delete[] d_energy;
-    delete[] energy;
     delete vmc;
 
     delete ham2;
     delete ham1;
     delete psi;
 
-
+    MPIVMC::Finalize();
 
     return 0;
 }

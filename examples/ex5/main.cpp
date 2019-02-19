@@ -84,6 +84,8 @@ public:
 int main(){
     using namespace std;
 
+    MPIVMC::Init(); // make this usable with a MPI-compiled library
+
     // Declare some trial wave functions
     QuadrExponential1D1POrbital * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
 
@@ -100,9 +102,9 @@ int main(){
 
     VMC * vmc; // VMC object we will resuse
     const long E_NMC = 10000l; // MC samplings to use for computing the energy
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
-    double * vp = new double[psi->getNVP()];
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
+    double vp[psi->getNVP()];
 
 
     // Case 1
@@ -122,6 +124,11 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
+
+    // settings for better performance                    
+    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNdecorrelationSteps(1000);
+
     vmc->nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
     cout << "   . . . Done!" << endl << endl;
 
@@ -157,6 +164,11 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     cout << "   Optimization . . ." << endl;
+
+    // settings for better performance
+    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNdecorrelationSteps(1000);
+
     vmc->nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
     cout << "   . . . Done!" << endl << endl;
 
@@ -174,10 +186,6 @@ int main(){
 
 
 
-
-    delete[] vp;
-    delete[] d_energy;
-    delete[] energy;
     delete vmc;
 
     delete ham2;
@@ -185,6 +193,7 @@ int main(){
     delete psi;
 
 
+    MPIVMC::Finalize();
 
     return 0;
 }
