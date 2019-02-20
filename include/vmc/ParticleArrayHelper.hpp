@@ -22,7 +22,7 @@ private:
     int _nspacedim;
 
 public:
-    ParticleArrayHelper(const int &nspacedim){
+    explicit ParticleArrayHelper(const int &nspacedim){
         _nspacedim = nspacedim;
     }
 

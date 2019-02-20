@@ -7,7 +7,8 @@
 // using namespace std;
 
 
-void TwoBodyJastrow::samplingFunction(const double * x, double * protov){
+void TwoBodyJastrow::samplingFunction(const double * x, double * protov)
+{
     protov[0] = 0.;
     for (int i=0; i<getNPart()-1; ++i){
         for (int j=i+1; j<getNPart(); ++j){
@@ -22,13 +23,14 @@ void TwoBodyJastrow::samplingFunction(const double * x, double * protov){
 }
 
 
-double TwoBodyJastrow::getAcceptance(const double * protoold, const double * protonew){
+double TwoBodyJastrow::getAcceptance(const double * protoold, const double * protonew)
+{
     return exp(2.0 * (protonew[0] - protoold[0]) );   // the factor 2 comes from the fact that the wf must be squared (sampling from psi^2)
 }
 
 
-void TwoBodyJastrow::computeAllDerivatives(const double *x){
-
+void TwoBodyJastrow::computeAllDerivatives(const double *x)
+{
     double * d1_divbywf = _getD1DivByWF();
     for (int i=0; i<getTotalNDim(); ++i) d1_divbywf[i] = 0.;
 
@@ -110,7 +112,6 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x){
     for (int i=0; i<getTotalNDim(); ++i){
         d2_divbywf[i] += pow(d1_divbywf[i], 2);
     }
-
 }
 
 double TwoBodyJastrow::computeWFValue(const double * protovalues)

@@ -13,10 +13,9 @@ unsigned long SymmetrizerWaveFunction::_npart_factorial()
 
 void SymmetrizerWaveFunction::_swapPositions(double * x, const int &i, const int &j)
 {
-    double xh;
     // particle swap (of positions)
     for (int k=0; k<_nspacedim; ++k) {
-        xh = x[i*_nspacedim+k];
+        double xh = x[i*_nspacedim+k];
         x[i*_nspacedim+k] = x[j*_nspacedim+k];
 
         x[j*_nspacedim+k] = xh;
@@ -25,10 +24,9 @@ void SymmetrizerWaveFunction::_swapPositions(double * x, const int &i, const int
 
 void SymmetrizerWaveFunction::_swapIndices(int * ids, const int &i, const int &j)
 {
-    int idh;
     // particle swap (of indices)
     for (int k=0; k<_nspacedim; ++k) {
-        idh = ids[i*_nspacedim+k];
+        int idh = ids[i*_nspacedim+k];
         ids[i*_nspacedim+k] = ids[j*_nspacedim+k];
 
         ids[j*_nspacedim+k] = idh;

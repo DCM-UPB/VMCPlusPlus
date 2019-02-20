@@ -43,10 +43,9 @@ public:
     double localJFKineticEnergy(const double *r)
     {
         double ekin=0.;
-        double foo;
         for (int i=0; i<_ndim; ++i)
             {
-                foo = _wf->getD1DivByWF(i);
+                double foo = _wf->getD1DivByWF(i);
                 ekin += foo*foo;
             }
         return (0.5*ekin);

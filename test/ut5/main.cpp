@@ -119,7 +119,7 @@ private:
     double _b;
 
 public:
-    He3u2(EuclideanMetric * em):
+    explicit He3u2(EuclideanMetric * em):
     TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
@@ -150,7 +150,6 @@ public:
     void urD2VD1(const double &dist, double * d1vd1){
         d1vd1[0] = 30./pow(dist, 7);
     }
-
 };
 
 
@@ -313,7 +312,7 @@ int main(){
 
         // cout << "getD1DivByWF(" << i <<") = " << Psi->getD1DivByWF(i) << endl;
         // cout << "numderiv = " << numderiv << endl << endl;
-        assert( abs( (Psi->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
+        assert( fabs( (Psi->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
 
         x[i] = origx;
     }
@@ -331,7 +330,7 @@ int main(){
         // cout << "getD2DivByWF(" << i << ") = " << Psi->getD2DivByWF(i) << endl;
         // cout << "J_1->getD2DivByWF(" << i << ") = " << J_1->getD2DivByWF(i) << endl;
         // cout << "numderiv = " << numderiv << endl << endl;
-        assert( abs( (Psi->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
+        assert( fabs( (Psi->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
 
         x[i] = origx;
     }
@@ -347,7 +346,7 @@ int main(){
 
         // cout << "getVD1DivByWF(" << i << ") = " << Psi->getVD1DivByWF(i) << endl;
         // cout << "numderiv = " << numderiv << endl << endl;
-        assert( abs( (Psi->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
+        assert( fabs( (Psi->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
 
         vp[i] = origvp;
         Psi->setVP(vp);
@@ -375,7 +374,7 @@ int main(){
 
             // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << Psi->getD1VD1DivByWF(i, j) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (Psi->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+            assert( fabs( (Psi->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
             vp[j] = origvp;
@@ -411,7 +410,7 @@ int main(){
 
             // cout << "getD2VD1DivByWF(" << i << ", " << j << ") = " << Psi->getD2VD1DivByWF(i, j) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (Psi->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+            assert( fabs( (Psi->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
             vp[j] = origvp;

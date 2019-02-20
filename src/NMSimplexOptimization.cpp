@@ -66,7 +66,6 @@ double vmc_cost(const gsl_vector *v, void *params)
 
 void NMSimplexOptimization::optimizeWF()
 {
-
   const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
   gsl_multimin_fminimizer *s = NULL;
   gsl_vector *ss, *x;

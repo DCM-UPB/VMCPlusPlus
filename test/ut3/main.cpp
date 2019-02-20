@@ -17,7 +17,7 @@ private:
     double _b;
 
 public:
-    He3u2(EuclideanMetric * em):
+    explicit He3u2(EuclideanMetric * em):
     TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
@@ -49,7 +49,6 @@ public:
     void urD2VD1(const double &dist, double * d1vd1){
         d1vd1[0] = 30./pow(dist, 7);
     }
-
 };
 
 
@@ -176,7 +175,7 @@ int main(){
 
             // cout << "u2->getD1(" << i << ") = " << u2->getD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs((u2->getD1(i)-numderiv)/numderiv) < TINY );
+            assert( fabs((u2->getD1(i)-numderiv)/numderiv) < TINY );
 
             x[i] = origx;
         }
@@ -188,7 +187,7 @@ int main(){
 
             // cout << "poly_u2->getD1(" << i << ") = " << poly_u2->getD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs((poly_u2->getD1(i)-numderiv)/numderiv) < TINY );
+            assert( fabs((poly_u2->getD1(i)-numderiv)/numderiv) < TINY );
 
             x[i] = origx;
         }
@@ -202,7 +201,7 @@ int main(){
 
             // cout << "u2->getD1(" << i+NSPACEDIM << ") = " << u2->getD1(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs((u2->getD1(i+NSPACEDIM)-numderiv)/numderiv) < TINY );
+            assert( fabs((u2->getD1(i+NSPACEDIM)-numderiv)/numderiv) < TINY );
 
             y[i] = origy;
         }
@@ -214,7 +213,7 @@ int main(){
 
             // cout << "poly_u2->getD1(" << i+NSPACEDIM << ") = " << poly_u2->getD1(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs((poly_u2->getD1(i+NSPACEDIM)-numderiv)/numderiv) < TINY );
+            assert( fabs((poly_u2->getD1(i+NSPACEDIM)-numderiv)/numderiv) < TINY );
 
             y[i] = origy;
         }
@@ -234,7 +233,7 @@ int main(){
 
             // cout << "u2->getD2(" << i << ") = " << u2->getD2(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (u2->getD2(i)-numderiv)/numderiv ) < TINY );
+            assert( fabs( (u2->getD2(i)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
         }
@@ -248,7 +247,7 @@ int main(){
 
             // cout << "poly_u2->getD2(" << i << ") = " << poly_u2->getD2(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (poly_u2->getD2(i)-numderiv)/numderiv ) < TINY );
+            assert( fabs( (poly_u2->getD2(i)-numderiv)/numderiv ) < TINY );
 
             x[i] = origx;
         }
@@ -264,7 +263,7 @@ int main(){
 
             // cout << "u2->getD2(" << i+NSPACEDIM << ") = " << u2->getD2(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (u2->getD2(i+NSPACEDIM)-numderiv)/numderiv ) < TINY );
+            assert( fabs( (u2->getD2(i+NSPACEDIM)-numderiv)/numderiv ) < TINY );
 
             y[i] = origy;
         }
@@ -278,7 +277,7 @@ int main(){
 
             // cout << "poly_u2->getD2(" << i+NSPACEDIM << ") = " << poly_u2->getD2(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (poly_u2->getD2(i+NSPACEDIM)-numderiv)/numderiv ) < TINY );
+            assert( fabs( (poly_u2->getD2(i+NSPACEDIM)-numderiv)/numderiv ) < TINY );
 
             y[i] = origy;
         }
@@ -296,7 +295,7 @@ int main(){
 
             // cout << "u2->getVD1(" << i << ") = " << u2->getVD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(( u2->getVD1(i)-numderiv)/numderiv ) < TINY );
+            assert( fabs(( u2->getVD1(i)-numderiv)/numderiv ) < TINY );
 
             vp[i] = origvp;
             u2->setVP(vp);
@@ -310,7 +309,7 @@ int main(){
 
             // cout << "poly_u2->getVD1(" << i << ") = " << poly_u2->getVD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(( poly_u2->getVD1(i)-numderiv)/numderiv ) < TINY );
+            assert( fabs(( poly_u2->getVD1(i)-numderiv)/numderiv ) < TINY );
 
             poly_vp[i] = origvp;
             poly_u2->setVP(poly_vp);
@@ -341,7 +340,7 @@ int main(){
 
                 // cout << "u2->getD1VD1(" << i << ", " << j << ") = " << u2->getD1VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (u2->getD1VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (u2->getD1VD1(i, j)-numderiv)/numderiv ) < TINY );
 
                 x[i] = origx;
                 vp[j] = origvp;
@@ -368,7 +367,7 @@ int main(){
 
                 // cout << "poly_u2->getD1VD1(" << i << ", " << j << ") = " << poly_u2->getD1VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (poly_u2->getD1VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (poly_u2->getD1VD1(i, j)-numderiv)/numderiv ) < TINY );
 
                 x[i] = origx;
                 poly_vp[j] = origvp;
@@ -397,7 +396,7 @@ int main(){
 
                 // cout << "u2->getD1VD1(" << i+NSPACEDIM << ", " << j << ") = " << u2->getD1VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (u2->getD1VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (u2->getD1VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
 
                 y[i] = origy;
                 vp[j] = origvp;
@@ -424,7 +423,7 @@ int main(){
 
                 // cout << "poly_u2->getD1VD1(" << i+NSPACEDIM << ", " << j << ") = " << poly_u2->getD1VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (poly_u2->getD1VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (poly_u2->getD1VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
 
                 y[i] = origy;
                 poly_vp[j] = origvp;
@@ -466,7 +465,7 @@ int main(){
 
                 // cout << "u2->getD2VD1(" << i << ", " << j << ") = " << u2->getD2VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (u2->getD2VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (u2->getD2VD1(i, j)-numderiv)/numderiv ) < TINY );
 
                 x[i] = origx;
                 vp[j] = origvp;
@@ -502,7 +501,7 @@ int main(){
 
                 // cout << "poly_u2->getD2VD1(" << i << ", " << j << ") = " << poly_u2->getD2VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (poly_u2->getD2VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (poly_u2->getD2VD1(i, j)-numderiv)/numderiv ) < TINY );
 
                 x[i] = origx;
                 poly_vp[j] = origvp;
@@ -540,7 +539,7 @@ int main(){
 
                 // cout << "u2->getD2VD1(" << i+NSPACEDIM << ", " << j << ") = " << u2->getD2VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (u2->getD2VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (u2->getD2VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
 
                 y[i] = origy;
                 vp[j] = origvp;
@@ -576,15 +575,13 @@ int main(){
 
                 // cout << "poly_u2->getD2VD1(" << i+NSPACEDIM << ", " << j << ") = " << poly_u2->getD2VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (poly_u2->getD2VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (poly_u2->getD2VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
 
                 y[i] = origy;
                 poly_vp[j] = origvp;
                 poly_u2->setVP(poly_vp);
             }
         }
-
-
     }
 
 

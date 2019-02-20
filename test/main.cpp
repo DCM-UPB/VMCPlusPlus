@@ -12,10 +12,10 @@ class QuadrExponential1D1POrbital: public WaveFunction
 {
 protected:
     double _a, _b;
-    double _wf_exp, _d1, _d2, _vd1_a, _vd1_b;
 
 public:
-    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false) {_a=a; _b=b;}
+    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false)
+        {_a=a; _b=b;}
 
     void setVP(const double *in)
     {
@@ -66,7 +66,7 @@ protected:
     double _b;
 
 public:
-    Gaussian1D1POrbital(const double b):
+    explicit Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
         _b=b;
     }

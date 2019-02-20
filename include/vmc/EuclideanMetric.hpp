@@ -7,7 +7,7 @@
 class EuclideanMetric: public Metric{
 
 public:
-    EuclideanMetric(const int &nspacedim): Metric(nspacedim){}
+    explicit EuclideanMetric(const int &nspacedim): Metric(nspacedim){}
     ~EuclideanMetric(){}
 
     double dist(const double * r1, const double * r2);

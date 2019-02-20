@@ -147,9 +147,9 @@ int main(){
 
         if (i>0) {
             assert(protov_nosym[0] != protov_nosym[1]);
-            if (isOdd[i]) assert(abs(protov_asym[0] + protov_asym[1]) < SUPERTINY);
-            else assert(abs(protov_asym[0] - protov_asym[1]) < SUPERTINY);
-            assert(abs(protov_sym[0] - protov_sym[1]) < SUPERTINY);
+            if (isOdd[i]) assert(fabs(protov_asym[0] + protov_asym[1]) < SUPERTINY);
+            else assert(fabs(protov_asym[0] - protov_asym[1]) < SUPERTINY);
+            assert(fabs(protov_sym[0] - protov_sym[1]) < SUPERTINY);
         } // we can't do asserts like this for the approximately symmetrized wfs
     }
 
@@ -194,7 +194,7 @@ int main(){
 
             // cout << "getD1DivByWF(" << i <<") = " << wf->getD1DivByWF(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (wf->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
+            assert( fabs( (wf->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
 
             x[i] = origx;
         }
@@ -211,7 +211,7 @@ int main(){
 
             // cout << "getD2DivByWF(" << i << ") = " << wf->getD2DivByWF(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (wf->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
+            assert( fabs( (wf->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
 
             x[i] = origx;
         }
@@ -227,7 +227,7 @@ int main(){
 
             // cout << "getVD1DivByWF(" << i << ") = " << wf->getVD1DivByWF(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs( (wf->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
+            assert( fabs( (wf->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
 
             vp[i] = origvp;
             wf->setVP(vp);
@@ -255,7 +255,7 @@ int main(){
 
                 // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << wf->getD1VD1DivByWF(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (wf->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (wf->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
                 x[i] = origx;
                 vp[j] = origvp;
@@ -291,7 +291,7 @@ int main(){
 
                 // cout << "getD2VD1DivByWF(" << i << ", " << j << ") = " << wf->getD2VD1DivByWF(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( abs( (wf->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+                assert( fabs( (wf->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
 
                 x[i] = origx;
                 vp[j] = origvp;

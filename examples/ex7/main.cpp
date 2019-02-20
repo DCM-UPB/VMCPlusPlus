@@ -13,8 +13,8 @@
   Hamiltonian describing a 1-particle harmonic oscillator:
   H  =  p^2 / 2m  +  1/2 * w^2 * x^2
 */
-class HarmonicOscillator1D1P: public Hamiltonian{
-
+class HarmonicOscillator1D1P: public Hamiltonian
+{
 protected:
     double _w;
 

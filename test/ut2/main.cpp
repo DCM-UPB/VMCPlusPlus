@@ -72,8 +72,8 @@ int main(){
 
             // cout << "analderivxy[" <<  i << "] = " << analderivxy[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivxy[i]-numderiv)/numderiv < TINY );
-            assert( abs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivxy[i]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             x[i] = origx;
         }
@@ -87,8 +87,8 @@ int main(){
 
             // cout << "analderivyx[" <<  i << "] = " << analderivyx[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivyx[i]-numderiv)/numderiv < TINY );
-            assert( abs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivyx[i]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             y[i] = origy;
         }
@@ -111,8 +111,8 @@ int main(){
 
             // cout << "analderivxy[" <<  i << "] = " << analderivxy[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivxy[i]-numderiv)/numderiv < TINY );
-            assert( abs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivxy[i]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             x[i] = origx;
         }
@@ -128,8 +128,8 @@ int main(){
 
             // cout << "analderivyx[" <<  i << "] = " << analderivyx[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( abs(analderivyx[i]-numderiv)/numderiv < TINY );
-            assert( abs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivyx[i]-numderiv)/numderiv < TINY );
+            assert( fabs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
 
             y[i] = origy;
         }
