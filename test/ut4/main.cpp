@@ -7,104 +7,7 @@
 #include <iostream>
 #include <random>
 
-
-
-class He3u2: public TwoBodyPseudoPotential{
-/*
-    u(r) = b/r^5
-*/
-
-private:
-    double _b;
-
-public:
-    explicit He3u2(EuclideanMetric * em):
-    TwoBodyPseudoPotential(em, 1, true, true, true){
-        _b = -0.1;
-    }
-
-    void setVP(const double *vp){_b=vp[0];}
-    void getVP(double *vp){vp[0]=_b;}
-
-    double ur(const double &dist){
-        return _b/pow(dist, 5);
-    }
-
-    double urD1(const double &dist){
-        return -5.*_b/pow(dist, 6);
-    }
-
-    double urD2(const double &dist){
-        return 30.*_b/pow(dist, 7);
-    }
-
-    void urVD1(const double &dist, double * vd1){
-        vd1[0] = 1./pow(dist, 5);
-    }
-
-    void urD1VD1(const double &dist, double * d1vd1){
-        d1vd1[0] = -5./pow(dist, 6);
-    }
-
-    void urD2VD1(const double &dist, double * d1vd1){
-        d1vd1[0] = 30./pow(dist, 7);
-    }
-};
-
-
-
-class PolynomialU2: public TwoBodyPseudoPotential{
-/*
-    u(r) = a * r^2 + b * r^3
-*/
-
-private:
-    double _a, _b;
-
-public:
-    PolynomialU2(EuclideanMetric * em, double a, double b):
-    TwoBodyPseudoPotential(em, 2, true, true, true){
-        _a = a;
-        _b = b;
-    }
-    ~PolynomialU2(){}
-
-    void setVP(const double *vp){
-        _a=vp[0]; _b=vp[1];
-    }
-    void getVP(double *vp){
-        vp[0]=_a; vp[1]=_b;
-    }
-
-    double ur(const double &r){
-        return _a * pow(r, 2) + _b * pow(r, 3);
-    }
-
-    double urD1(const double &r){
-        return 2. * _a * r + 3. * _b * pow(r, 2);
-    }
-
-    double urD2(const double &r){
-        return 2. * _a + 6. * _b * r;
-    }
-
-    void urVD1(const double &r, double * vd1){
-        vd1[0] = r*r;
-        vd1[1] = r*r*r;
-    }
-
-    void urD1VD1(const double &r, double * d1vd1){
-        d1vd1[0] = 2.*r;
-        d1vd1[1] = 3.*r*r;
-    }
-
-    void urD2VD1(const double &r, double * d2vd1){
-        d2vd1[0] = 2.;
-        d2vd1[1] = 6.*r;
-    }
-};
-
-
+#include "TestVMCFunctions.hpp"
 
 
 int main(){
@@ -141,7 +44,7 @@ int main(){
 
 
         // particles position
-        double * x = new double[NPART*NSPACEDIM];
+        double x[NPART*NSPACEDIM];
 
         // pick x from a grid
         const double K = 0.75;
@@ -157,7 +60,7 @@ int main(){
         }
 
         // variational parameters
-        double * vp = new double[J->getNVP()];
+        double vp[J->getNVP()];
         J->getVP(vp);
 
 
@@ -286,11 +189,6 @@ int main(){
             }
         }
 
-
-
-
-        delete[] vp;
-        delete[] x;
         delete J;
         delete u2;
     }

@@ -5,9 +5,8 @@
 #include "vmc/Metric.hpp"
 
 
-
-class TwoBodyPseudoPotential{
-
+class TwoBodyPseudoPotential
+{
 private:
     Metric * _metric;
     int _ndim2;
@@ -72,7 +71,6 @@ public:
     bool hasVD1(){return _flag_vd1;}
     bool hasD1VD1(){return _flag_d1vd1;}
     bool hasD2VD1(){return _flag_d2vd1;}
-
 };
 
 

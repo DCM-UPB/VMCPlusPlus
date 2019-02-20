@@ -18,8 +18,8 @@ u is a 2-body pseudopotential, and must be implemented as TwoBodyPseudoPotential
 */
 
 
-class TwoBodyJastrow: public WaveFunction{
-
+class TwoBodyJastrow: public WaveFunction
+{
 private:
     TwoBodyPseudoPotential * _u2;
     ParticleArrayHelper * _pah;

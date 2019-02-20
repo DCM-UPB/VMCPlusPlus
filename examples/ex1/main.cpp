@@ -99,7 +99,7 @@ protected:
     double _b;
 
 public:
-    Gaussian1D1POrbital(const double b):
+    explicit Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
         _b=b;
     }

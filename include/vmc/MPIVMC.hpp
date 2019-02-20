@@ -54,7 +54,6 @@ namespace MPIVMC
         #else
         mci->integrate(Nmc, average, error, findMRT2step, initialdecorrelation);
         #endif
-
     }
 
     void Finalize()

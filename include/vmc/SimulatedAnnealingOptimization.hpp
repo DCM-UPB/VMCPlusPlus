@@ -103,9 +103,8 @@ namespace vmc_siman{
 
 
 
-class SimulatedAnnealingOptimization: public WFOptimization{
-private:
-
+class SimulatedAnnealingOptimization: public WFOptimization
+{
 public:
     SimulatedAnnealingOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params): WFOptimization(wf, H, mci){
         vmc_siman::wf = wf;
@@ -142,9 +141,7 @@ public:
         delete[] vp;
         gsl_rng_free(r);
     }
-
 };
-
 
 
 #endif

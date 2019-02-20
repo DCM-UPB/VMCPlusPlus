@@ -16,8 +16,8 @@ Since this class most likely will be used within the library, unit tests on the 
 */
 
 
-class ParticleArrayHelper{
-
+class ParticleArrayHelper
+{
 private:
     int _nspacedim;
 
@@ -32,7 +32,6 @@ public:
     void setParticleArray(double * x, const int &i, const double * newx);
 
     void addArrayToParticleArray(double * x, const int &i, const double * toadd);
-
 };
 
 

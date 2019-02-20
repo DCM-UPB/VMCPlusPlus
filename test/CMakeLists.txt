@@ -1,4 +1,6 @@
+include_directories(common/)
 link_libraries(vmc)
+
 add_executable(check main.cpp)
 add_executable(ut1.exe ut1/main.cpp)
 add_executable(ut2.exe ut2/main.cpp)

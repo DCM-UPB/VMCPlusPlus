@@ -6,80 +6,7 @@
 #include <iostream>
 #include <random>
 
-
-/*
-  Trial Wave Function for N particles in 1 dimension, that uses parameters ai and b, with fixed ai and variational b.
-  Psi  =  exp( -b * sum((xi-ai)^2) )
-*/
-class QuadrExponential1DNPOrbital: public WaveFunction{
-protected:
-    double * _a;
-    double _b;
-    double _bi; // inverse b
-
-public:
-    QuadrExponential1DNPOrbital(const int &npart, const double * a, const double &b):
-    WaveFunction(1, npart, 1, 1, true, true, true), _b(b), _bi(1./b)
-    {
-        _a=new double[npart];
-        for (int i=0; i<npart; ++i) _a[i] = a[i];
-    }
-
-    ~QuadrExponential1DNPOrbital()
-    {
-        delete [] _a;
-    }
-
-    void setVP(const double *in){
-        _b=in[0];
-    }
-
-    void getVP(double *out){
-        out[0]=_b;
-    }
-
-    void samplingFunction(const double *x, double *out)
-    {
-        *out = 0.;
-        for (int i=0; i<_npart; ++i) {
-            *out += (x[i]-_a[i])*(x[i]-_a[i]);
-        }
-        *out *= -2.*_b;
-    }
-
-    double getAcceptance(const double * protoold, const double * protonew)
-    {
-        return exp(protonew[0]-protoold[0]);
-    }
-
-    void computeAllDerivatives(const double *x)
-    {
-        if (hasVD1()){
-            _setVD1DivByWF(0, 0);
-        }
-        for (int i=0; i<_npart; ++i) {
-            _setD1DivByWF(i, -2.*_b*(x[i]-_a[i]));
-            _setD2DivByWF(i, -2.*_b*(1. + (x[i]-_a[i]) * getD1DivByWF(i)));
-            if (hasVD1()){
-                _setVD1DivByWF(0, getVD1DivByWF(0) - (x[i]-_a[i])*(x[i]-_a[i]));
-            }
-        }
-
-        for (int i=0; i<_npart; ++i) {
-            if (hasD1VD1()){
-                _setD1VD1DivByWF(i, 0, getD1DivByWF(i) * (_bi + getVD1DivByWF(0)));
-            }
-            if (hasD2VD1()){
-                _setD2VD1DivByWF(i, 0, getD2DivByWF(i) * (_bi + getVD1DivByWF(0)) + _bi * getD1DivByWF(i)*getD1DivByWF(i));
-            }
-        }
-    }
-
-    double computeWFValue(const double * protovalues)
-    {
-        return exp(0.5*protovalues[0]);
-    }
-};
+#include "TestVMCFunctions.hpp"
 
 
 int main(){
@@ -115,7 +42,7 @@ int main(){
     PairSymmetrizerWaveFunction * phi_pasym = new PairSymmetrizerWaveFunction(phi_nosym, true);
 
     // particles position and all permutations
-    double ** xp = new double * [6];
+    double * xp[6];
     for (int i=0; i<6; ++i) xp[i] = new double[NTOTALDIM];
     xp[0][0] = 0.2; xp[0][1] = -0.5; xp[0][2] = 0.7;
     xp[1][0] = xp[0][0]; xp[1][1] = xp[0][2]; xp[1][2] = xp[0][1];
@@ -302,7 +229,6 @@ int main(){
     }
 
     for (int i=0; i<6; ++i) delete [] xp[i];
-    delete [] xp;
     
     delete phi_pasym;
     delete phi_psym;

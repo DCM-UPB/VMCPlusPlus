@@ -9,8 +9,8 @@
 
 
 
-class StochasticReconfigurationOptimization: public WFOptimization{
-
+class StochasticReconfigurationOptimization: public WFOptimization
+{
 private:
     const long _Nmc;
     const double _stepSize;

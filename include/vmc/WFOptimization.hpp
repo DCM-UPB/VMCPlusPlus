@@ -28,7 +28,6 @@ public:
 
     // optimize the wf
     virtual void optimizeWF() = 0;
-
 };
 
 

@@ -9,9 +9,8 @@
 
 
 
-
-class ConjugateGradientOptimization: public WFOptimization{
-
+class ConjugateGradientOptimization: public WFOptimization
+{
 private:
     long _E_Nmc;
     long _grad_E_Nmc;
@@ -45,9 +44,7 @@ public:
         delete cjgrad;
         delete targetf;
     }
-
 };
-
 
 
 #endif

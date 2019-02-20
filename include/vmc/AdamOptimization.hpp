@@ -10,8 +10,8 @@
 
 
 
-class AdamOptimization: public WFOptimization{
-
+class AdamOptimization: public WFOptimization
+{
 private:
     long _Nmc;
     bool _useSR;
@@ -64,7 +64,6 @@ public:
         delete adam;
         delete targetf;
     }
-
 };
 
 

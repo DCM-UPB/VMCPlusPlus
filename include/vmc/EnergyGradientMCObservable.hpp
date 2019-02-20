@@ -38,7 +38,6 @@ public:
             out[i+_wf->getNVP()] = out[i] * Hloc;
         }
     }
-
 };
 
 

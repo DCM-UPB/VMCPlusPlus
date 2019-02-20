@@ -2,8 +2,8 @@
 #define METRIC
 
 
-class Metric{
-
+class Metric
+{
 private:
     int _nspacedim;
 
@@ -23,8 +23,6 @@ public:
     virtual void distD1(const double * r1, const double * r2, double * out) = 0;
 
     virtual void distD2(const double * r1, const double * r2, double * out) = 0;
-
-
 };
 
 

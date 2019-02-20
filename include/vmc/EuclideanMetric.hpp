@@ -4,8 +4,8 @@
 #include "vmc/Metric.hpp"
 
 
-class EuclideanMetric: public Metric{
-
+class EuclideanMetric: public Metric
+{
 public:
     explicit EuclideanMetric(const int &nspacedim): Metric(nspacedim){}
     ~EuclideanMetric(){}
@@ -15,7 +15,6 @@ public:
     void distD1(const double * r1, const double * r2, double * out);
 
     void distD2(const double * r1, const double * r2, double * out);
-
 };
 
 
