@@ -3,11 +3,11 @@
 #include <gsl/gsl_siman.h>
 #include <stdexcept>
 
-#include "WaveFunction.hpp"
-#include "Hamiltonian.hpp"
-#include "VMC.hpp"
-#include "ConjGrad.hpp"
-#include "LogNFM.hpp"
+#include "vmc/WaveFunction.hpp"
+#include "vmc/Hamiltonian.hpp"
+#include "vmc/VMC.hpp"
+#include "nfm/ConjGrad.hpp"
+#include "nfm/LogNFM.hpp"
 
 
 
@@ -15,8 +15,8 @@
   Hamiltonian describing a 1-particle harmonic oscillator:
   H  =  p^2 / 2m  +  1/2 * w^2 * x^2
 */
-class HarmonicOscillator1D1P: public Hamiltonian{
-
+class HarmonicOscillator1D1P: public Hamiltonian
+{
 protected:
     double _w;
 
@@ -81,6 +81,9 @@ public:
         }
     }
 
+    double computeWFValue(const double * protovalues){
+        return exp(0.5*protovalues[0]);
+    }
 };
 
 
@@ -88,6 +91,8 @@ public:
 
 int main(){
     using namespace std;
+
+    MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Declare some trial wave functions
     QuadrExponential1D1POrbital * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
@@ -100,14 +105,15 @@ int main(){
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const long NMC = 4000l; // MC samplings to use for computing the energy
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
-    double * vp = new double[psi->getNVP()];
+    const long NMC = 10000l; // MC samplings to use for computing the energy
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
+    double vp[psi->getNVP()];
 
 
 
     VMC * vmc = new VMC(psi, ham);
+
     cout << "-> ham:    w = " << w << endl << endl;
 
     cout << "   Initial Wave Function parameters:" << endl;
@@ -124,17 +130,21 @@ int main(){
 
     cout << "   Optimization . . ." << endl;
 
+    // settings for performance
+    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNdecorrelationSteps(1000);
+
     // simulated annealing parameters
     int N_TRIES = 20;
     int ITERS_FIXED_T = 20;
     double STEP_SIZE = 0.1;
-    double K = 1.;
-    double T_INITIAL = 10.;
-    double MU_T = 1.1;
-    double T_MIN = 0.00001;
+    double K = 0.1;
+    double T_INITIAL = 1.0;
+    double MU_T = 1.3;
+    double T_MIN = 0.01;
     gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL, MU_T, T_MIN};
 
-    vmc->simulatedAnnealingOptimization(NMC, 1., 1., 0., params);
+    vmc->simulatedAnnealingOptimization(NMC, 1., 0.1, 0., params);
 
     cout << "   . . . Done!" << endl << endl;
 
@@ -151,13 +161,12 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl << endl;
 
 
-    delete[] vp;
-    delete[] d_energy;
-    delete[] energy;
     delete vmc;
     delete ham;
     delete psi;
 
+
+    MPIVMC::Finalize();
 
     return 0;
 }

@@ -1,13 +1,13 @@
-#include "VMC.hpp"
-#include "MPIVMC.hpp"
+#include "vmc/VMC.hpp"
+#include "vmc/MPIVMC.hpp"
 
 // --- compute quantities
 
-void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE)
+void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE, const bool doFindMRT2step, const bool doDecorrelation)
 {
     getMCI()->clearSamplingFunctions(); getMCI()->addSamplingFunction(_wf);
     getMCI()->clearObservables(); getMCI()->addObservable(_H);
-    MPIVMC::Integrate(getMCI(), Nmc, E, dE, true, true);
+    MPIVMC::Integrate(getMCI(), Nmc, E, dE, doFindMRT2step, doDecorrelation);
 }
 
 
@@ -20,19 +20,16 @@ void VMC::conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nm
     delete opt;
 };
 
-void VMC::stochasticReconfigurationOptimization(const long &Nmc, const bool flag_noisy)
+void VMC::stochasticReconfigurationOptimization(const long &Nmc, const double stepSize, const bool flag_dgrad)
 {
-    WFOptimization * opt;
-    if (flag_noisy) opt = new NoisyStochasticReconfigurationOptimization(_wf, _H, Nmc, getMCI());
-    else opt = new StochasticReconfigurationOptimization(_wf, _H, Nmc, getMCI());
-    opt->optimizeWF();
-    delete opt;
+    StochasticReconfigurationOptimization opt(_wf, _H, Nmc, getMCI(), stepSize, flag_dgrad);
+    opt.optimizeWF();
 };
 
-void VMC::adamOptimization(const long &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values,
+void VMC::adamOptimization(const long &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values, const bool useAveraging,
     const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon)
 {
-    AdamOptimization * opt = new AdamOptimization(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, lambda, alpha, beta1, beta2, epsilon);
+    AdamOptimization * opt = new AdamOptimization(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, useAveraging, lambda, alpha, beta1, beta2, epsilon);
     opt->optimizeWF();
     delete opt;
 };

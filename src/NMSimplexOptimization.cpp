@@ -1,5 +1,5 @@
-#include "NMSimplexOptimization.hpp"
-#include "MPIVMC.hpp"
+#include "vmc/NMSimplexOptimization.hpp"
+#include "vmc/MPIVMC.hpp"
 
 struct vmc_workspace
 {
@@ -66,7 +66,6 @@ double vmc_cost(const gsl_vector *v, void *params)
 
 void NMSimplexOptimization::optimizeWF()
 {
-
   const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
   gsl_multimin_fminimizer *s = NULL;
   gsl_vector *ss, *x;
@@ -74,9 +73,8 @@ void NMSimplexOptimization::optimizeWF()
 
   size_t iter = 0;
   int status;
-  double size;
 
-  int myrank = MPIVMC::Rank();
+  int myrank = MPIVMC::MyRank();
 
   vmc_workspace w;
   w.initFromOptimizer(this);

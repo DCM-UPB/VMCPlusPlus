@@ -2,10 +2,10 @@
 #include <cmath>
 #include <stdexcept>
 
-#include "WaveFunction.hpp"
-#include "Hamiltonian.hpp"
-#include "VMC.hpp"
-#include "ConjGrad.hpp"
+#include "vmc/WaveFunction.hpp"
+#include "vmc/Hamiltonian.hpp"
+#include "vmc/VMC.hpp"
+#include "nfm/ConjGrad.hpp"
 
 
 
@@ -13,8 +13,8 @@
   Hamiltonian describing a 1-particle harmonic oscillator:
   H  =  p^2 / 2m  +  1/2 * w^2 * x^2
 */
-class HarmonicOscillator1D1P: public Hamiltonian{
-
+class HarmonicOscillator1D1P: public Hamiltonian
+{
 protected:
     double _w;
 
@@ -80,6 +80,10 @@ public:
         }
     }
 
+    double computeWFValue(const double * protovalues)
+    {
+        return exp(0.5*protovalues[0]);
+    }
 };
 
 
@@ -95,7 +99,7 @@ protected:
     double _b;
 
 public:
-    Gaussian1D1POrbital(const double b):
+    explicit Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
         _b=b;
     }
@@ -129,12 +133,19 @@ public:
             _setVD1DivByWF(0, (-(*in)*(*in)));
         }
     }
+
+    double computeWFValue(const double * protovalues)
+    {
+        return exp(0.5*protovalues[0]);
+    }
 };
 
 
 
 int main(){
     using namespace std;
+
+    MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Declare some trial wave functions
     Gaussian1D1POrbital * psi1 = new Gaussian1D1POrbital(1.2);
@@ -213,7 +224,7 @@ int main(){
     delete psi2;
     delete psi1;
 
-
+    MPIVMC::Finalize();
 
     return 0;
 }

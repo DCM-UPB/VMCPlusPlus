@@ -1,38 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
-OS_NAME=$(uname)
+#C++ compiler
+CXX_COMPILER="g++"
 
-# Library name
-LIBNAME="vmc"
+# C++ flags
+CXX_FLAGS="-O3 -flto -Wall -Wno-unused-function"
 
-# C++ compiler
-CC="g++"
+# add coverage flags
+USE_COVERAGE=0
 
-# MPI compiler wrapper
-MPICC="mpic++"
+# use MPI for integration
 USE_MPI=0
 
-# C++ flags (std=c++11 is necessary)
-FLAGS="-std=c++11 -Wall"
-
-# Optimization flags
-OPTFLAGS="-O3 -flto"
-
-# Debuggin flags
-DEBUGFLAGS="-g -O0"
-
-# GSL (GNU Scientific Library)
-LGSL="-L/usr/local/lib"
-LIBGSL="-lgsl -lgslcblas"
-
 # MCIntegrator++ Library
-MCI_FOLDER="/...../MCIntegratorPlusPlus"
-IMCI="-I${MCI_FOLDER}/src/"
-LMCI="-L${MCI_FOLDER}"
-LIBMCI="-lmci"
+MCI_ROOT="/...../MCIntegratorPlusPlus"
 
-#NoisyFunctionMinimization Library
-NFM_FOLDER="/...../NoisyFunMin"
-INFM="-I${NFM_FOLDER}/src/"
-LNFM="-L${NFM_FOLDER}"
-LIBNFM="-lnfm"
+# NoisyFunctionMinimization Library
+NFM_ROOT="/...../NoisyFunMin"
+
+# GNU Scientific Library
+GSL_ROOT="" # provide a path if not in system location

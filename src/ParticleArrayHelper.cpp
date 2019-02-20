@@ -1,4 +1,4 @@
-#include "ParticleArrayHelper.hpp"
+#include "vmc/ParticleArrayHelper.hpp"
 
 #include <stdexcept>
 

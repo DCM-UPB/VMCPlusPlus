@@ -1,4 +1,4 @@
-#include "EuclideanMetric.hpp"
+#include "vmc/EuclideanMetric.hpp"
 
 #include <math.h>
 

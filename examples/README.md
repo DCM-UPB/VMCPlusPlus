@@ -16,7 +16,7 @@
 
 ## Example 3
 
-`ex3/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient (defunct!)
+`ex3/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
 
 
 
@@ -34,3 +34,8 @@
 ## Example 6
 
 `ex6/`: as `ex2`, but using the Adam algorithm.
+
+
+## Example 7
+
+`ex7/`: Simple example of MPI-VMC usage.
