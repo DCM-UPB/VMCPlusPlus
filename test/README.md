@@ -1,5 +1,8 @@
 # LEGEND OF THE UNIT TESTS
 
+Use `./run.sh` inside the test directory to run the check program and unit tests
+with valgrind or use `make test` inside the build directory, to run unit tests without valgrind.
+
 
 ## Unit Test 1
 
@@ -25,7 +28,12 @@
 
 
 
-
 ## Unit Test 5
 
 `ut5/`: check the MultiComponentWaveFunction.
+
+
+
+## Unit Test 6
+
+`ut6/`: check the SymmetrizerWaveFunction.

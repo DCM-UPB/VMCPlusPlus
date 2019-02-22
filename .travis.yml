@@ -51,7 +51,8 @@ before_install:
   fi;
   echo "CXX_COMPILER=${MYCXX}" >> config.sh;
   echo "CXX_FLAGS=\"-O0 -g -Wall -Wno-unused-function ${configopt}\"" >> config.sh;
-  if [[ "$USE_GCOV" == "TRUE" ]]; then echo "USE_COVERAGE=1" >> config.sh;
+  if [[ "$USE_GCOV" == "TRUE" ]]; then
+  echo "USE_COVERAGE=1" >> config.sh;
   else
   echo "USE_COVERAGE=0" >> config.sh;
   fi;
@@ -93,8 +94,7 @@ script:
   else
   if [[ "$USE_GCOV" == "TRUE" ]]; then
   cd build && make test;
-  pip install --user cpp-coveralls && coveralls --verbose -b ./ -r ../ -i include -i src -x .cpp -x .hpp --gcov-options '\-lp';
-  cd ..;
+  sudo pip install cpp-coveralls && coveralls --verbose -b ./ -r ../ -i include -i src -x .cpp -x .hpp --gcov-options '\-lp' && cd .. ;
   else
   cd test && ./run.sh && cd .. ;
   fi;

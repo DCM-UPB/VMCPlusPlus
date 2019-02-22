@@ -166,8 +166,8 @@ int main(){
 
     VMC * vmc; // VMC object we will resuse
     const long E_NMC = 100000l; // MC samplings to use for computing the energy
-    double * energy = new double[4]; // energy
-    double * d_energy = new double[4]; // energy error bar
+    double energy[4]; // energy
+    double d_energy[4]; // energy error bar
 
     // Case 1
     cout << "-> psi1: " << endl;
@@ -209,8 +209,6 @@ int main(){
     cout << "Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
 
-    delete[] d_energy;
-    delete[] energy;
     delete vmc;
 
 
