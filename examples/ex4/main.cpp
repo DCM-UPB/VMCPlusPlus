@@ -6,9 +6,9 @@
 #include "nfm/ConjGrad.hpp"
 #include "nfm/LogNFM.hpp"
 #include "vmc/Hamiltonian.hpp"
+#include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
 #include "vmc/WaveFunction.hpp"
-
 
 
 /*

@@ -11,22 +11,22 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
 
     // first derivative
     for (int i=0; i<getTotalNDim(); ++i){
-        _setD1DivByWF(i, 0.);
+        double d1 = 0.;
         for (WaveFunction * wf : _wfs){
-            _setD1DivByWF(i, getD1DivByWF(i) + wf->getD1DivByWF(i));
+            d1 += wf->getD1DivByWF(i);
         }
+        _setD1DivByWF(i, d1);
     }
     // second derivative
     for (int i=0; i<getTotalNDim(); ++i){
-        _setD2DivByWF(i, 0.);
-        for (WaveFunction * wf : _wfs){
-            _setD2DivByWF(i, getD2DivByWF(i) + wf->getD2DivByWF(i));
-        }
-        for (unsigned int iwf=0; iwf<_wfs.size()-1; ++iwf){
+        double d2 = 0.;
+        for (unsigned int iwf=0; iwf<_wfs.size(); ++iwf){
+            d2 += _wfs[iwf]->getD2DivByWF(i);
             for (unsigned int jwf=iwf+1; jwf<_wfs.size(); ++jwf){
-                _setD2DivByWF(i, getD2DivByWF(i) + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1DivByWF(i));
+                d2 += 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1DivByWF(i);
             }
         }
+        _setD2DivByWF(i, d2);
     }
     // first variational
     if (hasVD1()){
@@ -77,19 +77,10 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
                  for (unsigned int jwf=0; jwf<_wfs.size(); ++jwf){
                      if (iwf != jwf){
                          for (int ivp=0; ivp<_wfs[jwf]->getNVP(); ++ivp){
-                             _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp) + _wfs[iwf]->getD2DivByWF(i) * _wfs[jwf]->getVD1DivByWF(ivp));
-                         }
-                     }
-                     contvp += _wfs[jwf]->getNVP();
-                 }
-             }
-
-             for (unsigned int iwf=0; iwf<_wfs.size(); ++iwf){
-                 contvp = 0;
-                 for (unsigned int jwf=0; jwf<_wfs.size(); ++jwf){
-                     if (iwf != jwf){
-                         for (int ivp=0; ivp<_wfs[jwf]->getNVP(); ++ivp){
-                             _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp) + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1VD1DivByWF(i, ivp));
+                             _setD2VD1DivByWF(i, ivp+contvp, getD2VD1DivByWF(i, ivp+contvp)
+                                              + _wfs[iwf]->getD2DivByWF(i) * _wfs[jwf]->getVD1DivByWF(ivp)
+                                              + 2. * _wfs[iwf]->getD1DivByWF(i) * _wfs[jwf]->getD1VD1DivByWF(i, ivp)
+                                              );
                          }
                      }
                      contvp += _wfs[jwf]->getNVP();

@@ -1,7 +1,9 @@
 #include "vmc/NMSimplexOptimization.hpp"
 #include "vmc/MPIVMC.hpp"
 
-struct vmc_workspace
+#include <gsl/gsl_multimin.h>
+
+struct vmc_nms
 {
     WaveFunction * wf;
     Hamiltonian * H;
@@ -12,7 +14,7 @@ struct vmc_workspace
     double lambda;
     double rstart;
     double rend;
-    size_t max_n_iter;
+    int max_n_iter;
 
     void initFromOptimizer(NMSimplexOptimization * wfopt)
     {
@@ -31,20 +33,20 @@ struct vmc_workspace
 
 double vmc_cost(const gsl_vector *v, void *params)
 {
-    WaveFunction * const wf = (static_cast<struct vmc_workspace *>(params))->wf;
-    Hamiltonian * const H = (static_cast<struct vmc_workspace *>(params))->H;
-    MCI * const mci = (static_cast<struct vmc_workspace *>(params))->mci;
-    const int Nmc = (static_cast<struct vmc_workspace *>(params))->Nmc;
-    const double iota = (static_cast<struct vmc_workspace *>(params))->iota;
-    const double kappa = (static_cast<struct vmc_workspace *>(params))->kappa;
-    const double lambda = (static_cast<struct vmc_workspace *>(params))->lambda;
+    WaveFunction * const wf = (static_cast<struct vmc_nms *>(params))->wf;
+    Hamiltonian * const H = (static_cast<struct vmc_nms *>(params))->H;
+    MCI * const mci = (static_cast<struct vmc_nms *>(params))->mci;
+    const int Nmc = (static_cast<struct vmc_nms *>(params))->Nmc;
+    const double iota = (static_cast<struct vmc_nms *>(params))->iota;
+    const double kappa = (static_cast<struct vmc_nms *>(params))->kappa;
+    const double lambda = (static_cast<struct vmc_nms *>(params))->lambda;
 
     double vpar[wf->getNVP()];
     // apply the parameters to the wf
     for (int i=0; i<wf->getNVP(); ++i) {
         vpar[i] = gsl_vector_get(v, i);
     }
-    wf->setVP(&vpar[0]);
+    wf->setVP(vpar);
 
     // compute the energy and its standard deviation
     double energy[4]; // energy
@@ -56,7 +58,8 @@ double vmc_cost(const gsl_vector *v, void *params)
     // compute the normalization
     double norm = 0.;
     for (int i=0; i<wf->getNVP(); ++i) {
-        norm += pow(gsl_vector_get(v, i), 2);
+        const double vi = gsl_vector_get(v, i);
+        norm += vi*vi;
     }
     norm = sqrt(norm)/wf->getNVP();
 
@@ -67,62 +70,58 @@ double vmc_cost(const gsl_vector *v, void *params)
 
 void NMSimplexOptimization::optimizeWF()
 {
-  const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
-  gsl_multimin_fminimizer *s = nullptr;
-  gsl_vector *ss, *x;
-  gsl_multimin_function minex_func;
+    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
+    gsl_multimin_fminimizer *s = nullptr;
+    gsl_vector *ss, *x;
+    gsl_multimin_function minex_func;
 
-  size_t iter = 0;
-  int status;
+    int myrank = MPIVMC::MyRank();
 
-  int myrank = MPIVMC::MyRank();
+    vmc_nms w{};
+    w.initFromOptimizer(this);
 
-  vmc_workspace w{};
-  w.initFromOptimizer(this);
+    // Starting point
+    int npar = _wf->getNVP();
+    double vpar[npar];
+    _wf->getVP(vpar);
 
-  // Starting point
-  int npar = _wf->getNVP();
-  double vpar[npar];
-  _wf->getVP(&vpar[0]);
-
-  x = gsl_vector_alloc(npar);
-  for (int i=0; i<npar; ++i) {
-      gsl_vector_set(x, i, vpar[i]);
-  }
-
-  // Set initial step sizes to 1
-  ss = gsl_vector_alloc (npar);
-  gsl_vector_set_all(ss, _rstart);
-
-  // Initialize method and iterate
-  minex_func.n = npar;
-  minex_func.f = vmc_cost;
-  minex_func.params = &w;
-
-  s = gsl_multimin_fminimizer_alloc(T, npar);
-  gsl_multimin_fminimizer_set(s, &minex_func, x, ss);
-
-  do
-    {
-      iter++;
-      status = gsl_multimin_fminimizer_iterate(s);
-
-      if (status != 0) { break; }
-
-      double size = gsl_multimin_fminimizer_size(s);
-      status = gsl_multimin_test_size(size, _rend);
-
-      if (myrank==0) {
-          if (status == GSL_SUCCESS) {
-              printf ("converged to minimum at\n");
-          }
-
-          printf ("%5zu f() = %7.3f size = %.3f\n", iter, s->fval, size);
-      }
+    x = gsl_vector_alloc(npar);
+    for (int i=0; i<npar; ++i) {
+        gsl_vector_set(x, i, vpar[i]);
     }
-  while (status == GSL_CONTINUE && (_max_n_iter <= 0 || iter < _max_n_iter));
 
-  gsl_vector_free(x);
-  gsl_vector_free(ss);
-  gsl_multimin_fminimizer_free (s);
+    // Set initial step sizes to 1
+    ss = gsl_vector_alloc (npar);
+    gsl_vector_set_all(ss, _rstart);
+
+    // Initialize method and iterate
+    minex_func.n = npar;
+    minex_func.f = vmc_cost;
+    minex_func.params = &w;
+
+    s = gsl_multimin_fminimizer_alloc(T, npar);
+    gsl_multimin_fminimizer_set(s, &minex_func, x, ss);
+
+    int iter = 0;
+    int status;
+    do {
+        status = gsl_multimin_fminimizer_iterate(s);
+
+        if (status != 0) { break; }
+
+        double size = gsl_multimin_fminimizer_size(s);
+        status = gsl_multimin_test_size(size, _rend);
+
+        if (myrank==0) {
+            if (status == GSL_SUCCESS) {
+                std::cout << "converged to minimum at" << std::endl;
+            }
+            std::cout << iter << " f() = " << s->fval << " size = " << size << std::endl;
+        }
+        ++iter;
+    } while (status == GSL_CONTINUE && (iter < _max_n_iter));
+
+    gsl_vector_free(x);
+    gsl_vector_free(ss);
+    gsl_multimin_fminimizer_free(s);
 }

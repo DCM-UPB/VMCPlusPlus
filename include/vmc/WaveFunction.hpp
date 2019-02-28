@@ -29,9 +29,13 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
 
 class WaveFunction: public MCISamplingFunctionInterface, public MCICallBackOnAcceptanceInterface{
 protected:
+    const int _nspacedim;
+    const int _npart;
     int _nvp;  //number of variational parameters involved
-    int _npart;
-    int _nspacedim;
+
+    const bool _flag_vd1;
+    const bool _flag_d1vd1;
+    const bool _flag_d2vd1;
 
     double * _d1_divbywf;
     double * _d2_divbywf;
@@ -39,13 +43,8 @@ protected:
     double ** _d1vd1_divbywf;
     double ** _d2vd1_divbywf;
 
-    bool _flag_vd1;
-    bool _flag_d1vd1;
-    bool _flag_d2vd1;
-
 
     void _allocateVariationalDerivativesMemory();
-
 
     // --- getters and setters for the derivatives
     // first derivative divided by the wf

@@ -114,7 +114,7 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x)
     }
     // second derivative
     for (int i=0; i<getTotalNDim(); ++i){
-        d2_divbywf[i] += pow(d1_divbywf[i], 2);
+        d2_divbywf[i] += d1_divbywf[i]*d1_divbywf[i];
     }
 }
 

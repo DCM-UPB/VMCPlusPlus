@@ -2,6 +2,8 @@
 #include "vmc/MPIVMC.hpp"
 #include "vmc/StochasticReconfigurationMCObservable.hpp"
 
+#include <numeric>
+
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_matrix.h>
@@ -12,8 +14,7 @@
 void add_norm_f(const double * const vp, const int &nvp, double &f, const double &lambda)
 {
     // compute the normalization term
-    double norm = 0.;
-    for (int i=0; i<nvp; ++i) { norm += vp[i]*vp[i]; }
+    const double norm = std::inner_product(vp, vp+nvp, vp, 0.);
     f += lambda*norm/nvp;
 }
 
@@ -21,7 +22,9 @@ void add_norm_grad(const double * const vp, const int &nvp, double * const grad_
 {
     const double fac = lambda/nvp;
     // add the normalization gradient
-    for (int i=0; i<nvp; ++i) { grad_E[i] += 2.*vp[i] * fac; }
+    for (int i=0; i<nvp; ++i) {
+        grad_E[i] += 2.*vp[i] * fac;
+    }
 }
 
 void add_norm_fgrad(const double * const vp, const int &nvp, double &f, double * const grad_E, const double &lambda)
@@ -29,12 +32,13 @@ void add_norm_fgrad(const double * const vp, const int &nvp, double &f, double *
     const double fac = lambda/nvp;
 
     // compute the normalization term
-    double norm = 0.;
-    for (int i=0; i<nvp; ++i) { norm += vp[i]*vp[i]; }
+    const double norm = std::inner_product(vp, vp+nvp, vp, 0.);
 
     // add the normalization value and gradient
     f += norm*fac;
-    for (int i=0; i<nvp; ++i) { grad_E[i] += 2.*vp[i] * fac; }
+    for (int i=0; i<nvp; ++i) {
+        grad_E[i] += 2.*vp[i] * fac;
+    }
 }
 
 
@@ -97,9 +101,10 @@ void StochasticReconfigurationTargetFunction::_calcObs(const double * const vp, 
         for (int i=0; i<nvp; ++i){
             for (int j=0; j<nvp; ++j){
                 gsl_matrix_set(sij, i, j, OiOj[i*nvp + j] - Oi[i] * Oi[j]);
-                if (flag_dgrad) { gsl_matrix_set(rdsij, i, j,
-                                               (dOiOj[i*nvp + j] + fabs(Oi[i]*Oi[j])*( (dOi[i]/Oi[i]) + (dOi[j]/Oi[j]) ))
-                                               /  gsl_matrix_get(sij, i, j) );
+                if (flag_dgrad) {
+                    gsl_matrix_set(rdsij, i, j,
+                                   (dOiOj[i*nvp + j] + fabs(Oi[i]*Oi[j])*( (dOi[i]/Oi[i]) + (dOi[j]/Oi[j]) ))
+                                   /  gsl_matrix_get(sij, i, j) );
                 }
             }
         }
@@ -107,9 +112,10 @@ void StochasticReconfigurationTargetFunction::_calcObs(const double * const vp, 
         gsl_vector * rdfi = flag_dgrad ? gsl_vector_alloc(nvp) : nullptr;   // relative error, i.e. error/value
         for (int i=0; i<nvp; ++i){
             gsl_vector_set(fi, i, H[0]*Oi[i] - HOi[i]);
-            if (flag_dgrad) { gsl_vector_set(rdfi, i,
-                                           (fabs(H[0]*Oi[i])*( (dH[0]/H[0]) + (dOi[i]/Oi[i]) ) + dHOi[i])
-                                           / gsl_vector_get(fi, i)  );
+            if (flag_dgrad) {
+                gsl_vector_set(rdfi, i,
+                               (fabs(H[0]*Oi[i])*( (dH[0]/H[0]) + (dOi[i]/Oi[i]) ) + dHOi[i])
+                               / gsl_vector_get(fi, i) );
             }
         }
         // invert matrix using SVD
