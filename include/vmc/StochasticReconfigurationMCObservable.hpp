@@ -1,30 +1,28 @@
-#ifndef STOCHASTIC_RECONFIGURATION_MC_OBSERVABLE
-#define STOCHASTIC_RECONFIGURATION_MC_OBSERVABLE
+#ifndef VMC_STOCHASTICRECONFIGURATIONMCOBSERVABLE_HPP
+#define VMC_STOCHASTICRECONFIGURATIONMCOBSERVABLE_HPP
 
 #include "mci/MCIObservableFunctionInterface.hpp"
-#include "vmc/WaveFunction.hpp"
 #include "vmc/Hamiltonian.hpp"
+#include "vmc/WaveFunction.hpp"
 
 
 
 class StochasticReconfigurationMCObservable: public MCIObservableFunctionInterface
 {
 protected:
-    WaveFunction * _wf;
-    Hamiltonian * _H;
+    WaveFunction * const _wf;
+    Hamiltonian * const _H;
 
 public:
     StochasticReconfigurationMCObservable(WaveFunction * wf, Hamiltonian * H):
-        MCIObservableFunctionInterface(H->getNDim(), 2*wf->getNVP() + wf->getNVP()*wf->getNVP()){
-        _wf = wf;
-        _H = H;
-    }
+        MCIObservableFunctionInterface(H->getNDim(), 2*wf->getNVP() + wf->getNVP()*wf->getNVP()),
+        _wf(wf), _H(H) {}
 
-    virtual ~StochasticReconfigurationMCObservable(){}
+    ~StochasticReconfigurationMCObservable() override= default;
 
 
     // MCIObservableFunctionInterface implementation
-    void observableFunction(const double * in, double * out){
+    void observableFunction(const double * in, double * out) override{
         // out is made in this way (nvp is the number of variational parameters):
         // out[0:nvp-1] = Oi
         // out[nvp:2*nvp-1] = HOi
@@ -35,20 +33,15 @@ public:
         // local energy
         const double Hloc = _H->localPBKineticEnergy(in) + _H->localPotentialEnergy(in);
 
-        // variational derivatives
-        double vd1[nvp];
-        for (int i=0; i<nvp; ++i){
-            vd1[i] = _wf->getVD1DivByWF(i);
-        }
         // store the elements Oi and HOi
         for (int i=0; i<nvp; ++i){
-            out[i] = vd1[i];    // Oi
+            out[i] = _wf->getVD1DivByWF(i);    // Oi
             out[i+nvp] = Hloc * out[i];    //HOi
         }
         // store the elements OiOj
         for (int i=0; i<nvp; ++i){
             for (int j=0; j<nvp; ++j){
-                out[2*nvp + j + i*nvp] = vd1[i]*vd1[j];   // OiOj
+                out[2*nvp + i*nvp + j] = out[i]*out[j];   // OiOj
             }
         }
     }

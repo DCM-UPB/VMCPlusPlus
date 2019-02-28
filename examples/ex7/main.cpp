@@ -1,11 +1,11 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
-#include "vmc/WaveFunction.hpp"
+#include "nfm/ConjGrad.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/VMC.hpp"
-#include "nfm/ConjGrad.hpp"
+#include "vmc/WaveFunction.hpp"
 
 #include "vmc/MPIVMC.hpp" // this example requires MPI!
 
@@ -21,10 +21,10 @@ protected:
 public:
     HarmonicOscillator1D1P(const double w, WaveFunction * wf):
         Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
-    virtual ~HarmonicOscillator1D1P(){}
+    ~HarmonicOscillator1D1P() override= default;
 
     // potential energy
-    double localPotentialEnergy(const double *r)
+    double localPotentialEnergy(const double *r) override
     {
         return (0.5*_w*_w*(*r)*(*r));
     }
@@ -48,29 +48,29 @@ public:
         _b=b;
     }
 
-    void setVP(const double *in)
+    void setVP(const double *in) override
     {
         _b=*in;
         //if (_b<0.01) _b=0.01;
         using namespace std;
         //cout << "change b! " << _b << endl;
     }
-    void getVP(double *out)
+    void getVP(double *out) override
     {
         *out=_b;
     }
 
-    void samplingFunction(const double *in, double *out)
+    void samplingFunction(const double *in, double *out) override
     {
         *out=-2.*_b*(*in)*(*in);
     }
 
-    double getAcceptance(const double * protoold, const double * protonew)
+    double getAcceptance(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *in){
+    void computeAllDerivatives(const double *in) override{
         _setD1DivByWF(0, -2.*_b*(*in));
         _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
         if (hasVD1()){
@@ -78,7 +78,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues)
+    double computeWFValue(const double * protovalues) override
     {
         return exp(protovalues[0]);
     }
@@ -100,7 +100,7 @@ int main(){
     HarmonicOscillator1D1P ham(1., &psi);
 
 
-    const long E_NMC = 20000l; // MC samplings to use for computing the energy
+    const int E_NMC = 20000l; // MC samplings to use for computing the energy
     double energy[4], energy_h[4]; // energy
     double d_energy[4], d_energy_h[4]; // energy error bar
     for (int i=0; i<4; ++i) {
@@ -116,11 +116,13 @@ int main(){
     vmc.getMCI()->storeObservablesOnFile(obsfile.c_str(), 1);
     vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile.c_str(), 1);
 
-    if (myrank==0) cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
+    if (myrank==0) { cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
+}
 
     const int neval = 5;
     // First compute the energy with auto-mode findMRT2step/initialDecorr/blocking
-    if (myrank==0) cout << "Computing the energy " << neval << " times, with auto-mode findMRT2step/initialDecorr (inconsistent time per CPU)." << endl;
+    if (myrank==0) { cout << "Computing the energy " << neval << " times, with auto-mode findMRT2step/initialDecorr (inconsistent time per CPU)." << endl;
+}
     for (int i=0; i<neval; ++i) {
         vmc.computeVariationalEnergy(E_NMC, energy_h, d_energy_h);
         if (myrank ==0) {
@@ -148,7 +150,9 @@ int main(){
     vmc.getMCI()->setNfindMRT2steps(50);
     vmc.getMCI()->setNdecorrelationSteps(5000);
 
-    if (myrank==0) cout << "Computing the energy " << neval << " times, with fixed-mode findMRT2step/initialDecorr (consistent time per CPU)." << endl;
+    if (myrank==0) {
+        cout << "Computing the energy " << neval << " times, with fixed-mode findMRT2step/initialDecorr (consistent time per CPU)." << endl;
+    }
     for (int i=0; i<neval; ++i) {
         vmc.computeVariationalEnergy(E_NMC, energy_h, d_energy_h);
         if (myrank ==0) {

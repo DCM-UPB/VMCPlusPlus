@@ -1,9 +1,9 @@
-#ifndef STOCHASTIC_RECONFIGURATION_OPTIMIZATION
-#define STOCHASTIC_RECONFIGURATION_OPTIMIZATION
+#ifndef VMC_STOCHASTICRECONFIGURATIONOPTIMIZATION_HPP
+#define VMC_STOCHASTICRECONFIGURATIONOPTIMIZATION_HPP
 
-#include "vmc/WFOptimization.hpp"
-#include "vmc/StochasticReconfigurationTargetFunction.hpp"
 #include "nfm/DynamicDescent.hpp"
+#include "vmc/StochasticReconfigurationTargetFunction.hpp"
+#include "vmc/WFOptimization.hpp"
 
 #include "mci/MCIntegrator.hpp"
 
@@ -12,17 +12,17 @@
 class StochasticReconfigurationOptimization: public WFOptimization
 {
 private:
-    const long _Nmc;
+    const int _Nmc;
     const double _stepSize;
     const bool _flag_dgrad;
 
 public:
-    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const long &Nmc, MCI * mci, const double stepSize = 1., const bool flag_dgrad = false): WFOptimization(wf, H, mci), _Nmc(Nmc), _stepSize(stepSize), _flag_dgrad(flag_dgrad) {}
+    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const int &Nmc, MCI * mci, const double stepSize = 1., const bool flag_dgrad = false): WFOptimization(wf, H, mci), _Nmc(Nmc), _stepSize(stepSize), _flag_dgrad(flag_dgrad) {}
 
-    virtual ~StochasticReconfigurationOptimization(){}
+    ~StochasticReconfigurationOptimization() override= default;
 
     // optimization
-    void optimizeWF(){
+    void optimizeWF() override{
         // create targetfunction
         StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, 0., _flag_dgrad);
         // declare the Dynamic Descent object

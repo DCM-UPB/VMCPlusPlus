@@ -1,17 +1,16 @@
-#ifndef METRIC
-#define METRIC
+#ifndef VMC_METRIC_HPP
+#define VMC_METRIC_HPP
 
 
 class Metric
 {
 private:
-    int _nspacedim;
+    const int _nspacedim;
 
 public:
-    Metric(const int &nspacedim){
-        _nspacedim = nspacedim;
-    }
-    virtual ~Metric(){}
+    explicit Metric(const int &nspacedim): _nspacedim(nspacedim) {}
+
+    virtual ~Metric()= default;
 
 
     int getNSpaceDim(){return _nspacedim;}

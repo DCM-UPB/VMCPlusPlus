@@ -1,5 +1,5 @@
-#ifndef MULTI_COMPONENT_WAVE_FUNCTION
-#define MULTI_COMPONENT_WAVE_FUNCTION
+#ifndef VMC_MULTICOMPONENTWAVEFUNCTION_HPP
+#define VMC_MULTICOMPONENTWAVEFUNCTION_HPP
 
 
 #include "vmc/WaveFunction.hpp"
@@ -13,26 +13,26 @@ private:
     std::vector<WaveFunction *> _wfs;
 
 public:
-    MultiComponentWaveFunction(const int &nspacedim, const int &npart, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true):
+    MultiComponentWaveFunction(const int &nspacedim, const int &npart, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false):
     WaveFunction(nspacedim, npart, 0, 0, flag_vd1, flag_d1vd1, flag_d2vd1){}
-    virtual ~MultiComponentWaveFunction(){
+    ~MultiComponentWaveFunction() override{
         _wfs.clear();
     }
 
 
     void addWaveFunction(WaveFunction * wf);
 
-    void setVP(const double *vp);
+    void setVP(const double *vp) override;
 
-    void getVP(double *vp);
+    void getVP(double *vp) override;
 
-    void samplingFunction(const double * in, double * out);
+    void samplingFunction(const double * in, double * out) override;
 
-    double getAcceptance(const double * protoold, const double * protonew);
+    double getAcceptance(const double * protoold, const double * protonew) override;
 
-    void computeAllDerivatives(const double *x);
+    void computeAllDerivatives(const double *x) override;
 
-    double computeWFValue(const double * protovalues);
+    double computeWFValue(const double * protovalues) override;
 };
 
 

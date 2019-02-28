@@ -1,10 +1,10 @@
-#ifndef ADAM_OPTIMIZATION
-#define ADAM_OPTIMIZATION
+#ifndef VMC_ADAMOPTIMIZATION_HPP
+#define VMC_ADAMOPTIMIZATION_HPP
 
-#include "vmc/WFOptimization.hpp"
-#include "vmc/StochasticReconfigurationTargetFunction.hpp"
-#include "vmc/EnergyGradientTargetFunction.hpp"
 #include "nfm/Adam.hpp"
+#include "vmc/EnergyGradientTargetFunction.hpp"
+#include "vmc/StochasticReconfigurationTargetFunction.hpp"
+#include "vmc/WFOptimization.hpp"
 
 #include "mci/MCIntegrator.hpp"
 
@@ -13,40 +13,32 @@
 class AdamOptimization: public WFOptimization
 {
 private:
-    long _Nmc;
-    bool _useSR;
-    bool _useGradientError;
-    bool _useAveraging;
-    size_t _max_n_const_values;
-    double _lambda;
-    double _alpha;
-    double _beta1, _beta2;
-    double _epsilon;
+    const int _Nmc;
+    const bool _useSR;
+    const bool _useGradientError;
+    const bool _useAveraging;
+    const size_t _max_n_const_values;
+    const double _lambda;
+    const double _alpha;
+    const double _beta1, _beta2;
+    const double _epsilon;
 
 public:
-    AdamOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci, const long &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20,
-        const bool useAveraging = false, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8)
-        : WFOptimization(wf, H, mci)
-    {
-        _Nmc = Nmc;
-        _useSR = useSR;
-        _useGradientError = useGradientError;
-        _max_n_const_values = max_n_const_values;
-        _useAveraging = useAveraging;
-        _lambda = lambda;
-        _alpha = alpha;
-        _beta1 = beta1;
-        _beta2 = beta2;
-        _epsilon = epsilon;
-    }
-    virtual ~AdamOptimization(){}
+    AdamOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci, const int &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20,
+                     const bool useAveraging = false, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8):
+        WFOptimization(wf, H, mci),
+        _Nmc(Nmc), _useSR(useSR), _useGradientError(useGradientError), _useAveraging(useAveraging), _max_n_const_values(max_n_const_values),
+        _lambda(lambda), _alpha(alpha), _beta1(beta1), _beta2(beta2), _epsilon(epsilon) {}
+
+    ~AdamOptimization() override= default;
 
     // optimization
-    void optimizeWF(){
+    void optimizeWF() override{
         // create targetfunction
         NoisyFunctionWithGradient * targetf;
-        if (_useSR) targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
-        else targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda);
+        if (_useSR) { targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
+        } else { targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda); }
+
         // declare the Adam object
         Adam * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters

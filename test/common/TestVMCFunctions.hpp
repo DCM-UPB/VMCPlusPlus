@@ -1,12 +1,9 @@
-#ifndef TEST_VMC_FUNCTIONS
-#define TEST_VMC_FUNCTIONS
-
 #include <cmath>
 
-#include "vmc/WaveFunction.hpp"
+#include "vmc/EuclideanMetric.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/TwoBodyPseudoPotential.hpp"
-#include "vmc/EuclideanMetric.hpp"
+#include "vmc/WaveFunction.hpp"
 
 
 class QuadrExponential1D1POrbital: public WaveFunction
@@ -18,7 +15,7 @@ public:
     QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false)
         {_a=a; _b=b;}
 
-    void setVP(const double *in)
+    void setVP(const double *in) override
     {
         _a=in[0];
         //if (_a<0.01) _a=0.01;
@@ -27,24 +24,24 @@ public:
         using namespace std;
         //cout << "change a and b! " << _a << "   " << _b << endl;
     }
-    void getVP(double *out)
+    void getVP(double *out) override
     {
         out[0]=_a;
         out[1]=_b;
     }
 
-    void samplingFunction(const double *in, double *out)
+    void samplingFunction(const double *in, double *out) override
     {
         *out = -2.*(_b*(in[0]-_a)*(in[0]-_a));
         std::cout << "out " << *out << std::endl;
     }
 
-    double getAcceptance(const double * protoold, const double * protonew)
+    double getAcceptance(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *in){
+    void computeAllDerivatives(const double *in) override{
         _setD1DivByWF(0, -2.*_b*(in[0]-_a));
         _setD2DivByWF(0, -2.*_b + (-2.*_b*(in[0]-_a))*(-2.*_b*(in[0]-_a)));
         if (hasVD1()){
@@ -53,7 +50,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues)
+    double computeWFValue(const double * protovalues) override
     {
         return exp(0.5*protovalues[0]);
     }
@@ -74,23 +71,23 @@ public:
     WaveFunction(1, npart, 1, 1, true, true, true), _b(b), _bi(1./b)
     {
         _a=new double[npart];
-        for (int i=0; i<npart; ++i) _a[i] = a[i];
+        for (int i=0; i<npart; ++i) { _a[i] = a[i]; }
     }
 
-    ~QuadrExponential1DNPOrbital()
+    ~QuadrExponential1DNPOrbital() override
     {
         delete [] _a;
     }
 
-    void setVP(const double *in){
+    void setVP(const double *in) override{
         _b=in[0];
     }
 
-    void getVP(double *out){
+    void getVP(double *out) override{
         out[0]=_b;
     }
 
-    void samplingFunction(const double *x, double *out)
+    void samplingFunction(const double *x, double *out) override
     {
         *out = 0.;
         for (int i=0; i<_npart; ++i) {
@@ -99,12 +96,12 @@ public:
         *out *= -2.*_b;
     }
 
-    double getAcceptance(const double * protoold, const double * protonew)
+    double getAcceptance(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *x)
+    void computeAllDerivatives(const double *x) override
     {
         if (hasVD1()){
             _setVD1DivByWF(0, 0);
@@ -127,7 +124,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues)
+    double computeWFValue(const double * protovalues) override
     {
         return exp(0.5*protovalues[0]);
     }
@@ -145,29 +142,29 @@ public:
         _b=b;
     }
 
-    void setVP(const double *in)
+    void setVP(const double *in) override
     {
         _b=*in;
         //if (_b<0.01) _b=0.01;
         using namespace std;
         //cout << "change b! " << _b << endl;
     }
-    void getVP(double *out)
+    void getVP(double *out) override
     {
         *out=_b;
     }
 
-    void samplingFunction(const double *in, double *out)
+    void samplingFunction(const double *in, double *out) override
     {
         *out=-2.*_b*(*in)*(*in);
     }
 
-    double getAcceptance(const double * protoold, const double * protonew)
+    double getAcceptance(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *in){
+    void computeAllDerivatives(const double *in) override{
         _setD1DivByWF(0, -2.*_b*(*in));
         _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
         if (hasVD1()){
@@ -175,7 +172,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues)
+    double computeWFValue(const double * protovalues) override
     {
         return exp(0.5*protovalues[0]);
     }
@@ -188,7 +185,7 @@ protected:
     double _w;
 public:
     HarmonicOscillator1D1P(const double w, WaveFunction * wf): Hamiltonian(1, 1, wf) {_w=w;}
-    double localPotentialEnergy(const double *r)
+    double localPotentialEnergy(const double *r) override
     {
         return (0.5*_w*_w*(*r)*(*r));
     }
@@ -208,32 +205,32 @@ public:
     TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
-    ~He3u2(){}
+    ~He3u2() override= default;
 
-    void setVP(const double *vp){_b=vp[0];}
-    void getVP(double *vp){vp[0]=_b;}
+    void setVP(const double *vp) override{_b=vp[0];}
+    void getVP(double *vp) override{vp[0]=_b;}
 
-    double ur(const double &dist){
+    double ur(const double &dist) override{
         return _b/pow(dist, 5);
     }
 
-    double urD1(const double &dist){
+    double urD1(const double &dist) override{
         return -5.*_b/pow(dist, 6);
     }
 
-    double urD2(const double &dist){
+    double urD2(const double &dist) override{
         return 30.*_b/pow(dist, 7);
     }
 
-    void urVD1(const double &dist, double * vd1){
+    void urVD1(const double &dist, double * vd1) override{
         vd1[0] = 1./pow(dist, 5);
     }
 
-    void urD1VD1(const double &dist, double * d1vd1){
+    void urD1VD1(const double &dist, double * d1vd1) override{
         d1vd1[0] = -5./pow(dist, 6);
     }
 
-    void urD2VD1(const double &dist, double * d1vd1){
+    void urD2VD1(const double &dist, double * d1vd1) override{
         d1vd1[0] = 30./pow(dist, 7);
     }
 };
@@ -254,38 +251,38 @@ public:
         _a = a;
         _b = b;
     }
-    ~PolynomialU2(){}
+    ~PolynomialU2() override= default;
 
-    void setVP(const double *vp){
+    void setVP(const double *vp) override{
         _a=vp[0]; _b=vp[1];
     }
-    void getVP(double *vp){
+    void getVP(double *vp) override{
         vp[0]=_a; vp[1]=_b;
     }
 
-    double ur(const double &r){
+    double ur(const double &r) override{
         return _a * pow(r, 2) + _b * pow(r, 3);
     }
 
-    double urD1(const double &r){
+    double urD1(const double &r) override{
         return 2. * _a * r + 3. * _b * pow(r, 2);
     }
 
-    double urD2(const double &r){
+    double urD2(const double &r) override{
         return 2. * _a + 6. * _b * r;
     }
 
-    void urVD1(const double &r, double * vd1){
+    void urVD1(const double &r, double * vd1) override{
         vd1[0] = r*r;
         vd1[1] = r*r*r;
     }
 
-    void urD1VD1(const double &r, double * d1vd1){
+    void urD1VD1(const double &r, double * d1vd1) override{
         d1vd1[0] = 2.*r;
         d1vd1[1] = 3.*r*r;
     }
 
-    void urD2VD1(const double &r, double * d2vd1){
+    void urD2VD1(const double &r, double * d2vd1) override{
         d2vd1[0] = 2.;
         d2vd1[1] = 6.*r;
     }
@@ -304,39 +301,36 @@ public:
     TwoBodyPseudoPotential(em, 1, true, true, true){
         _K = K;
     }
-    ~FlatU2(){}
+    ~FlatU2() override= default;
 
-    void setVP(const double *vp){
+    void setVP(const double *vp) override{
         _K = vp[0];
     }
-    void getVP(double *vp){
+    void getVP(double *vp) override{
         vp[0] = _K;
     }
 
-    double ur(const double &r){
+    double ur(const double & /*r*/) override{
         return _K;
     }
 
-    double urD1(const double &r){
+    double urD1(const double & /*r*/) override{
         return 0.;
     }
 
-    double urD2(const double &r){
+    double urD2(const double & /*r*/) override{
         return 0.;
     }
 
-    void urVD1(const double &r, double * vd1){
+    void urVD1(const double & /*r*/, double * vd1) override{
         vd1[0] = 1.;
     }
 
-    void urD1VD1(const double &r, double * d1vd1){
+    void urD1VD1(const double & /*r*/, double * d1vd1) override{
         d1vd1[0] = 0.;
     }
 
-    void urD2VD1(const double &r, double * d2vd1){
+    void urD2VD1(const double & /*r*/, double * d2vd1) override{
         d2vd1[0] = 0.;
     }
 };
-
-
-#endif

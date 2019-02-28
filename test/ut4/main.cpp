@@ -1,9 +1,9 @@
 #include "vmc/EuclideanMetric.hpp"
-#include "vmc/TwoBodyPseudoPotential.hpp"
 #include "vmc/TwoBodyJastrow.hpp"
+#include "vmc/TwoBodyPseudoPotential.hpp"
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <iostream>
 #include <random>
 
@@ -28,7 +28,7 @@ int main(){
     rd = uniform_real_distribution<double>(-0.1, 0.1);
 
     // distance metric
-    EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
+    auto * em = new EuclideanMetric(NSPACEDIM);
 
     // make the tests using two different pseudo-potentials
     for (int iu2=0; iu2<2; ++iu2) {

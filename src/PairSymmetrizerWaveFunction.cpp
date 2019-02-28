@@ -29,8 +29,8 @@ void PairSymmetrizerWaveFunction::computeAllDerivatives(const double * x)
             _swapIndices(idh, i, j);
 
             // evaluate and add swap wf
-            if (!_flag_antisymmetric) _addSwapDerivatives(xh, normf, idh);
-            else _addSwapDerivatives(xh, normf2, idh);
+            if (!_flag_antisymmetric) { _addSwapDerivatives(xh, normf, idh);
+            } else { _addSwapDerivatives(xh, normf2, idh); }
 
             _swapPositions(xh, j, i); // swap back
             _swapIndices(idh, j, i);
@@ -47,7 +47,7 @@ void PairSymmetrizerWaveFunction::samplingFunction(const double * in, double * o
     const double normf = 1. / (_npart*(_npart-1)/2 + 1); // normalizing factor
 
     // initialize
-    for (int i=0; i<ndim; ++i) inh[i] = in[i];
+    for (int i=0; i<ndim; ++i) { inh[i] = in[i]; }
 
     // evaluate unswapped wf
     _wf->samplingFunction(in, outh);
@@ -60,8 +60,8 @@ void PairSymmetrizerWaveFunction::samplingFunction(const double * in, double * o
 
             // evaluate and add swap wf
             _wf->samplingFunction(inh, outh);
-            if (!_flag_antisymmetric) out[0] += normf*_wf->computeWFValue(outh);
-            else out[0] -= normf*_wf->computeWFValue(outh);
+            if (!_flag_antisymmetric) { out[0] += normf*_wf->computeWFValue(outh);
+            } else { out[0] -= normf*_wf->computeWFValue(outh); }
 
             _swapPositions(inh, j, i); // swap back
         }

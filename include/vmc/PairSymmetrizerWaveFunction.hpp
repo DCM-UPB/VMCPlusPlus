@@ -1,5 +1,5 @@
-#ifndef PAIR_SYMMETRIZER_WAVE_FUNCTION
-#define PAIR_SYMMETRIZER_WAVE_FUNCTION
+#ifndef VMC_PAIRSYMMETRIZERWAVEFUNCTION_HPP
+#define VMC_PAIRSYMMETRIZERWAVEFUNCTION_HPP
 
 
 #include "SymmetrizerWaveFunction.hpp"
@@ -20,22 +20,22 @@ class PairSymmetrizerWaveFunction: public SymmetrizerWaveFunction {
       approximative (anti-)symmetrization method.
     */
 public:
-    PairSymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
+    explicit PairSymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
         SymmetrizerWaveFunction(wf, flag_antisymmetric){}
 
-    ~PairSymmetrizerWaveFunction(){}
+    ~PairSymmetrizerWaveFunction() override= default;
 
     // devirtualize inherited methods
-    double getAcceptance(const double * protoold, const double * protonew) {
+    double getAcceptance(const double * protoold, const double * protonew) override {
         return SymmetrizerWaveFunction::getAcceptance(protoold, protonew);
     }
-    double computeWFValue(const double * protovalues) {
+    double computeWFValue(const double * protovalues) override {
         return SymmetrizerWaveFunction::computeWFValue(protovalues);
     }
 
     // own implementations
-    void samplingFunction(const double * in, double * out);
-    void computeAllDerivatives(const double * x);
+    void samplingFunction(const double * in, double * out) override;
+    void computeAllDerivatives(const double * x) override;
 };
 
 #endif

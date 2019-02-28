@@ -1,6 +1,6 @@
 #include "vmc/ParticleArrayHelper.hpp"
 
-#include <assert.h>
+#include <cassert>
 
 
 int main(){
@@ -35,12 +35,14 @@ int main(){
 
     // check setParticleArray
     double newx[NSPACEDIM];
-    for (int i=0; i<NSPACEDIM; ++i) newx[i] = 2*RANDOMINT*i;
+    for (int i=0; i<NSPACEDIM; ++i) { newx[i] = 2*RANDOMINT*i; }
+
     double oldx[NSPACEDIM];
     for (int i=0; i<NPART; ++i){
         // store the original array values
         vec = pah.getParticleArray(x, i);
-        for (int j=0; j<NSPACEDIM; ++j) oldx[j] = vec[j];
+        for (int j=0; j<NSPACEDIM; ++j) { oldx[j] = vec[j]; }
+
         // change the values for the particle i
         pah.setParticleArray(x, i, newx);
         // check that the values in the array x are as expected
@@ -73,7 +75,8 @@ int main(){
     for (int i=0; i<NPART; ++i){
         // store the original array values
         vec = pah.getParticleArray(x, i);
-        for (int j=0; j<NSPACEDIM; ++j) oldx[j] = vec[j];
+        for (int j=0; j<NSPACEDIM; ++j) { oldx[j] = vec[j]; }
+
         // change the values for the particle i
         pah.addArrayToParticleArray(x, i, newx);
         // check that the values in the array x are as expected
@@ -91,9 +94,11 @@ int main(){
             }
         }
         // set x to its original values
-        for (int j=0; j<NSPACEDIM; ++j) newx[j] = - newx[j];
+        for (double & j : newx) { j = - j; }
+
         pah.addArrayToParticleArray(x, i, newx);
-        for (int j=0; j<NSPACEDIM; ++j) newx[j] = - newx[j];
+        for (double & j : newx) { j = - j; }
+
         // check that x is set back to the original values
         for (int i2=0; i2<NPART; ++i2){
             for (int j=0; j<NSPACEDIM; ++j){

@@ -1,8 +1,8 @@
-#ifndef WAVE_FUNCTION
-#define WAVE_FUNCTION
+#ifndef VMC_WAVEFUNCTION_HPP
+#define VMC_WAVEFUNCTION_HPP
 
-#include "mci/MCISamplingFunctionInterface.hpp"
 #include "mci/MCICallBackOnAcceptanceInterface.hpp"
+#include "mci/MCISamplingFunctionInterface.hpp"
 
 #include <iostream>
 
@@ -65,8 +65,8 @@ protected:
     double ** _getD2VD1DivByWF(){return _d2vd1_divbywf;}
 
 public:
-    WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
-    virtual ~WaveFunction();
+    WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false);
+    ~WaveFunction() override;
 
     int getNSpaceDim(){return _nspacedim;}
     int getTotalNDim(){return MCISamplingFunctionInterface::getNDim();}
@@ -95,7 +95,7 @@ public:
 
 
     // --- method herited from MCICallBackOnAcceptanceInterface, that will simply call computeAllDerivatives
-    void callBackFunction(const double *x, const bool flag_observation);
+    void callBackFunction(const double *x, bool flag_observation) override;
 
 
     // --- getters and setters for the derivatives

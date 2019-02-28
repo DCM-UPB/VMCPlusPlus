@@ -1,11 +1,11 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
-#include "vmc/WaveFunction.hpp"
+#include "nfm/ConjGrad.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/VMC.hpp"
-#include "nfm/ConjGrad.hpp"
+#include "vmc/WaveFunction.hpp"
 
 
 
@@ -21,10 +21,10 @@ protected:
 public:
     HarmonicOscillator1D1P(const double w, WaveFunction * wf):
         Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
-    virtual ~HarmonicOscillator1D1P(){}
+    ~HarmonicOscillator1D1P() override= default;
 
     // potential energy
-    double localPotentialEnergy(const double *r)
+    double localPotentialEnergy(const double *r) override
     {
         return (0.5*_w*_w*(*r)*(*r));
     }
@@ -47,31 +47,31 @@ public:
             _a=a; _b=b;
         }
 
-    void setVP(const double *in){
+    void setVP(const double *in) override{
         _a=in[0];
         _b=in[1];
     }
 
-    void getVP(double *out){
+    void getVP(double *out) override{
         out[0]=_a;
         out[1]=_b;
     }
 
-    void samplingFunction(const double *x, double *out){
+    void samplingFunction(const double *x, double *out) override{
         /*
           Compute the sampling function proto value, used in getAcceptance()
         */
         *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
     }
 
-    double getAcceptance(const double * protoold, const double * protonew){
+    double getAcceptance(const double * protoold, const double * protonew) override{
         /*
           Compute the acceptance probability
         */
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *x){
+    void computeAllDerivatives(const double *x) override{
         _setD1DivByWF(0, -2.*_b*(x[0]-_a));
         _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
         if (hasVD1()){
@@ -80,7 +80,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues)
+    double computeWFValue(const double * protovalues) override
     {
         return exp(0.5*protovalues[0]);
     }
@@ -104,29 +104,29 @@ public:
         _b=b;
     }
 
-    void setVP(const double *in)
+    void setVP(const double *in) override
     {
         _b=*in;
         //if (_b<0.01) _b=0.01;
         using namespace std;
         //cout << "change b! " << _b << endl;
     }
-    void getVP(double *out)
+    void getVP(double *out) override
     {
         *out=_b;
     }
 
-    void samplingFunction(const double *in, double *out)
+    void samplingFunction(const double *in, double *out) override
     {
         *out=-2.*_b*(*in)*(*in);
     }
 
-    double getAcceptance(const double * protoold, const double * protonew)
+    double getAcceptance(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *in){
+    void computeAllDerivatives(const double *in) override{
         _setD1DivByWF(0, -2.*_b*(*in));
         _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
         if (hasVD1()){
@@ -134,7 +134,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues)
+    double computeWFValue(const double * protovalues) override
     {
         return exp(0.5*protovalues[0]);
     }
@@ -148,24 +148,24 @@ int main(){
     MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Declare some trial wave functions
-    Gaussian1D1POrbital * psi1 = new Gaussian1D1POrbital(1.2);
-    Gaussian1D1POrbital * psi2 = new Gaussian1D1POrbital(0.5);
-    Gaussian1D1POrbital * psi3 = new Gaussian1D1POrbital(1.0);
-    QuadrExponential1D1POrbital * psi4 = new QuadrExponential1D1POrbital(-0.5, 1.0);
+    auto * psi1 = new Gaussian1D1POrbital(1.2);
+    auto * psi2 = new Gaussian1D1POrbital(0.5);
+    auto * psi3 = new Gaussian1D1POrbital(1.0);
+    auto * psi4 = new QuadrExponential1D1POrbital(-0.5, 1.0);
 
     // Declare an Hamiltonian for each wave function (keep in mind that the kinetic energy is strictly bound to it)
     // We use the harmonic oscillator with w=1
-    HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(1., psi1);
-    HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(1., psi2);
-    HarmonicOscillator1D1P * ham3 = new HarmonicOscillator1D1P(1., psi3);
-    HarmonicOscillator1D1P * ham4 = new HarmonicOscillator1D1P(1., psi4);
+    auto * ham1 = new HarmonicOscillator1D1P(1., psi1);
+    auto * ham2 = new HarmonicOscillator1D1P(1., psi2);
+    auto * ham3 = new HarmonicOscillator1D1P(1., psi3);
+    auto * ham4 = new HarmonicOscillator1D1P(1., psi4);
 
 
 
     cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
 
     VMC * vmc; // VMC object we will resuse
-    const long E_NMC = 100000l; // MC samplings to use for computing the energy
+    const int E_NMC = 100000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
 

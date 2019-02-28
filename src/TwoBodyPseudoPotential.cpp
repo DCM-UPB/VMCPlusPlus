@@ -14,9 +14,9 @@ void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const doub
     _metric->distD1(r1, r2, _foo);
     _metric->distD2(r1, r2, _foo2);
 
-    if (_flag_vd1) urVD1(_metric->dist(r1, r2), _vfoo);
-    if (_flag_d1vd1 || _flag_d2vd1) urD1VD1(_metric->dist(r1, r2), _vfoo1);
-    if (_flag_d2vd1) urD2VD1(_metric->dist(r1, r2), _vfoo2);
+    if (_flag_vd1) { urVD1(_metric->dist(r1, r2), _vfoo); }
+    if (_flag_d1vd1 || _flag_d2vd1) { urD1VD1(_metric->dist(r1, r2), _vfoo1); }
+    if (_flag_d2vd1) { urD2VD1(_metric->dist(r1, r2), _vfoo2); }
 
     for (int i=0; i<_ndim2; ++i){
         _d1[i] = _foo[i] * ud1;
@@ -62,60 +62,60 @@ TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int &nvp, 
     _d1 = new double[_ndim2];
     _d2 = new double[_ndim2];
 
-    _vd1 = 0;
+    _vd1 = nullptr;
     if (flag_vd1){
         _vd1 = new double[_nvp];
     }
 
-    _d1vd1 = 0;
+    _d1vd1 = nullptr;
     if (flag_d1vd1){
         _d1vd1 = new double*[_ndim2];
-        for (int id1=0; id1<_ndim2; ++id1) _d1vd1[id1] = new double[_nvp];
+        for (int id1=0; id1<_ndim2; ++id1) { _d1vd1[id1] = new double[_nvp]; }
     }
 
-    _d2vd1 = 0;
+    _d2vd1 = nullptr;
     if (flag_d2vd1){
         _d2vd1 = new double*[_ndim2];
-        for (int id2=0; id2<_ndim2; ++id2) _d2vd1[id2] = new double[_nvp];
+        for (int id2=0; id2<_ndim2; ++id2) { _d2vd1[id2] = new double[_nvp]; }
     }
 
     _foo = new double[_ndim2];
     _foo2 = new double[_ndim2];
-    _vfoo = 0;
-    if (flag_vd1 || flag_d1vd1 || flag_d2vd1) _vfoo = new double[_nvp];
-    _vfoo1 = 0;
-    if (flag_d1vd1 || flag_d2vd1) _vfoo1 = new double[_nvp];
-    _vfoo2 = 0;
-    if (flag_d2vd1) _vfoo2 = new double[_nvp];
+    _vfoo = nullptr;
+    if (flag_vd1 || flag_d1vd1 || flag_d2vd1) { _vfoo = new double[_nvp]; }
+    _vfoo1 = nullptr;
+    if (flag_d1vd1 || flag_d2vd1) { _vfoo1 = new double[_nvp]; }
+    _vfoo2 = nullptr;
+    if (flag_d2vd1) { _vfoo2 = new double[_nvp]; }
 }
 
 
 TwoBodyPseudoPotential::~TwoBodyPseudoPotential(){
-    _metric = 0;
+    _metric = nullptr;
 
-    delete[] _d1; _d1=0;
-    delete[] _d2; _d2=0;
-    if (_vd1 != 0){
-        delete[] _vd1; _vd1 = 0;
+    delete[] _d1; _d1=nullptr;
+    delete[] _d2; _d2=nullptr;
+    if (_vd1 != nullptr){
+        delete[] _vd1; _vd1 = nullptr;
     }
-    if (_d1vd1 != 0){
-        for (int i=0; i<_ndim2; ++i) delete[] _d1vd1[i];
-        delete[] _d1vd1; _d1vd1 = 0;
+    if (_d1vd1 != nullptr){
+        for (int i=0; i<_ndim2; ++i) { delete[] _d1vd1[i]; }
+        delete[] _d1vd1; _d1vd1 = nullptr;
     }
-    if (_d2vd1 != 0){
-        for (int i=0; i<_ndim2; ++i) delete[] _d2vd1[i];
-        delete[] _d2vd1; _d2vd1 = 0;
+    if (_d2vd1 != nullptr){
+        for (int i=0; i<_ndim2; ++i) { delete[] _d2vd1[i]; }
+        delete[] _d2vd1; _d2vd1 = nullptr;
     }
 
-    delete[] _foo; _foo = 0;
-    delete[] _foo2; _foo2 = 0;
-    if (_vfoo){
-        delete[] _vfoo; _vfoo = 0;
+    delete[] _foo; _foo = nullptr;
+    delete[] _foo2; _foo2 = nullptr;
+    if (_vfoo != nullptr){
+        delete[] _vfoo; _vfoo = nullptr;
     }
-    if (_vfoo1){
-        delete[] _vfoo1; _vfoo1 = 0;
+    if (_vfoo1 != nullptr){
+        delete[] _vfoo1; _vfoo1 = nullptr;
     }
-    if (_vfoo2){
-        delete[] _vfoo2; _vfoo2 = 0;
+    if (_vfoo2 != nullptr){
+        delete[] _vfoo2; _vfoo2 = nullptr;
     }
 }

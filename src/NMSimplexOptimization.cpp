@@ -6,7 +6,7 @@ struct vmc_workspace
     WaveFunction * wf;
     Hamiltonian * H;
     MCI * mci;
-    long Nmc;
+    int Nmc;
     double iota;
     double kappa;
     double lambda;
@@ -31,13 +31,13 @@ struct vmc_workspace
 
 double vmc_cost(const gsl_vector *v, void *params)
 {
-    WaveFunction * const wf = ((struct vmc_workspace *)params)->wf;
-    Hamiltonian * const H = ((struct vmc_workspace *)params)->H;
-    MCI * const mci = ((struct vmc_workspace *)params)->mci;
-    const long Nmc = ((struct vmc_workspace *)params)->Nmc;
-    const double iota = ((struct vmc_workspace *)params)->iota;
-    const double kappa = ((struct vmc_workspace *)params)->kappa;
-    const double lambda = ((struct vmc_workspace *)params)->lambda;
+    WaveFunction * const wf = (static_cast<struct vmc_workspace *>(params))->wf;
+    Hamiltonian * const H = (static_cast<struct vmc_workspace *>(params))->H;
+    MCI * const mci = (static_cast<struct vmc_workspace *>(params))->mci;
+    const int Nmc = (static_cast<struct vmc_workspace *>(params))->Nmc;
+    const double iota = (static_cast<struct vmc_workspace *>(params))->iota;
+    const double kappa = (static_cast<struct vmc_workspace *>(params))->kappa;
+    const double lambda = (static_cast<struct vmc_workspace *>(params))->lambda;
 
     double vpar[wf->getNVP()];
     // apply the parameters to the wf
@@ -55,8 +55,9 @@ double vmc_cost(const gsl_vector *v, void *params)
 
     // compute the normalization
     double norm = 0.;
-    for (int i=0; i<wf->getNVP(); ++i)
+    for (int i=0; i<wf->getNVP(); ++i) {
         norm += pow(gsl_vector_get(v, i), 2);
+    }
     norm = sqrt(norm)/wf->getNVP();
 
     // return the cost function
@@ -67,7 +68,7 @@ double vmc_cost(const gsl_vector *v, void *params)
 void NMSimplexOptimization::optimizeWF()
 {
   const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
-  gsl_multimin_fminimizer *s = NULL;
+  gsl_multimin_fminimizer *s = nullptr;
   gsl_vector *ss, *x;
   gsl_multimin_function minex_func;
 
@@ -76,7 +77,7 @@ void NMSimplexOptimization::optimizeWF()
 
   int myrank = MPIVMC::MyRank();
 
-  vmc_workspace w;
+  vmc_workspace w{};
   w.initFromOptimizer(this);
 
   // Starting point
@@ -106,8 +107,7 @@ void NMSimplexOptimization::optimizeWF()
       iter++;
       status = gsl_multimin_fminimizer_iterate(s);
 
-      if (status)
-        break;
+      if (status != 0) { break; }
 
       double size = gsl_multimin_fminimizer_size(s);
       status = gsl_multimin_test_size(size, _rend);

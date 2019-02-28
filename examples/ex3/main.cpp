@@ -1,12 +1,12 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
-#include "vmc/WaveFunction.hpp"
-#include "vmc/Hamiltonian.hpp"
-#include "vmc/VMC.hpp"
 #include "nfm/ConjGrad.hpp"
 #include "nfm/LogNFM.hpp"
+#include "vmc/Hamiltonian.hpp"
+#include "vmc/VMC.hpp"
+#include "vmc/WaveFunction.hpp"
 
 
 
@@ -24,7 +24,7 @@ public:
         Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
 
     // potential energy
-    double localPotentialEnergy(const double *r)
+    double localPotentialEnergy(const double *r) override
     {
         return (0.5*_w*_w*(*r)*(*r));
     }
@@ -47,31 +47,31 @@ public:
             _a=a; _b=b;
         }
 
-    void setVP(const double *in){
+    void setVP(const double *in) override{
         _a=in[0];
         _b=in[1];
     }
 
-    void getVP(double *out){
+    void getVP(double *out) override{
         out[0]=_a;
         out[1]=_b;
     }
 
-    void samplingFunction(const double *x, double *out){
+    void samplingFunction(const double *x, double *out) override{
         /*
           Compute the sampling function proto value, used in getAcceptance()
         */
         *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
     }
 
-    double getAcceptance(const double * protoold, const double * protonew){
+    double getAcceptance(const double * protoold, const double * protonew) override{
         /*
           Compute the acceptance probability
         */
         return exp(protonew[0]-protoold[0]);
     }
 
-    void computeAllDerivatives(const double *x){
+    void computeAllDerivatives(const double *x) override{
         _setD1DivByWF(0, -2.*_b*(x[0]-_a));
         _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
         if (hasVD1()){
@@ -80,7 +80,7 @@ public:
         }
     }
 
-    double computeWFValue(const double * protovalues){
+    double computeWFValue(const double * protovalues) override{
         return exp(0.5*protovalues[0]);
     }
 };
@@ -94,19 +94,19 @@ int main(){
     MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Declare some trial wave functions
-    QuadrExponential1D1POrbital * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
+    auto * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
 
     // Declare an Hamiltonian
     // We use the harmonic oscillator with w=1 and w=2
     const double w = 1.;
-    HarmonicOscillator1D1P * ham = new HarmonicOscillator1D1P(w, psi);
+    auto * ham = new HarmonicOscillator1D1P(w, psi);
 
     NFMLogManager log;
     log.setLogLevel(1); // use this to enable log printout
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const long NMC = 10000l; // MC samplings to use for computing the energy
+    const int NMC = 10000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
     double vp[psi->getNVP()];

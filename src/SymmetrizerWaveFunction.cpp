@@ -1,13 +1,14 @@
 #include "vmc/SymmetrizerWaveFunction.hpp"
 
-#include <stdexcept>
 #include <cmath>
+#include <stdexcept>
 
 unsigned long SymmetrizerWaveFunction::_npart_factorial()
 {
     unsigned long fac = 1;
-    const unsigned long npart = static_cast<unsigned long>(_npart);
-    for (unsigned long i=2; i<=npart; ++i) fac *= i;
+    const auto npart = static_cast<unsigned long>(_npart);
+    for (unsigned long i=2; i<=npart; ++i) { fac *= i; }
+
     return fac;
 }
 
@@ -126,7 +127,8 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
 
     // initialize
     iter = 0;
-    for (int i=0; i<_npart; ++i) counts[i] = 0;
+    for (int i=0; i<_npart; ++i) { counts[i] = 0; }
+
     for (int i=0; i<ndim; ++i) {
         xh[i] = x[i];
         idh[i] = i;
@@ -150,8 +152,8 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
             }
 
             // evaluate and add swap wf
-            if (!_flag_antisymmetric || !isOdd) _addSwapDerivatives(xh, normf, idh);
-            else _addSwapDerivatives(xh, normf2, idh);
+            if (!_flag_antisymmetric || !isOdd) { _addSwapDerivatives(xh, normf, idh);
+            } else { _addSwapDerivatives(xh, normf2, idh); }
 
             ++counts[iter];
             iter = 0;
@@ -171,9 +173,9 @@ double SymmetrizerWaveFunction::computeWFValue(const double * protovalues)
 double SymmetrizerWaveFunction::getAcceptance(const double * protoold, const double * protonew)
 {
     double po2 = protoold[0]*protoold[0], pn2 = protonew[0]*protonew[0];
-    if (po2 == 0 && pn2 != 0) return 1.;
-    else if (po2 != 0 && pn2 == 0) return 0.;
-    else return pn2 / po2;
+    if (po2 == 0 && pn2 != 0) { return 1.; }
+    if (po2 != 0 && pn2 == 0) { return 0.; }
+    return pn2 / po2;
 }
 
 
@@ -187,8 +189,8 @@ void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
 
     // initialize
     iter = 0;
-    for (int i=0; i<_npart; ++i) counts[i] = 0.;
-    for (int i=0; i<ndim; ++i) inh[i] = in[i];
+    for (int i=0; i<_npart; ++i) { counts[i] = 0.; }
+    for (int i=0; i<ndim; ++i) { inh[i] = in[i]; }
 
     // evaluate unswapped wf
     _wf->samplingFunction(in, outh);
@@ -208,8 +210,8 @@ void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
 
             // evaluate and add swap wf
             _wf->samplingFunction(inh, outh);
-            if (!_flag_antisymmetric || !isOdd) out[0] += normf*_wf->computeWFValue(outh);
-            else out[0] -= normf*_wf->computeWFValue(outh);
+            if (!_flag_antisymmetric || !isOdd) { out[0] += normf*_wf->computeWFValue(outh);
+            } else { out[0] -= normf*_wf->computeWFValue(outh); }
 
             ++counts[iter];
             iter = 0;

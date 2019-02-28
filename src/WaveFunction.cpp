@@ -19,14 +19,14 @@ void WaveFunction::callBackFunction(const double *x, const bool flag_observation
 
 void WaveFunction::_allocateVariationalDerivativesMemory(){
     if (hasVD1()){
-        if (_vd1_divbywf != 0){
+        
             delete[] _vd1_divbywf;
-        }
+        
         _vd1_divbywf = new double[getNVP()];
-        for (int i=0; i<getNVP(); ++i) _vd1_divbywf[i] = 0.;
+        for (int i=0; i<getNVP(); ++i) { _vd1_divbywf[i] = 0.; }
     }
     if (hasD1VD1()){
-        if (_d1vd1_divbywf != 0){
+        if (_d1vd1_divbywf != nullptr){
             for (int i=0; i<getTotalNDim(); ++i){
                 delete[] _d1vd1_divbywf[i];
             }
@@ -35,11 +35,11 @@ void WaveFunction::_allocateVariationalDerivativesMemory(){
         _d1vd1_divbywf = new double*[getTotalNDim()];
         for (int i=0; i<getTotalNDim(); ++i){
             _d1vd1_divbywf[i] = new double[getNVP()];
-            for (int j=0; j<getNVP(); ++j) _d1vd1_divbywf[i][j] = 0.;
+            for (int j=0; j<getNVP(); ++j) { _d1vd1_divbywf[i][j] = 0.; }
         }
     }
     if (hasD1VD1()){
-        if (_d2vd1_divbywf != 0){
+        if (_d2vd1_divbywf != nullptr){
             for (int i=0; i<getTotalNDim(); ++i){
                 delete[] _d2vd1_divbywf[i];
             }
@@ -48,7 +48,7 @@ void WaveFunction::_allocateVariationalDerivativesMemory(){
         _d2vd1_divbywf = new double*[getTotalNDim()];
         for (int i=0; i<getTotalNDim(); ++i){
             _d2vd1_divbywf[i] = new double[getNVP()];
-            for (int j=0; j<getNVP(); ++j) _d2vd1_divbywf[i][j] = 0.;
+            for (int j=0; j<getNVP(); ++j) { _d2vd1_divbywf[i][j] = 0.; }
         }
     }
 }
@@ -73,29 +73,29 @@ MCICallBackOnAcceptanceInterface(nspacedim*npart){
         _d2_divbywf[i] = 0.;
     }
 
-    _vd1_divbywf = 0;
-    _d1vd1_divbywf = 0;
-    _d2vd1_divbywf = 0;
+    _vd1_divbywf = nullptr;
+    _d1vd1_divbywf = nullptr;
+    _d2vd1_divbywf = nullptr;
     _allocateVariationalDerivativesMemory();
 }
 
 
 WaveFunction::~WaveFunction(){
-    delete[] _d1_divbywf; _d1_divbywf = 0;
-    delete[] _d2_divbywf; _d2_divbywf = 0;
-    if (_vd1_divbywf != 0){
-        delete[] _vd1_divbywf; _vd1_divbywf = 0;
+    delete[] _d1_divbywf; _d1_divbywf = nullptr;
+    delete[] _d2_divbywf; _d2_divbywf = nullptr;
+    if (_vd1_divbywf != nullptr){
+        delete[] _vd1_divbywf; _vd1_divbywf = nullptr;
     }
-    if (_d1vd1_divbywf != 0){
+    if (_d1vd1_divbywf != nullptr){
         for (int i=0; i<getTotalNDim(); ++i){
             delete[] _d1vd1_divbywf[i];
         }
-        delete[] _d1vd1_divbywf; _d1vd1_divbywf = 0;
+        delete[] _d1vd1_divbywf; _d1vd1_divbywf = nullptr;
     }
-    if (_d2vd1_divbywf != 0){
+    if (_d2vd1_divbywf != nullptr){
         for (int i=0; i<getTotalNDim(); ++i){
             delete[] _d2vd1_divbywf[i];
         }
-        delete[] _d2vd1_divbywf; _d2vd1_divbywf = 0;
+        delete[] _d2vd1_divbywf; _d2vd1_divbywf = nullptr;
     }
 }

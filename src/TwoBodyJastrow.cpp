@@ -1,6 +1,6 @@
 #include "vmc/TwoBodyJastrow.hpp"
 
-#include <math.h>
+#include <cmath>
 // #include <iostream>
 //
 //
@@ -32,24 +32,28 @@ double TwoBodyJastrow::getAcceptance(const double * protoold, const double * pro
 void TwoBodyJastrow::computeAllDerivatives(const double *x)
 {
     double * d1_divbywf = _getD1DivByWF();
-    for (int i=0; i<getTotalNDim(); ++i) d1_divbywf[i] = 0.;
+    for (int i=0; i<getTotalNDim(); ++i) { d1_divbywf[i] = 0.; }
 
     double * d2_divbywf = _getD2DivByWF();
-    for (int i=0; i<getTotalNDim(); ++i) d2_divbywf[i] = 0.;
+    for (int i=0; i<getTotalNDim(); ++i) { d2_divbywf[i] = 0.; }
 
     double * vd1_divbywf = _getVD1DivByWF();;
     if (hasVD1() || hasD1VD1()){
-        for (int i=0; i<getNVP(); ++i) vd1_divbywf[i] = 0.;
+        for (int i=0; i<getNVP(); ++i) { vd1_divbywf[i] = 0.; }
     }
 
     double ** d1vd1_divbywf = _getD1VD1DivByWF();
     if (hasD1VD1()){
-        for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d1vd1_divbywf[i][j] = 0.;
+        for (int i=0; i<getTotalNDim(); ++i) {
+            for (int j=0; j<getNVP(); ++j) { d1vd1_divbywf[i][j] = 0.; }
+        }
     }
 
     double ** d2vd1_divbywf = _getD2VD1DivByWF();
     if (hasD2VD1()){
-        for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d2vd1_divbywf[i][j] = 0.;
+        for (int i=0; i<getTotalNDim(); ++i) {
+            for (int j=0; j<getNVP(); ++j) { d2vd1_divbywf[i][j] = 0.; }
+        }
     }
 
     // --- compute the "pure" terms of the derivatives (they will completed with cross terms afterwards)

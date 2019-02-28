@@ -1,5 +1,5 @@
-#ifndef PARTICLE_ARRAY_HELPER
-#define PARTICLE_ARRAY_HELPER
+#ifndef VMC_PARTICLEARRAYHELPER_HPP
+#define VMC_PARTICLEARRAYHELPER_HPP
 
 /*
 Tools for managing 1D arrays which represent the matrix:
@@ -19,12 +19,10 @@ Since this class most likely will be used within the library, unit tests on the 
 class ParticleArrayHelper
 {
 private:
-    int _nspacedim;
+    const int _nspacedim;
 
 public:
-    explicit ParticleArrayHelper(const int &nspacedim){
-        _nspacedim = nspacedim;
-    }
+    explicit ParticleArrayHelper(const int &nspacedim): _nspacedim(nspacedim) {}
 
     double * getParticleArray(double * x, const int &i);
     const double * getParticleArray(const double * x, const int &i);

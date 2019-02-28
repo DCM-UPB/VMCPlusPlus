@@ -1,8 +1,8 @@
 #include "vmc/SymmetrizerWaveFunction.hpp"
 #include "vmc/PairSymmetrizerWaveFunction.hpp"
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <iostream>
 #include <random>
 
@@ -31,19 +31,20 @@ int main(){
 
     // define a non-symmetric wavefunction
     const double ai_nosym[NPART] = {0.5, -0.25, 0.0};
-    QuadrExponential1DNPOrbital * phi_nosym = new QuadrExponential1DNPOrbital(NPART, ai_nosym, GAUSS_EXPF);
+    auto * phi_nosym = new QuadrExponential1DNPOrbital(NPART, ai_nosym, GAUSS_EXPF);
 
     // fully (anti-)symmetrized wfs
-    SymmetrizerWaveFunction * phi_sym = new SymmetrizerWaveFunction(phi_nosym, false);
-    SymmetrizerWaveFunction * phi_asym = new SymmetrizerWaveFunction(phi_nosym, true); // antisymmetric version
+    auto * phi_sym = new SymmetrizerWaveFunction(phi_nosym, false);
+    auto * phi_asym = new SymmetrizerWaveFunction(phi_nosym, true); // antisymmetric version
 
     // pair-wise (anti-)symmetrized wfs
-    PairSymmetrizerWaveFunction * phi_psym = new PairSymmetrizerWaveFunction(phi_nosym, false);
-    PairSymmetrizerWaveFunction * phi_pasym = new PairSymmetrizerWaveFunction(phi_nosym, true);
+    auto * phi_psym = new PairSymmetrizerWaveFunction(phi_nosym, false);
+    auto * phi_pasym = new PairSymmetrizerWaveFunction(phi_nosym, true);
 
     // particles position and all permutations
     double * xp[6];
-    for (int i=0; i<6; ++i) xp[i] = new double[NTOTALDIM];
+    for (auto & x : xp) { x = new double[NTOTALDIM]; }
+
     xp[0][0] = 0.2; xp[0][1] = -0.5; xp[0][2] = 0.7;
     xp[1][0] = xp[0][0]; xp[1][1] = xp[0][2]; xp[1][2] = xp[0][1];
     xp[2][0] = xp[0][1]; xp[2][1] = xp[0][0]; xp[2][2] = xp[0][2];
@@ -74,8 +75,9 @@ int main(){
 
         if (i>0) {
             assert(protov_nosym[0] != protov_nosym[1]);
-            if (isOdd[i]) assert(fabs(protov_asym[0] + protov_asym[1]) < SUPERTINY);
-            else assert(fabs(protov_asym[0] - protov_asym[1]) < SUPERTINY);
+            if (isOdd[i]) { assert(fabs(protov_asym[0] + protov_asym[1]) < SUPERTINY);
+            } else { assert(fabs(protov_asym[0] - protov_asym[1]) < SUPERTINY); }
+
             assert(fabs(protov_sym[0] - protov_sym[1]) < SUPERTINY);
         } // we can't do asserts like this for the approximately symmetrized wfs
     }
@@ -90,7 +92,7 @@ int main(){
     vector<string> names {"phi_nosym", "phi_sym", "phi_asym", "phi_psym", "phi_pasym"};
 
     double x[NTOTALDIM];
-    for (int i=0; i<NTOTALDIM; ++i) x[i] = xp[0][i];
+    for (int i=0; i<NTOTALDIM; ++i) { x[i] = xp[0][i]; }
 
     double vp[1];
     vp[0] = GAUSS_EXPF;
@@ -228,7 +230,7 @@ int main(){
         ++cont;
     }
 
-    for (int i=0; i<6; ++i) delete [] xp[i];
+    for (auto & x : xp) { delete [] x; }
     
     delete phi_pasym;
     delete phi_psym;

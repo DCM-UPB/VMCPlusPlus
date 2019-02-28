@@ -1,6 +1,6 @@
 #include "vmc/EuclideanMetric.hpp"
 
-#include <math.h>
+#include <cmath>
 
 
 double EuclideanMetric::dist(const double * r1, const double * r2){

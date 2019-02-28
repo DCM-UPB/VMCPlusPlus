@@ -1,9 +1,9 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
-#include "vmc/WaveFunction.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/VMC.hpp"
+#include "vmc/WaveFunction.hpp"
 
 #include "TestVMCFunctions.hpp"
 
@@ -13,14 +13,10 @@ int main(){
 
     MPIVMC::Init();
 
-    const long NMC = 4000l;
-    double ** irange = new double*[1];
-    *irange = new double[2];
-    irange[0][0] = -10.;
-    irange[0][1] = 10.;
+    const int NMC = 4000l;
 
-    Gaussian1D1POrbital * gauss = new Gaussian1D1POrbital(1.2);
-    HarmonicOscillator1D1P * harm_osc = new HarmonicOscillator1D1P(1., gauss);
+    auto * gauss = new Gaussian1D1POrbital(1.2);
+    auto * harm_osc = new HarmonicOscillator1D1P(1., gauss);
     // QuadrExponential1D1POrbital * qexp = new QuadrExponential1D1POrbital(1.0, 1.1);
     // HarmonicOscillator1D1P * harm_osc2 = new HarmonicOscillator1D1P(1., qexp);
 
@@ -29,7 +25,7 @@ int main(){
     gauss->getVP(&b1);
     cout << "Wave Function b     = " << b1 << endl;
     VMC * vmc = new VMC(gauss, harm_osc);
-    vmc->getMCI()->setIRange(irange);
+    vmc->getMCI()->setIRange(-10., 10.);
     double energy[4];
     double d_energy[4];
     vmc->computeVariationalEnergy(NMC, energy, d_energy, false, false);
@@ -88,9 +84,6 @@ int main(){
     // delete harm_osc2;
     delete gauss;
     // delete qexp;
-
-    delete[] irange[0];
-    delete[] irange;
 
     MPIVMC::Finalize();
 
