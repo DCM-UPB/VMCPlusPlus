@@ -9,82 +9,7 @@
 
 #include "vmc/MPIVMC.hpp" // this example requires MPI!
 
-/*
-  Hamiltonian describing a 1-particle harmonic oscillator:
-  H  =  p^2 / 2m  +  1/2 * w^2 * x^2
-*/
-class HarmonicOscillator1D1P: public Hamiltonian
-{
-protected:
-    double _w;
-
-public:
-    HarmonicOscillator1D1P(const double w, WaveFunction * wf):
-        Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
-    ~HarmonicOscillator1D1P() override= default;
-
-    // potential energy
-    double localPotentialEnergy(const double *r) override
-    {
-        return (0.5*_w*_w*(*r)*(*r));
-    }
-};
-
-
-
-/*
-  Trial Wave Function for 1 particle in 1 dimension, that uses one variational parameters: b.
-  Psi  =  exp( -b * x^2 )
-  Notice that the corresponding probability density (sampling function) is Psi^2.
-*/
-class Gaussian1D1POrbital: public WaveFunction
-{
-protected:
-    double _b;
-
-public:
-    explicit Gaussian1D1POrbital(const double b):
-    WaveFunction(1, 1, 1, 1, false, false, false){
-        _b=b;
-    }
-
-    void setVP(const double *in) override
-    {
-        _b=*in;
-        //if (_b<0.01) _b=0.01;
-        using namespace std;
-        //cout << "change b! " << _b << endl;
-    }
-    void getVP(double *out) override
-    {
-        *out=_b;
-    }
-
-    void protoFunction(const double *in, double *out) override
-    {
-        *out=-2.*_b*(*in)*(*in);
-    }
-
-    double acceptanceFunction(const double * protoold, const double * protonew) override
-    {
-        return exp(protonew[0]-protoold[0]);
-    }
-
-    void computeAllDerivatives(const double *in) override{
-        _setD1DivByWF(0, -2.*_b*(*in));
-        _setD2DivByWF(0, -2.*_b+4.*_b*_b*(*in)*(*in));
-        if (hasVD1()){
-            _setVD1DivByWF(0, (-(*in)*(*in)));
-        }
-    }
-
-    double computeWFValue(const double * protovalues) override
-    {
-        return exp(protovalues[0]);
-    }
-};
-
-
+#include "../common/ExampleFunctions.hpp"
 
 int main(){
     using namespace std;
@@ -147,7 +72,7 @@ int main(){
 
     // Now fix the number of steps for findMRT2step/initialDecorr
     // we use a generous total amount of 10000 equilibration steps
-    vmc.getMCI()->setNfindMRT2steps(50);
+    vmc.getMCI()->setNfindMRT2Iterations(50);
     vmc.getMCI()->setNdecorrelationSteps(5000);
 
     if (myrank==0) {

@@ -19,6 +19,11 @@ private:
         }
         return newwf;
     }
+
+    // we contain ProtoFunctionInterfaces as members, so we need to implement these:
+    void _newToOld(const mci::WalkerState &wlk) override;
+    void _oldToNew() override;
+
 public:
     MultiComponentWaveFunction(const int &nspacedim, const int &npart, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false):
     WaveFunction(nspacedim, npart, 0, 0, flag_vd1, flag_d1vd1, flag_d2vd1){}

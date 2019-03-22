@@ -35,6 +35,11 @@ protected:
     mci::SamplingFunctionInterface * _clone() const final {
         return new SymmetrizerWaveFunction(_wf, _flag_antisymmetric);
     }
+
+    // we have a ProtoFunctionInterface as member (_wf), so we need to implement these:
+    void _newToOld(const mci::WalkerState &wlk) override { _wf->newToOld(wlk); }
+    void _oldToNew() override { _wf->oldToNew(); }
+
 public:
     explicit SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
         WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()),

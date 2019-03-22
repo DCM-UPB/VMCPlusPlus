@@ -37,10 +37,6 @@ int main(){
     auto * phi_sym = new SymmetrizerWaveFunction(phi_nosym, false);
     auto * phi_asym = new SymmetrizerWaveFunction(phi_nosym, true); // antisymmetric version
 
-    // pair-wise (anti-)symmetrized wfs
-    auto * phi_psym = new PairSymmetrizerWaveFunction(phi_nosym, false);
-    auto * phi_pasym = new PairSymmetrizerWaveFunction(phi_nosym, true);
-
     // particles position and all permutations
     double * xp[6];
     for (auto & x : xp) { x = new double[NTOTALDIM]; }
@@ -55,7 +51,7 @@ int main(){
     bool isOdd[6] = {false, true, true, false, false, true};
 
     // compute the new protovalues
-    double protov_nosym[2], protov_sym[2], protov_asym[2], protov_psym[2], protov_pasym[2];
+    double protov_nosym[2], protov_sym[2], protov_asym[2];
     
     for (int i=0; i<6; ++i) {
         size_t offset = (i==0 ? 0 : 1);
@@ -63,15 +59,11 @@ int main(){
         phi_nosym->protoFunction(xp[i], protov_nosym + offset);
         phi_sym->protoFunction(xp[i], protov_sym + offset);
         phi_asym->protoFunction(xp[i], protov_asym + offset);
-        phi_psym->protoFunction(xp[i], protov_psym + offset);
-        phi_pasym->protoFunction(xp[i], protov_pasym + offset);
 
         // cout << "Perm " << i << ": ";
         // cout << " phi_nosym " << phi_nosym->computeWFValue(protov_nosym + offset);
         // cout << " phi_sym " << phi_sym->computeWFValue(protov_sym + offset);
         // cout << " phi_asym " << phi_asym->computeWFValue(protov_asym + offset) << endl;
-        // cout << " phi_psym " << phi_psym->computeWFValue(protov_psym + offset);
-        // cout << " phi_pasym " << phi_pasym->computeWFValue(protov_pasym + offset) << endl;
 
         if (i>0) {
             assert(protov_nosym[0] != protov_nosym[1]);
@@ -79,17 +71,15 @@ int main(){
             } else { assert(fabs(protov_asym[0] - protov_asym[1]) < SUPERTINY); }
 
             assert(fabs(protov_sym[0] - protov_sym[1]) < SUPERTINY);
-        } // we can't do asserts like this for the approximately symmetrized wfs
+        }
     }
 
     std::vector<WaveFunction *> wfs;
     wfs.push_back(phi_nosym);
     wfs.push_back(phi_sym);
     wfs.push_back(phi_asym);
-    wfs.push_back(phi_psym);
-    wfs.push_back(phi_pasym);
 
-    vector<string> names {"phi_nosym", "phi_sym", "phi_asym", "phi_psym", "phi_pasym"};
+    vector<string> names {"phi_nosym", "phi_sym", "phi_asym"};
 
     double x[NTOTALDIM];
     for (int i=0; i<NTOTALDIM; ++i) { x[i] = xp[0][i]; }
@@ -232,9 +222,6 @@ int main(){
 
     for (auto & x : xp) { delete [] x; }
     
-    delete phi_pasym;
-    delete phi_psym;
-
     delete phi_asym;
     delete phi_sym;
 

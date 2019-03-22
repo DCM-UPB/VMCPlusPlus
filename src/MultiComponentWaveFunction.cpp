@@ -173,3 +173,16 @@ void MultiComponentWaveFunction::addWaveFunction(WaveFunction * wf){
     setNProto( getNProto() + wf->getNProto() );
     setNVP( getNVP() + wf->getNVP() );
 }
+
+
+void MultiComponentWaveFunction::_newToOld(const mci::WalkerState &wlk) {
+    for (auto & wf : _wfs) {
+        wf->newToOld(wlk);
+    }
+}
+
+void MultiComponentWaveFunction::_oldToNew() {
+    for (auto & wf : _wfs) {
+        wf->oldToNew();
+    }
+}

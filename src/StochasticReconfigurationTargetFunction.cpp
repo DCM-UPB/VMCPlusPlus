@@ -54,7 +54,6 @@ void StochasticReconfigurationTargetFunction::_integrate(const double * const vp
     _mci->clearObservables();
     _mci->addObservable(*_H);
 
-    StochasticReconfigurationMCObservable * grad_obs = nullptr;
     if(flag_grad) {
         _mci->addObservable( StochasticReconfigurationMCObservable(_wf, _H) );
     }

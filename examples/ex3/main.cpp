@@ -9,84 +9,7 @@
 #include "vmc/VMC.hpp"
 #include "vmc/WaveFunction.hpp"
 
-
-/*
-  Hamiltonian describing a 1-particle harmonic oscillator:
-  H  =  p^2 / 2m  +  1/2 * w^2 * x^2
-*/
-class HarmonicOscillator1D1P: public Hamiltonian
-{
-protected:
-    double _w;
-
-public:
-    HarmonicOscillator1D1P(const double w, WaveFunction * wf):
-        Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
-
-    // potential energy
-    double localPotentialEnergy(const double *r) override
-    {
-        return (0.5*_w*_w*(*r)*(*r));
-    }
-};
-
-
-
-/*
-  Trial Wave Function for 1 particle in 1 dimension, that uses two variational parameters: a and b.
-  Psi  =  exp( -b * (x-a)^2 )
-  Notice that the corresponding probability density (sampling function) is Psi^2.
-*/
-class QuadrExponential1D1POrbital: public WaveFunction{
-protected:
-    double _a, _b;
-
-public:
-    QuadrExponential1D1POrbital(const double a, const double b):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, true /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
-            _a=a; _b=b;
-        }
-
-    void setVP(const double *in) override{
-        _a=in[0];
-        _b=in[1];
-    }
-
-    void getVP(double *out) override{
-        out[0]=_a;
-        out[1]=_b;
-    }
-
-    void protoFunction(const double *x, double *out) override{
-        /*
-          Compute the sampling function proto value, used in acceptanceFunction()
-        */
-        *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
-    }
-
-    double acceptanceFunction(const double * protoold, const double * protonew) override{
-        /*
-          Compute the acceptance probability
-        */
-        return exp(protonew[0]-protoold[0]);
-    }
-
-    void computeAllDerivatives(const double *x) override{
-        _setD1DivByWF(0, -2.*_b*(x[0]-_a));
-        _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
-        if (hasVD1()){
-            _setVD1DivByWF(0, 2.*_b*(x[0]-_a));
-            _setVD1DivByWF(1, -(x[0]-_a)*(x[0]-_a));
-        }
-    }
-
-    double computeWFValue(const double * protovalues) override{
-        return exp(0.5*protovalues[0]);
-    }
-};
-
-
-
+#include "../common/ExampleFunctions.hpp"
 
 int main(){
     using namespace std;
@@ -94,7 +17,7 @@ int main(){
     MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Declare some trial wave functions
-    auto * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
+    auto * psi = new QuadrExponential1D1POrbital(-0.5, 1.0, true); // enable variational deriv
 
     // Declare an Hamiltonian
     // We use the harmonic oscillator with w=1 and w=2
@@ -128,7 +51,7 @@ int main(){
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
 
     // settings for better performance
-    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNfindMRT2Iterations(10);
     vmc->getMCI()->setNdecorrelationSteps(1000);
 
     cout << "   Optimization . . ." << endl;

@@ -16,7 +16,8 @@
 #include <stdexcept>
 
 
-class VMC{
+class VMC
+{
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
@@ -31,7 +32,6 @@ public:
             throw std::invalid_argument( "Error VMC: ndim different between wf and H" );
         }
         _mci = new mci::MCI(_H->getTotalNDim());
-        //_mci->addCallBackOnMove(*_wf);
     }
 
     ~VMC(){

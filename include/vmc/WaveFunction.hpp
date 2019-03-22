@@ -29,22 +29,6 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
 
 */
 
-/*
-class WFDerivativeCallBack: public mci::CallBackOnMoveInterface{
-protected:
-    
-
-public:
-    // --- method herited from mci::CallBackOnMoveInterface, that will call computeAllDerivatives if necessary
-    void callBackFunction(const mci::WalkerState &wlkstate, bool flag_observation) override;
-    void WaveFunction::callBackFunction(const mci::WalkerState &wlk, const bool flag_observation){
-    if (flag_observation && wlk.accepted){
-        computeAllDerivatives(wlk.xnew);
-    }
-}
-    
-}*/
-
 class WaveFunction: public mci::SamplingFunctionInterface
 {
 protected:
@@ -82,8 +66,15 @@ protected:
     void _setD2VD1DivByWF(const int &id2, const int &ivd1, const double &d2vd1_divbywf){_d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf;}
     double ** _getD2VD1DivByWF(){return _d2vd1_divbywf;}
 
+    void _newToOld(const mci::WalkerState &wlk) override {
+        if (wlk.accepted && wlk.needsObs) {
+            this->computeAllDerivatives(wlk.xnew);
+        }
+    }
+
 public:
-    WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false);
+    WaveFunction(const int &nspacedim, const int &npart, const int &ncomp/*defines number of proto values*/,
+                 const int &nvp, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false);
     ~WaveFunction() override;
 
     int getNSpaceDim(){return _nspacedim;}
@@ -112,7 +103,7 @@ public:
     // This method is also used to provide MCI's samplingFunction method.
     virtual double computeWFValue(const double * protovalues) const = 0;    // --- MUST BE IMPLEMENTED
 
-    double samplingFunction(const double protovalues[]) const final {
+    double samplingFunction(const double protovalues[]) const final { // mainly for use by certain MCI trial moves
         const double wfval = this->computeWFValue(protovalues);
         return wfval*wfval; // the sampling function is Psi^2
     }
