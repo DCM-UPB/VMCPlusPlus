@@ -1,8 +1,8 @@
 #ifndef VMC_WAVEFUNCTION_HPP
 #define VMC_WAVEFUNCTION_HPP
 
-#include "mci/MCICallBackOnAcceptanceInterface.hpp"
-#include "mci/MCISamplingFunctionInterface.hpp"
+#include "mci/CallBackOnMoveInterface.hpp"
+#include "mci/SamplingFunctionInterface.hpp"
 
 #include <iostream>
 
@@ -15,19 +15,38 @@ IMPLEMENTATIONS OF THIS INTERFACE MUST INCLUDE:
     - void getVP(double *vp)
             get the variational parameters
 
-    - void samplingFunction(const double * in, double * out)
-            heritage from MCISamplingFunctionInterface, uses Psi^2
+    - void protoFunction(const double * in, double * out)
+            heritage from mci::SamplingFunctionInterface, uses Psi^2
 
-    - double getAcceptance(const double * protoold, const double * protonew)
-            heritage from MCISamplingFunctionInterface
+    - double acceptanceFunction(const double * protoold, const double * protonew)
+            heritage from mci::SamplingFunctionInterface
+
+    - double computeWFValue(const double * protov)
+            compute the true wave function value from given proto values
 
     - void computeAllDerivatives(const double *x)
             use the setters for derivatives values (setD1DivByWF, setD2DivByWF, etc.)
 
 */
 
+/*
+class WFDerivativeCallBack: public mci::CallBackOnMoveInterface{
+protected:
+    
 
-class WaveFunction: public MCISamplingFunctionInterface, public MCICallBackOnAcceptanceInterface{
+public:
+    // --- method herited from mci::CallBackOnMoveInterface, that will call computeAllDerivatives if necessary
+    void callBackFunction(const mci::WalkerState &wlkstate, bool flag_observation) override;
+    void WaveFunction::callBackFunction(const mci::WalkerState &wlk, const bool flag_observation){
+    if (flag_observation && wlk.accepted){
+        computeAllDerivatives(wlk.xnew);
+    }
+}
+    
+}*/
+
+class WaveFunction: public mci::SamplingFunctionInterface
+{
 protected:
     const int _nspacedim;
     const int _npart;
@@ -68,7 +87,7 @@ public:
     ~WaveFunction() override;
 
     int getNSpaceDim(){return _nspacedim;}
-    int getTotalNDim(){return MCISamplingFunctionInterface::getNDim();}
+    int getTotalNDim(){return mci::SamplingFunctionInterface::getNDim();}
     int getNPart(){return _npart;}
     int getNVP(){return _nvp;}
 
@@ -90,12 +109,13 @@ public:
     // wavefunction value, you have to provide a method to reconstruct
     // the wactual wavefunction value (not squared) from the sampling
     // function values, in case it is required e.g. by a wrapper.
-    virtual double computeWFValue(const double * protovalues) = 0;    // --- MUST BE IMPLEMENTED
+    // This method is also used to provide MCI's samplingFunction method.
+    virtual double computeWFValue(const double * protovalues) const = 0;    // --- MUST BE IMPLEMENTED
 
-
-    // --- method herited from MCICallBackOnAcceptanceInterface, that will simply call computeAllDerivatives
-    void callBackFunction(const double *x, bool flag_observation) override;
-
+    double samplingFunction(const double protovalues[]) const final {
+        const double wfval = this->computeWFValue(protovalues);
+        return wfval*wfval; // the sampling function is Psi^2
+    }
 
     // --- getters and setters for the derivatives
     // first derivative divided by the wf

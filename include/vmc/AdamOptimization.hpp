@@ -24,7 +24,7 @@ private:
     const double _epsilon;
 
 public:
-    AdamOptimization(WaveFunction * wf, Hamiltonian * H, MCI * mci, const int &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20,
+    AdamOptimization(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20,
                      const bool useAveraging = false, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8):
         WFOptimization(wf, H, mci),
         _Nmc(Nmc), _useSR(useSR), _useGradientError(useGradientError), _useAveraging(useAveraging), _max_n_const_values(max_n_const_values),

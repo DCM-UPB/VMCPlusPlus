@@ -49,15 +49,14 @@ void StochasticReconfigurationTargetFunction::_integrate(const double * const vp
 
     // set up the MC integrator
     _mci->clearSamplingFunctions();
-    _mci->addSamplingFunction(_wf);
+    _mci->addSamplingFunction(*_wf);
 
     _mci->clearObservables();
-    _mci->addObservable(_H);
+    _mci->addObservable(*_H);
 
     StochasticReconfigurationMCObservable * grad_obs = nullptr;
     if(flag_grad) {
-        grad_obs = new StochasticReconfigurationMCObservable(_wf, _H);
-        _mci->addObservable(grad_obs);
+        _mci->addObservable( StochasticReconfigurationMCObservable(_wf, _H) );
     }
 
     // perform the integral and store the values
@@ -66,7 +65,6 @@ void StochasticReconfigurationTargetFunction::_integrate(const double * const vp
     // clear
     _mci->clearObservables();
     _mci->clearSamplingFunctions();
-    if (flag_grad) { delete grad_obs; }
 }
 
 void StochasticReconfigurationTargetFunction::_calcObs(const double * const vp, double &f, double &df, double * const grad_E, double * const dgrad_E)

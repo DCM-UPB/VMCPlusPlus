@@ -1,4 +1,4 @@
-#include "vmc/PairSymmetrizerWaveFunction.hpp"
+/*#include "vmc/PairSymmetrizerWaveFunction.hpp"
 
 #include <cmath>
 
@@ -9,7 +9,7 @@ void PairSymmetrizerWaveFunction::computeAllDerivatives(const double * x)
     int idh[ndim]; // helper array for indices
 
     double protov[_wf->getNProto()];
-    samplingFunction(x, protov);
+    protoFunction(x, protov);
     const double normf = 1. / ((_npart*(_npart-1)/2 + 1)*computeWFValue(protov)); // normalizing factor
     const double normf2 = -normf; // negative factor for odd permutations in antisym case
 
@@ -39,7 +39,7 @@ void PairSymmetrizerWaveFunction::computeAllDerivatives(const double * x)
 }
 
 
-void PairSymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
+void PairSymmetrizerWaveFunction::protoFunction(const double * in, double * out)
 {
     const int ndim = getTotalNDim();
     double outh[_wf->getNProto()], inh[ndim]; // helper arrays for input/output
@@ -50,7 +50,7 @@ void PairSymmetrizerWaveFunction::samplingFunction(const double * in, double * o
     for (int i=0; i<ndim; ++i) { inh[i] = in[i]; }
 
     // evaluate unswapped wf
-    _wf->samplingFunction(in, outh);
+    _wf->protoFunction(in, outh);
     out[0] = normf*_wf->computeWFValue(outh);
 
     // add all pair-swapped wfs
@@ -59,7 +59,7 @@ void PairSymmetrizerWaveFunction::samplingFunction(const double * in, double * o
             _swapPositions(inh, i, j);
 
             // evaluate and add swap wf
-            _wf->samplingFunction(inh, outh);
+            _wf->protoFunction(inh, outh);
             if (!_flag_antisymmetric) { out[0] += normf*_wf->computeWFValue(outh);
             } else { out[0] -= normf*_wf->computeWFValue(outh); }
 
@@ -67,3 +67,4 @@ void PairSymmetrizerWaveFunction::samplingFunction(const double * in, double * o
         }
     }
 }
+*/

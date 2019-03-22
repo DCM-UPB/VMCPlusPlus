@@ -16,7 +16,7 @@ private:
     const int _grad_E_Nmc;
 
 public:
-    ConjugateGradientOptimization(WaveFunction * wf, Hamiltonian * H, const int &E_Nmc, const int &grad_E_Nmc, MCI * mci):
+    ConjugateGradientOptimization(WaveFunction * wf, Hamiltonian * H, const int &E_Nmc, const int &grad_E_Nmc, mci::MCI * mci):
         WFOptimization(wf, H, mci),
         _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc) {}
 

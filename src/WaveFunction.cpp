@@ -8,12 +8,6 @@ void WaveFunction::setNVP(const int &nvp){
 }
 
 
-void WaveFunction::callBackFunction(const double *x, const bool flag_observation){
-    if (flag_observation){
-        computeAllDerivatives(x);
-    }
-}
-
 
 void WaveFunction::_allocateVariationalDerivativesMemory(){
     if (hasVD1()) {
@@ -51,7 +45,7 @@ void WaveFunction::_allocateVariationalDerivativesMemory(){
 
 
 WaveFunction::WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1):
-    MCISamplingFunctionInterface(nspacedim*npart, ncomp), MCICallBackOnAcceptanceInterface(nspacedim*npart),
+    mci::SamplingFunctionInterface(nspacedim*npart, ncomp),
     _nspacedim(nspacedim), _npart(npart), _nvp(nvp), _flag_vd1(flag_vd1), _flag_d1vd1(flag_d1vd1), _flag_d2vd1(flag_d2vd1)
 {
     _d1_divbywf = new double[nspacedim*npart];
@@ -59,7 +53,7 @@ WaveFunction::WaveFunction(const int &nspacedim, const int &npart, const int &nc
 
     std::fill(_d1_divbywf, _d1_divbywf+nspacedim*npart, 0.);
     std::fill(_d2_divbywf, _d2_divbywf+nspacedim*npart, 0.);
-    
+
     _vd1_divbywf = nullptr;
     _d1vd1_divbywf = nullptr;
     _d2vd1_divbywf = nullptr;

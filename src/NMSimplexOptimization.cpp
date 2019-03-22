@@ -7,7 +7,7 @@ struct vmc_nms
 {
     WaveFunction * wf;
     Hamiltonian * H;
-    MCI * mci;
+    mci::MCI * mci;
     int Nmc;
     double iota;
     double kappa;
@@ -35,7 +35,7 @@ double vmc_cost(const gsl_vector *v, void *params)
 {
     WaveFunction * const wf = (static_cast<struct vmc_nms *>(params))->wf;
     Hamiltonian * const H = (static_cast<struct vmc_nms *>(params))->H;
-    MCI * const mci = (static_cast<struct vmc_nms *>(params))->mci;
+    mci::MCI * const mci = (static_cast<struct vmc_nms *>(params))->mci;
     const int Nmc = (static_cast<struct vmc_nms *>(params))->Nmc;
     const double iota = (static_cast<struct vmc_nms *>(params))->iota;
     const double kappa = (static_cast<struct vmc_nms *>(params))->kappa;
@@ -51,8 +51,8 @@ double vmc_cost(const gsl_vector *v, void *params)
     // compute the energy and its standard deviation
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
-    mci->clearObservables(); mci->addObservable(H);
+    mci->clearSamplingFunctions(); mci->addSamplingFunction(*wf);
+    mci->clearObservables(); mci->addObservable(*H);
     MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
 
     // compute the normalization

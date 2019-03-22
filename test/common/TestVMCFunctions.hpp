@@ -30,13 +30,13 @@ public:
         out[1]=_b;
     }
 
-    void samplingFunction(const double *in, double *out) override
+    void protoFunction(const double *in, double *out) override
     {
         *out = -2.*(_b*(in[0]-_a)*(in[0]-_a));
         std::cout << "out " << *out << std::endl;
     }
 
-    double getAcceptance(const double * protoold, const double * protonew) override
+    double acceptanceFunction(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
@@ -87,7 +87,7 @@ public:
         out[0]=_b;
     }
 
-    void samplingFunction(const double *x, double *out) override
+    void protoFunction(const double *x, double *out) override
     {
         *out = 0.;
         for (int i=0; i<_npart; ++i) {
@@ -96,7 +96,7 @@ public:
         *out *= -2.*_b;
     }
 
-    double getAcceptance(const double * protoold, const double * protonew) override
+    double acceptanceFunction(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }
@@ -154,12 +154,12 @@ public:
         *out=_b;
     }
 
-    void samplingFunction(const double *in, double *out) override
+    void protoFunction(const double *in, double *out) override
     {
         *out=-2.*_b*(*in)*(*in);
     }
 
-    double getAcceptance(const double * protoold, const double * protonew) override
+    double acceptanceFunction(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }

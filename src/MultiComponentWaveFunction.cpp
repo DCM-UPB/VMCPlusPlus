@@ -104,7 +104,7 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double *x){
     }
 }
 
-double MultiComponentWaveFunction::computeWFValue(const double * protovalues)
+double MultiComponentWaveFunction::computeWFValue(const double * protovalues) const
 {
     double out = 1.;
     int contproto = 0;
@@ -115,21 +115,20 @@ double MultiComponentWaveFunction::computeWFValue(const double * protovalues)
     return out;
 }
 
-double MultiComponentWaveFunction::getAcceptance(const double * protoold, const double * protonew){
+double MultiComponentWaveFunction::acceptanceFunction(const double * protoold, const double * protonew) const {
     double acceptance = 1.;
     int contproto = 0;
     for (WaveFunction * wf : _wfs){
-        acceptance *= wf->getAcceptance(protoold+contproto, protonew+contproto);
+        acceptance *= wf->acceptanceFunction(protoold+contproto, protonew+contproto);
         contproto += wf->getNProto();
     }
     return acceptance;
 }
 
-
-void MultiComponentWaveFunction::samplingFunction(const double * in, double * out){
+void MultiComponentWaveFunction::protoFunction(const double * in, double * out){
     int contproto = 0;
     for (WaveFunction * wf : _wfs){
-        wf->samplingFunction(in, out+contproto);
+        wf->protoFunction(in, out+contproto);
         contproto += wf->getNProto();
     }
 }

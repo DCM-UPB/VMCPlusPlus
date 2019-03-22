@@ -20,7 +20,7 @@ class VMC{
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
-    MCI * _mci;
+    mci::MCI * _mci;
 
 
 public:
@@ -30,8 +30,8 @@ public:
         if (_wf->getTotalNDim() != _H->getTotalNDim()) {
             throw std::invalid_argument( "Error VMC: ndim different between wf and H" );
         }
-        _mci = new MCI(_H->getTotalNDim());
-        _mci->addCallBackOnAcceptance(_wf);
+        _mci = new mci::MCI(_H->getTotalNDim());
+        //_mci->addCallBackOnMove(*_wf);
     }
 
     ~VMC(){
@@ -40,7 +40,7 @@ public:
 
 
     // Monte Carlo Integral within VMC should be performed using the MCI object provided by VMC
-    MCI * getMCI(){return _mci;}
+    mci::MCI * getMCI(){return _mci;}
 
     // Computation of the variational energy
     void computeVariationalEnergy(const int & Nmc, double * E, double * dE, bool doFindMRT2step = true, bool doDecorrelation = true);

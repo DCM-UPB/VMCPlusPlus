@@ -5,7 +5,7 @@
 #include "SymmetrizerWaveFunction.hpp"
 
 
-class PairSymmetrizerWaveFunction: public SymmetrizerWaveFunction {
+//class PairSymmetrizerWaveFunction: public SymmetrizerWaveFunction {
     /*
       This class wraps around an arbitrary WaveFunction and applies by default the
       pair Symmetrizer operator or by optional second constructor argument instead
@@ -19,23 +19,23 @@ class PairSymmetrizerWaveFunction: public SymmetrizerWaveFunction {
       symmetric/antisymmetric under particle-exchange! So this is just an experimental
       approximative (anti-)symmetrization method.
     */
-public:
+/*public:
     explicit PairSymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
         SymmetrizerWaveFunction(wf, flag_antisymmetric){}
 
     ~PairSymmetrizerWaveFunction() override= default;
 
     // devirtualize inherited methods
-    double getAcceptance(const double * protoold, const double * protonew) override {
-        return SymmetrizerWaveFunction::getAcceptance(protoold, protonew);
+    double acceptanceFunction(const double * protoold, const double * protonew) override {
+        return SymmetrizerWaveFunction::acceptanceFunction(protoold, protonew);
     }
     double computeWFValue(const double * protovalues) override {
         return SymmetrizerWaveFunction::computeWFValue(protovalues);
     }
 
     // own implementations
-    void samplingFunction(const double * in, double * out) override;
+    void protoFunction(const double * in, double * out) override;
     void computeAllDerivatives(const double * x) override;
 };
-
+*/
 #endif

@@ -11,7 +11,7 @@ namespace vmc_siman{
     WaveFunction * wf;
     Hamiltonian * H;
     int Nmc;
-    MCI * mci;
+    mci::MCI * mci;
 
     // Simulated Annealing target function parameters
     double iota;   // factor that applies to the energy, for the target function
@@ -33,8 +33,8 @@ namespace vmc_siman{
         // compute the energy and its standard deviation
         double energy[4]; // energy
         double d_energy[4]; // energy error bar
-        mci->clearSamplingFunctions(); mci->addSamplingFunction(wf);
-        mci->clearObservables(); mci->addObservable(H);
+        mci->clearSamplingFunctions(); mci->addSamplingFunction(*wf);
+        mci->clearObservables(); mci->addObservable(*H);
         MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
 
         // compute the normalization
@@ -90,7 +90,7 @@ namespace vmc_siman{
 } // namespace vmc_siman
 
 
-SimulatedAnnealingOptimization::SimulatedAnnealingOptimization(WaveFunction * wf, Hamiltonian * H, const int &Nmc, MCI * mci, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params)
+SimulatedAnnealingOptimization::SimulatedAnnealingOptimization(WaveFunction * wf, Hamiltonian * H, const int &Nmc, mci::MCI * mci, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params)
     : WFOptimization(wf, H, mci)
 {
     vmc_siman::wf = wf;

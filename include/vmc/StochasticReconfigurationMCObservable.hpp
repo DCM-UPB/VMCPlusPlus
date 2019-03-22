@@ -1,27 +1,30 @@
 #ifndef VMC_STOCHASTICRECONFIGURATIONMCOBSERVABLE_HPP
 #define VMC_STOCHASTICRECONFIGURATIONMCOBSERVABLE_HPP
 
-#include "mci/MCIObservableFunctionInterface.hpp"
+#include "mci/ObservableFunctionInterface.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/WaveFunction.hpp"
 
 
 
-class StochasticReconfigurationMCObservable: public MCIObservableFunctionInterface
+class StochasticReconfigurationMCObservable: public mci::ObservableFunctionInterface
 {
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
 
+    mci::ObservableFunctionInterface * _clone() const final {
+        return new StochasticReconfigurationMCObservable(_wf, _H); // ownership needs fix
+    }
 public:
     StochasticReconfigurationMCObservable(WaveFunction * wf, Hamiltonian * H):
-        MCIObservableFunctionInterface(H->getNDim(), 2*wf->getNVP() + wf->getNVP()*wf->getNVP()),
+        mci::ObservableFunctionInterface(H->getNDim(), 2*wf->getNVP() + wf->getNVP()*wf->getNVP()),
         _wf(wf), _H(H) {}
 
     ~StochasticReconfigurationMCObservable() override= default;
 
 
-    // MCIObservableFunctionInterface implementation
+    // mci::ObservableFunctionInterface implementation
     void observableFunction(const double * in, double * out) override{
         // out is made in this way (nvp is the number of variational parameters):
         // out[0:nvp-1] = Oi

@@ -60,11 +60,11 @@ int main(){
     for (int i=0; i<6; ++i) {
         size_t offset = (i==0 ? 0 : 1);
 
-        phi_nosym->samplingFunction(xp[i], protov_nosym + offset);
-        phi_sym->samplingFunction(xp[i], protov_sym + offset);
-        phi_asym->samplingFunction(xp[i], protov_asym + offset);
-        phi_psym->samplingFunction(xp[i], protov_psym + offset);
-        phi_pasym->samplingFunction(xp[i], protov_pasym + offset);
+        phi_nosym->protoFunction(xp[i], protov_nosym + offset);
+        phi_sym->protoFunction(xp[i], protov_sym + offset);
+        phi_asym->protoFunction(xp[i], protov_asym + offset);
+        phi_psym->protoFunction(xp[i], protov_psym + offset);
+        phi_pasym->protoFunction(xp[i], protov_pasym + offset);
 
         // cout << "Perm " << i << ": ";
         // cout << " phi_nosym " << phi_nosym->computeWFValue(protov_nosym + offset);
@@ -111,14 +111,14 @@ int main(){
         // initial wave function
         double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
         double samp;
-        wf->samplingFunction(x, &samp); f = wf->computeWFValue(&samp);
+        wf->protoFunction(x, &samp); f = wf->computeWFValue(&samp);
 
 
         // --- check the first derivatives
         for (int i=0; i<NTOTALDIM; ++i){
             const double origx = x[i];
             x[i] += DX;
-            wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
             const double numderiv = (fdx-f)/(DX*f);
 
             // cout << "getD1DivByWF(" << i <<") = " << wf->getD1DivByWF(i) << endl;
@@ -133,9 +133,9 @@ int main(){
         for (int i=0; i<NTOTALDIM; ++i){
             const double origx = x[i];
             x[i] = origx + DX;
-            wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
             x[i] = origx - DX;
-            wf->samplingFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
             const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
             // cout << "getD2DivByWF(" << i << ") = " << wf->getD2DivByWF(i) << endl;
@@ -151,7 +151,7 @@ int main(){
             const double origvp = vp[i];
             vp[i] += DX;
             wf->setVP(vp);
-            wf->samplingFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
             const double numderiv = (fdvp - f)/(DX*f);
 
             // cout << "getVD1DivByWF(" << i << ") = " << wf->getVD1DivByWF(i) << endl;
@@ -170,15 +170,15 @@ int main(){
                 const double origvp = vp[j];
 
                 x[i] += DX;
-                wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
 
                 x[i] = origx;
                 vp[j] += DX;
                 wf->setVP(vp);
-                wf->samplingFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
 
                 x[i] += DX;
-                wf->samplingFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
 
                 const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
 
@@ -200,21 +200,21 @@ int main(){
                 const double origvp = vp[j];
 
                 x[i] = origx + DX;
-                wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
 
                 vp[j] = origvp + DX;
                 wf->setVP(vp);
-                wf->samplingFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
 
                 x[i] = origx;
-                wf->samplingFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
 
                 x[i] = origx - DX;
-                wf->samplingFunction(x, &samp); fmdxdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fmdxdvp = wf->computeWFValue(&samp);
 
                 vp[j] = origvp;
                 wf->setVP(vp);
-                wf->samplingFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
 
                 const double numderiv = (fdxdvp - 2.*fdvp + fmdxdvp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
 

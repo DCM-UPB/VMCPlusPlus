@@ -24,6 +24,9 @@ private:
     TwoBodyPseudoPotential * const _u2;
     ParticleArrayHelper * _pah;
 
+    mci::SamplingFunctionInterface * _clone() const final {
+        return new TwoBodyJastrow(_npart, _u2);
+    }
 public:
     TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2):
         WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()),
@@ -46,13 +49,13 @@ public:
     void getVP(double *vp) override{_u2->getVP(vp);}
 
 
-    void samplingFunction(const double * x, double * protov) override;
+    void protoFunction(const double * x, double * protov) override;
 
-    double getAcceptance(const double * protoold, const double * protonew) override;
+    double acceptanceFunction(const double * protoold, const double * protonew) const override;
 
     void computeAllDerivatives(const double *x) override;
 
-    double computeWFValue(const double * protovalues) override;
+    double computeWFValue(const double * protovalues) const override;
 };
 
 

@@ -36,21 +36,21 @@ namespace MPIVMC
         #endif
     }
 
-    inline void SetSeed(MCI * const mci, const std::string &filename, const int &offset = 0)
+    inline void SetSeed(mci::MCI * mci, const std::string &filename, const int &offset = 0)
     {
         #if USE_MPI==1
-        MPIMCI::setSeed(mci, filename, offset);
+        MPIMCI::setSeed(*mci, filename, offset);
         #else
         std::cout << "Warning: In non-MPI mode MPIVMC::SetSeed ignores the seedfile and sets the seed to offset (default 0)." << std::endl;
         mci->setSeed(offset);
         #endif
     }
 
-    inline void Integrate(MCI * const mci, const int &Nmc, double * average, double * error, const bool findMRT2step=true, const bool initialdecorrelation=true, const bool randomizeWalkers = false)
+    inline void Integrate(mci::MCI * mci, const int &Nmc, double * average, double * error, const bool findMRT2step=true, const bool initialdecorrelation=true, const bool randomizeWalkers = false)
     {
         if (randomizeWalkers) { mci->newRandomX(); }
         #if USE_MPI==1
-        MPIMCI::integrate(mci, Nmc, average, error, findMRT2step, initialdecorrelation);
+        MPIMCI::integrate(*mci, Nmc, average, error, findMRT2step, initialdecorrelation);
         #else
         mci->integrate(Nmc, average, error, findMRT2step, initialdecorrelation);
         #endif

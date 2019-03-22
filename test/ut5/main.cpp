@@ -109,11 +109,11 @@ int main(){
 
     // --- check the sampling function
     double protov[4];
-    Psi->samplingFunction(x, protov);
+    Psi->protoFunction(x, protov);
     double * protovJ[4]; for (auto & pv : protovJ) { pv = new double; }
 
     for (int iJ=0; iJ<4; ++iJ){
-        J[iJ]->samplingFunction(x, protovJ[iJ]);
+        J[iJ]->protoFunction(x, protovJ[iJ]);
         // cout << "Psi protovalue = " << protov[iJ] << "    J_" << iJ+1 << " protovalue = " << protovJ[iJ][0] << endl;
         assert( protov[iJ] == protovJ[iJ][0] );
     }
@@ -129,20 +129,20 @@ int main(){
     }
     // compute the new protovalues
     double protovnew[4];
-    Psi->samplingFunction(x, protovnew);
+    Psi->protoFunction(x, protovnew);
     double * protovJnew[4]; for (auto & pv : protovJnew) { pv = new double; }
 
-    J_1->samplingFunction(x, protovJnew[0]);
-    J_2->samplingFunction(x, protovJnew[1]);
-    J_3->samplingFunction(x, protovJnew[2]);
-    J_4->samplingFunction(x, protovJnew[3]);
+    J_1->protoFunction(x, protovJnew[0]);
+    J_2->protoFunction(x, protovJnew[1]);
+    J_3->protoFunction(x, protovJnew[2]);
+    J_4->protoFunction(x, protovJnew[3]);
 
     // compute and compare the acceptance values
-    const double accPsi = Psi->getAcceptance(protov, protovnew);
-    const double accJ1 = J_1->getAcceptance(protovJ[0], protovJnew[0]);
-    const double accJ2 = J_2->getAcceptance(protovJ[1], protovJnew[1]);
-    const double accJ3 = J_3->getAcceptance(protovJ[2], protovJnew[2]);
-    const double accJ4 = J_4->getAcceptance(protovJ[3], protovJnew[3]);
+    const double accPsi = Psi->acceptanceFunction(protov, protovnew);
+    const double accJ1 = J_1->acceptanceFunction(protovJ[0], protovJnew[0]);
+    const double accJ2 = J_2->acceptanceFunction(protovJ[1], protovJnew[1]);
+    const double accJ3 = J_3->acceptanceFunction(protovJ[2], protovJnew[2]);
+    const double accJ4 = J_4->acceptanceFunction(protovJ[3], protovJnew[3]);
     // cout << "acceptance values:    Psi = " << accPsi << "    J_1 = " << accJ1 << "    J_2 = " << accJ2 << "    J_3 = " << accJ3 << "    J_4 = " << accJ4 << "    J_1*J_2*J_3*J_4 = " << accJ1*accJ2*accJ3*accJ4 << endl;
     assert( accPsi == accJ1*accJ2*accJ3*accJ4 );
 
@@ -157,14 +157,14 @@ int main(){
     // initial wave function
     double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
     double samp[4];
-    Psi->samplingFunction(x, samp); f = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+    Psi->protoFunction(x, samp); f = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
 
     // --- check the first derivatives
     for (int i=0; i<NPART*NSPACEDIM; ++i){
         const double origx = x[i];
         x[i] += DX;
-        Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        Psi->protoFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         const double numderiv = (fdx-f)/(DX*f);
 
         // cout << "getD1DivByWF(" << i <<") = " << Psi->getD1DivByWF(i) << endl;
@@ -179,9 +179,9 @@ int main(){
     for (int i=0; i<NPART*NSPACEDIM; ++i){
         const double origx = x[i];
         x[i] = origx + DX;
-        Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        Psi->protoFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         x[i] = origx - DX;
-        Psi->samplingFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        Psi->protoFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
         // cout << "getD2DivByWF(" << i << ") = " << Psi->getD2DivByWF(i) << endl;
@@ -198,7 +198,7 @@ int main(){
         const double origvp = vp[i];
         vp[i] += DX;
         Psi->setVP(vp);
-        Psi->samplingFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+        Psi->protoFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
         const double numderiv = (fdvp - f)/(DX*f);
 
         // cout << "getVD1DivByWF(" << i << ") = " << Psi->getVD1DivByWF(i) << endl;
@@ -217,15 +217,15 @@ int main(){
             const double origvp = vp[j];
 
             x[i] += DX;
-            Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             x[i] = origx;
             vp[j] += DX;
             Psi->setVP(vp);
-            Psi->samplingFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             x[i] += DX;
-            Psi->samplingFunction(x, samp); fdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
 
@@ -247,21 +247,21 @@ int main(){
             const double origvp = vp[j];
 
             x[i] = origx + DX;
-            Psi->samplingFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             vp[j] = origvp + DX;
             Psi->setVP(vp);
-            Psi->samplingFunction(x, samp); fdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             x[i] = origx;
-            Psi->samplingFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             x[i] = origx - DX;
-            Psi->samplingFunction(x, samp); fmdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fmdxdvp = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             vp[j] = origvp;
             Psi->setVP(vp);
-            Psi->samplingFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
+            Psi->protoFunction(x, samp); fmdx = exp(samp[0]+samp[1]+samp[2]+samp[3]);
 
             const double numderiv = (fdxdvp - 2.*fdvp + fmdxdvp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
 

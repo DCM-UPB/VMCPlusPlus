@@ -13,13 +13,13 @@ class EnergyGradientTargetFunction: public NoisyFunctionWithGradient
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
-    MCI * const _mci;
+    mci::MCI * const _mci;
     const int _E_Nmc;
     const int _grad_E_Nmc;
     const double _lambda_reg;
 
 public:
-    EnergyGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const int & E_Nmc, const int &grad_E_Nmc, MCI * mci, const double &lambda_reg = 0.):
+    EnergyGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const int & E_Nmc, const int &grad_E_Nmc, mci::MCI * mci, const double &lambda_reg = 0.):
         NoisyFunctionWithGradient(wf->getNVP()),
         _wf(wf), _H(H), _mci(mci), _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc), _lambda_reg(lambda_reg) {}
 

@@ -60,12 +60,12 @@ public:
         *out=_b;
     }
 
-    void samplingFunction(const double *in, double *out) override
+    void protoFunction(const double *in, double *out) override
     {
         *out=-2.*_b*(*in)*(*in);
     }
 
-    double getAcceptance(const double * protoold, const double * protonew) override
+    double acceptanceFunction(const double * protoold, const double * protonew) override
     {
         return exp(protonew[0]-protoold[0]);
     }

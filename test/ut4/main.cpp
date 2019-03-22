@@ -70,7 +70,7 @@ int main(){
 
         // initial wave function
         double f, fdx, fmdx, fdp, fdxdp, fmdxdp;
-        J->samplingFunction(x, &f); f = exp(f);
+        J->protoFunction(x, &f); f = exp(f);
         // cout << "f = " << f << endl;
 
 
@@ -78,7 +78,7 @@ int main(){
         for (int i=0; i<NPART*NSPACEDIM; ++i){
             const double origx = x[i];
             x[i] += DX;
-            J->samplingFunction(x, &fdx); fdx = exp(fdx);
+            J->protoFunction(x, &fdx); fdx = exp(fdx);
             const double numderiv = (fdx-f)/(DX*f);
 
             // cout << "getD1DivByWF(" << i <<") = " << J->getD1DivByWF(i) << endl;
@@ -93,9 +93,9 @@ int main(){
         for (int i=0; i<NPART*NSPACEDIM; ++i){
             const double origx = x[i];
             x[i] = origx + DX;
-            J->samplingFunction(x, &fdx); fdx = exp(fdx);
+            J->protoFunction(x, &fdx); fdx = exp(fdx);
             x[i] = origx - DX;
-            J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
+            J->protoFunction(x, &fmdx); fmdx = exp(fmdx);
             const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
             // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
@@ -111,7 +111,7 @@ int main(){
             const double origvp = vp[i];
             vp[i] += DX;
             J->setVP(vp);
-            J->samplingFunction(x, &fdp); fdp = exp(fdp);
+            J->protoFunction(x, &fdp); fdp = exp(fdp);
             const double numderiv = (fdp - f)/(DX*f);
 
             // cout << "getVD1DivByWF(" << i << ") = " << J->getVD1DivByWF(i) << endl;
@@ -130,15 +130,15 @@ int main(){
                 const double origvp = vp[j];
 
                 x[i] += DX;
-                J->samplingFunction(x, &fdx); fdx = exp(fdx);
+                J->protoFunction(x, &fdx); fdx = exp(fdx);
 
                 x[i] = origx;
                 vp[j] += DX;
                 J->setVP(vp);
-                J->samplingFunction(x, &fdp); fdp = exp(fdp);
+                J->protoFunction(x, &fdp); fdp = exp(fdp);
 
                 x[i] += DX;
-                J->samplingFunction(x, &fdxdp); fdxdp = exp(fdxdp);
+                J->protoFunction(x, &fdxdp); fdxdp = exp(fdxdp);
 
                 const double numderiv = (fdxdp - fdx - fdp + f)/(DX*DX*f);
 
@@ -161,21 +161,21 @@ int main(){
                 const double origvp = vp[j];
 
                 x[i] = origx + DX;
-                J->samplingFunction(x, &fdx); fdx = exp(fdx);
+                J->protoFunction(x, &fdx); fdx = exp(fdx);
 
                 vp[j] = origvp + DX;
                 J->setVP(vp);
-                J->samplingFunction(x, &fdxdp); fdxdp = exp(fdxdp);
+                J->protoFunction(x, &fdxdp); fdxdp = exp(fdxdp);
 
                 x[i] = origx;
-                J->samplingFunction(x, &fdp); fdp = exp(fdp);
+                J->protoFunction(x, &fdp); fdp = exp(fdp);
 
                 x[i] = origx - DX;
-                J->samplingFunction(x, &fmdxdp); fmdxdp = exp(fmdxdp);
+                J->protoFunction(x, &fmdxdp); fmdxdp = exp(fmdxdp);
 
                 vp[j] = origvp;
                 J->setVP(vp);
-                J->samplingFunction(x, &fmdx); fmdx = exp(fmdx);
+                J->protoFunction(x, &fmdx); fmdx = exp(fmdx);
 
                 const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
 

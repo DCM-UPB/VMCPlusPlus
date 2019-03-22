@@ -57,14 +57,14 @@ public:
         out[1]=_b;
     }
 
-    void samplingFunction(const double *x, double *out) override{
+    void protoFunction(const double *x, double *out) override{
         /*
-          Compute the sampling function proto value, used in getAcceptance()
+          Compute the sampling function proto value, used in acceptanceFunction()
         */
         *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
     }
 
-    double getAcceptance(const double * protoold, const double * protonew) override{
+    double acceptanceFunction(const double * protoold, const double * protonew) override{
         /*
           Compute the acceptance probability
         */

@@ -1,12 +1,12 @@
 #ifndef VMC_HAMILTONIAN_HPP
 #define VMC_HAMILTONIAN_HPP
 
-#include "mci/MCIObservableFunctionInterface.hpp"
+#include "mci/ObservableFunctionInterface.hpp"
 #include "vmc/WaveFunction.hpp"
 
 
 // Hamiltonian: obs[0]=Totale Energy, obs[1]=Potential Energy, obs[2]=Kinetic Energy (PB), obs[3]=Kinetic Energy (JF)
-class Hamiltonian: public MCIObservableFunctionInterface
+class Hamiltonian: public mci::ObservableFunctionInterface
 {
 protected:
     const int _nspacedim;
@@ -17,7 +17,7 @@ protected:
 
 public:
     Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf, const bool usePBKE = true /* use JF+PB KE or only JF */)
-        : MCIObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
+        : mci::ObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
     ~Hamiltonian() override= default;
 
     int getNSpaceDim(){return _nspacedim;}

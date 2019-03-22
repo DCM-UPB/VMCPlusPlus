@@ -16,7 +16,7 @@ class StochasticReconfigurationTargetFunction: public NoisyFunctionWithGradient
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
-    MCI * const _mci;
+    mci::MCI * const _mci;
     const int _Nmc;
     const double _lambda_reg;
     const bool _calcDGrad; // allows to disable calculation of gradient error
@@ -24,7 +24,7 @@ protected:
     void _integrate(const double * vp, double * obs, double * dobs, bool flag_grad = false);
     void _calcObs(const double * vp, double &f, double &df, double * grad_E = nullptr, double * dgrad_E = nullptr);
 public:
-    StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, MCI * mci, const int &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):
+    StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):
         NoisyFunctionWithGradient(wf->getNVP()), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {}
 
     ~StochasticReconfigurationTargetFunction() override= default;

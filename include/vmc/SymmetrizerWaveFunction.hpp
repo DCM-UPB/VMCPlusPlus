@@ -32,6 +32,9 @@ protected:
     void _computeStandardDerivatives(const double * x, const double &normf);
     void _addSwapDerivatives(const double * x, const double &normf, const int * ids);
 
+    mci::SamplingFunctionInterface * _clone() const final {
+        return new SymmetrizerWaveFunction(_wf, _flag_antisymmetric);
+    }
 public:
     explicit SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
         WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()),
@@ -43,13 +46,13 @@ public:
 
     void getVP(double * vp) override;
 
-    void samplingFunction(const double * in, double * out) override;
+    void protoFunction(const double * in, double * out) override;
 
-    double getAcceptance(const double * protoold, const double * protonew) override;
+    double acceptanceFunction(const double * protoold, const double * protonew) const override;
 
     void computeAllDerivatives(const double * x) override;
 
-    double computeWFValue(const double * protovalues) override;
+    double computeWFValue(const double * protovalues) const override;
 
     bool isAntiSymmetric() {return _flag_antisymmetric;}
 };

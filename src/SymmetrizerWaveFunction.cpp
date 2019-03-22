@@ -28,7 +28,7 @@ void SymmetrizerWaveFunction::_swapIndices(int * ids, const int &i, const int &j
 void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, const double &normf)
 {
     double protov[_wf->getNProto()];
-    _wf->samplingFunction(x, protov);
+    _wf->protoFunction(x, protov);
     const double wfvalue = _wf->computeWFValue(protov);
     const double normf2 = normf * wfvalue;
 
@@ -66,7 +66,7 @@ void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, cons
 void SymmetrizerWaveFunction::_addSwapDerivatives(const double * x, const double &normf, const int * ids)
 {
     double protov[_wf->getNProto()];
-    _wf->samplingFunction(x, protov);
+    _wf->protoFunction(x, protov);
     const double wfvalue = _wf->computeWFValue(protov);
     const double normf2 = normf * wfvalue;
 
@@ -112,7 +112,7 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
     bool isOdd = false; // flip for permutation parity
 
     double protov[_wf->getNProto()];
-    samplingFunction(x, protov);
+    protoFunction(x, protov);
     const double normf = 1. / (_npart_factorial()*computeWFValue(protov)); // normalizing factor
     const double normf2 = -normf; // negative factor for odd permutations in antisym case
 
@@ -157,12 +157,12 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
     }
 }
 
-double SymmetrizerWaveFunction::computeWFValue(const double * protovalues)
+double SymmetrizerWaveFunction::computeWFValue(const double * protovalues) const
 {
-    return protovalues[0]; // sign is important here so we calculate the unsquared wf in samplingFunction
+    return protovalues[0]; // sign is important here so we calculate the unsquared wf in protoFunction
 }
 
-double SymmetrizerWaveFunction::getAcceptance(const double * protoold, const double * protonew)
+double SymmetrizerWaveFunction::acceptanceFunction(const double * protoold, const double * protonew) const
 {
     const double po2 = protoold[0]*protoold[0];
     const double pn2 = protonew[0]*protonew[0];
@@ -172,7 +172,7 @@ double SymmetrizerWaveFunction::getAcceptance(const double * protoold, const dou
 }
 
 
-void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
+void SymmetrizerWaveFunction::protoFunction(const double * in, double * out)
 {
     const int ndim = getTotalNDim();
     double outh[_wf->getNProto()], inh[ndim]; // helper arrays for input/output
@@ -186,7 +186,7 @@ void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
     std::copy(in, in+ndim, inh);
 
     // evaluate unswapped wf
-    _wf->samplingFunction(in, outh);
+    _wf->protoFunction(in, outh);
     out[0] = normf*_wf->computeWFValue(outh);
 
     // add swapped wfs by heaps algorithm
@@ -202,7 +202,7 @@ void SymmetrizerWaveFunction::samplingFunction(const double * in, double * out)
             }
 
             // evaluate and add swap wf
-            _wf->samplingFunction(inh, outh);
+            _wf->protoFunction(inh, outh);
             if (!_flag_antisymmetric || !isOdd) {
                 out[0] += normf*_wf->computeWFValue(outh);
             }
