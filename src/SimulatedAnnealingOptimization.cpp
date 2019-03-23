@@ -33,8 +33,6 @@ namespace vmc_siman{
         // compute the energy and its standard deviation
         double energy[4]; // energy
         double d_energy[4]; // energy error bar
-        mci->clearSamplingFunctions(); mci->addSamplingFunction(*wf);
-        mci->clearObservables(); mci->addObservable(*H);
         MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
 
         // compute the normalization

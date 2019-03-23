@@ -51,8 +51,6 @@ double vmc_cost(const gsl_vector *v, void *params)
     // compute the energy and its standard deviation
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    mci->clearSamplingFunctions(); mci->addSamplingFunction(*wf);
-    mci->clearObservables(); mci->addObservable(*H);
     MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
 
     // compute the normalization
@@ -119,7 +117,7 @@ void NMSimplexOptimization::optimizeWF()
             std::cout << iter << " f() = " << s->fval << " size = " << size << std::endl;
         }
         ++iter;
-    } while (status == GSL_CONTINUE && (iter < _max_n_iter));
+    } while (status == GSL_CONTINUE && ( _max_n_iter <= 0 || iter < _max_n_iter));
 
     gsl_vector_free(x);
     gsl_vector_free(ss);

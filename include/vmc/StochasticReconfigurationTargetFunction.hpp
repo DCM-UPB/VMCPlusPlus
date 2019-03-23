@@ -21,7 +21,7 @@ protected:
     const double _lambda_reg;
     const bool _calcDGrad; // allows to disable calculation of gradient error
 
-    void _integrate(const double * vp, double * obs, double * dobs, bool flag_grad = false);
+    void _integrate(const double * vp, double * obs, double * dobs, bool flag_grad = false, bool flag_dgrad = false);
     void _calcObs(const double * vp, double &f, double &df, double * grad_E = nullptr, double * dgrad_E = nullptr);
 public:
     StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):

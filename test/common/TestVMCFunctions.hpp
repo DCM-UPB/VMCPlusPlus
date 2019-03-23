@@ -17,6 +17,7 @@ protected:
     mci::SamplingFunctionInterface * _clone() const final {
         return new QuadrExponential1D1POrbital(_a, _b);
     }
+
 public:
     QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false)
         {_a=a; _b=b;}
@@ -66,7 +67,8 @@ public:
   Trial Wave Function for N particles in 1 dimension, that uses parameters ai and b, with fixed ai and variational b.
   Psi  =  exp( -b * sum((xi-ai)^2) )
 */
-class QuadrExponential1DNPOrbital: public WaveFunction{
+class QuadrExponential1DNPOrbital: public WaveFunction
+{
 protected:
     double * _a;
     double _b;
@@ -75,6 +77,7 @@ protected:
     mci::SamplingFunctionInterface * _clone() const final {
         return new QuadrExponential1DNPOrbital(_npart, _a, _b);
     }
+
 public:
     QuadrExponential1DNPOrbital(const int &npart, const double * a, const double &b):
     WaveFunction(1, npart, 1, 1, true, true, true), _b(b), _bi(1./b)
@@ -148,6 +151,7 @@ protected:
     mci::SamplingFunctionInterface * _clone() const final {
         return new Gaussian1D1POrbital(_b);
     }
+
 public:
     explicit Gaussian1D1POrbital(const double b):
     WaveFunction(1, 1, 1, 1, false, false, false){
@@ -199,6 +203,7 @@ protected:
     mci::ObservableFunctionInterface * _clone() const final {
         return new HarmonicOscillator1D1P(_w, _wf);
     }
+
 public:
     HarmonicOscillator1D1P(const double w, WaveFunction * wf): Hamiltonian(1, 1, wf) {_w=w;}
     double localPotentialEnergy(const double *r) final
@@ -208,11 +213,11 @@ public:
 };
 
 
-class He3u2: public TwoBodyPseudoPotential{
+class He3u2: public TwoBodyPseudoPotential
+{
 /*
     u(r) = b/r^5
 */
-
 private:
     double _b;
 

@@ -16,7 +16,7 @@ protected:
     Hamiltonian * const _H;
 
     mci::ObservableFunctionInterface * _clone() const final {
-        return new EnergyGradientMCObservable(_wf, _H); // ownership needs fix
+        return new EnergyGradientMCObservable(_wf, _H);
     }
 public:
     EnergyGradientMCObservable(WaveFunction * wf, Hamiltonian * H):

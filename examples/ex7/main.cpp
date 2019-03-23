@@ -38,8 +38,8 @@ int main(){
     // example of file out with MPI
     auto obsfile = "obsfile" + std::to_string(myrank);
     auto wlkfile = "wlkfile" + std::to_string(myrank);;
-    vmc.getMCI()->storeObservablesOnFile(obsfile.c_str(), 1);
-    vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile.c_str(), 1);
+    vmc.getMCI()->storeObservablesOnFile(obsfile, 1);
+    vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile, 1);
 
     if (myrank==0) { cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
 }

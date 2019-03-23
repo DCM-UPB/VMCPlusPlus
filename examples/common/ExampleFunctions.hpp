@@ -24,6 +24,7 @@ protected:
     mci::ObservableFunctionInterface * _clone() const final {
         return new HarmonicOscillator1D1P(_w, _wf);
     }
+
 public:
     HarmonicOscillator1D1P(double w, WaveFunction * wf):
         Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
@@ -49,6 +50,7 @@ protected:
     mci::SamplingFunctionInterface * _clone() const final {
         return new QuadrExponential1D1POrbital(_a, _b, _flag_vd1);
     }
+
 public:
     QuadrExponential1D1POrbital(double a, double b, bool flag_vd1 = false):
     WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, flag_vd1 /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
@@ -109,6 +111,7 @@ protected:
     mci::SamplingFunctionInterface * _clone() const final {
         return new Gaussian1D1POrbital(_b, _flag_vd1);
     }
+
 public:
     explicit Gaussian1D1POrbital(double b, bool flag_vd1 = false):
     WaveFunction(1, 1, 1, 1, flag_vd1, false, false){

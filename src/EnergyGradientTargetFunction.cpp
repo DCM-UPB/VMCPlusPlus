@@ -7,9 +7,6 @@ void EnergyGradientTargetFunction::f(const double *vp, double &f, double &df)
 {
     // set the variational parameters given as input
     _wf->setVP(vp);
-    // set up the MC integrator
-    _mci->clearSamplingFunctions(); _mci->addSamplingFunction(*_wf);
-    _mci->clearObservables(); _mci->addObservable(*_H);
     // perform the integral and store the values
     double obs[4];
     double dobs[4];
@@ -36,14 +33,12 @@ void EnergyGradientTargetFunction::fgrad(const double *vp, double &f, double &df
 {
     // set the variational parameters given as input
     _wf->setVP(vp);
-    // set up the MC integrator
-    _mci->clearSamplingFunctions(); _mci->addSamplingFunction(*_wf);
-    _mci->clearObservables(); _mci->addObservable(*_H);
-    _mci->addObservable( EnergyGradientMCObservable(_wf, _H) );
+    // add gradient obs to MCI
+    _mci->addObservable( EnergyGradientMCObservable(_wf, _H), 1, 1, false, true ); // skipping equlibiration for gradients
     // perform the integral and store the values
     double obs[4 + 2*_wf->getNVP()];
     double dobs[4 + 2*_wf->getNVP()];
-    MPIVMC::Integrate(_mci, _grad_E_Nmc, obs, dobs, true, false); // skipping decorrelation for gradients
+    MPIVMC::Integrate(_mci, _grad_E_Nmc, obs, dobs, true, true);
     // create pointers for ease of use and readability
     const double * const H = obs;
     const double * const dH = dobs;
@@ -63,4 +58,5 @@ void EnergyGradientTargetFunction::fgrad(const double *vp, double &f, double &df
         const double fac = 2.*_lambda_reg/_wf->getNVP();
         for (int i=0; i<_wf->getNVP(); ++i) { grad_E[i] += fac*vp[i]; }
     }
+    _mci->popObservable(); // remove the gradient obs (it will be deleted)
 }

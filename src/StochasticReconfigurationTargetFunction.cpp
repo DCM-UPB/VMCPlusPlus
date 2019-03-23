@@ -42,28 +42,22 @@ void add_norm_fgrad(const double * const vp, const int &nvp, double &f, double *
 }
 
 
-void StochasticReconfigurationTargetFunction::_integrate(const double * const vp, double * const obs, double * const dobs, const bool flag_grad)
+void StochasticReconfigurationTargetFunction::_integrate(const double * const vp, double * const obs, double * const dobs, const bool flag_grad, const bool flag_dgrad)
 {
     // set the variational parameters given as input
     _wf->setVP(vp);
 
     // set up the MC integrator
-    _mci->clearSamplingFunctions();
-    _mci->addSamplingFunction(*_wf);
-
-    _mci->clearObservables();
-    _mci->addObservable(*_H);
-
-    if(flag_grad) {
-        _mci->addObservable( StochasticReconfigurationMCObservable(_wf, _H) );
+    if(flag_grad) { // add gradient obs if necessary
+        // skip MC error for grad if flag_dgrad is false
+        _mci->addObservable( StochasticReconfigurationMCObservable(_wf, _H) , flag_dgrad ? 1 : 0, 1, false, flag_dgrad);
     }
 
-    // perform the integral and store the values
-    MPIVMC::Integrate(_mci, _Nmc, obs, dobs, true, false);
+    // perform the integral and store the values (skip extra burning phase on gradient runs (only findMRT2))
+    MPIVMC::Integrate(_mci, _Nmc, obs, dobs, true, !flag_grad);
 
-    // clear
-    _mci->clearObservables();
-    _mci->clearSamplingFunctions();
+    // remove gradient obs again
+    if (flag_grad) {  _mci->popObservable(); }
 }
 
 void StochasticReconfigurationTargetFunction::_calcObs(const double * const vp, double &f, double &df, double * const grad_E, double * const dgrad_E)
@@ -75,7 +69,7 @@ void StochasticReconfigurationTargetFunction::_calcObs(const double * const vp, 
     double obs[flag_grad ? 4 + 2*nvp + nvp*nvp : 4];
     double dobs[flag_grad ? 4 + 2*nvp + nvp*nvp : 4];
 
-    _integrate(vp, obs, dobs, flag_grad);
+    _integrate(vp, obs, dobs, flag_grad, flag_dgrad);
 
     f = obs[0];
     df = dobs[0];

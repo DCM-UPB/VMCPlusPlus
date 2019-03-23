@@ -1,5 +1,4 @@
 #include "vmc/SymmetrizerWaveFunction.hpp"
-#include "vmc/PairSymmetrizerWaveFunction.hpp"
 
 #include <cassert>
 #include <cmath>

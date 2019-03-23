@@ -21,21 +21,36 @@ class VMC
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
-    mci::MCI * _mci;
+    mci::MCI * const _mci;
 
 
 public:
     VMC(WaveFunction * wf, Hamiltonian * H):
-        _wf(wf), _H(H)
+        _wf(wf), _H(H), _mci( new mci::MCI(_H->getTotalNDim()) )
     {
         if (_wf->getTotalNDim() != _H->getTotalNDim()) {
             throw std::invalid_argument( "Error VMC: ndim different between wf and H" );
         }
-        _mci = new mci::MCI(_H->getTotalNDim());
+        _mci->addSamplingFunction(std::unique_ptr<mci::SamplingFunctionInterface>(_wf));
+        _mci->addObservable(std::unique_ptr<mci::ObservableFunctionInterface>(_H));
     }
 
     ~VMC(){
-        delete _mci;
+        while (_mci->getNPDF()>1) {
+            // in case more pfs than _wf were added (e.g. via getMCI())
+            _mci->popSamplingFunction();
+        }
+        auto wf = _mci->popSamplingFunction(); // reacquire unique pointer
+        wf.release(); // make sure the memory will not be deleted (hotfix for now)
+
+        while (_mci->getNObs()>1) {
+            // in case something more than _wf was added (e.g. via getMCI())
+            _mci->popObservable();
+        }
+        auto obs = _mci->popObservable(); // reacquire unique pointer
+        obs.release(); // make sure the memory will not be deleted (hotfix for now)
+
+        delete _mci; // now mci can be deleted while _wf and _H stay alive (as was the old behavior)
     }
 
 
