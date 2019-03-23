@@ -1,85 +1,13 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
-#include "vmc/WaveFunction.hpp"
 #include "vmc/Hamiltonian.hpp"
+#include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
+#include "vmc/WaveFunction.hpp"
 
-
-/*
-  Hamiltonian describing a 1-particle harmonic oscillator:
-  H  =  p^2 / 2m  +  1/2 * w^2 * x^2
-*/
-class HarmonicOscillator1D1P: public Hamiltonian
-{
-protected:
-    double _w;
-
-public:
-    HarmonicOscillator1D1P(const double w, WaveFunction * wf):
-        Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
-
-    // potential energy
-    double localPotentialEnergy(const double *r)
-    {
-        return (0.5*_w*_w*(*r)*(*r));
-    }
-};
-
-
-
-/*
-  Trial Wave Function for 1 particle in 1 dimension, that uses two variational parameters: a and b.
-  Psi  =  exp( -b * (x-a)^2 )
-  Notice that the corresponding probability density (sampling function) is Psi^2.
-*/
-class QuadrExponential1D1POrbital: public WaveFunction{
-protected:
-    double _a, _b;
-
-public:
-    QuadrExponential1D1POrbital(const double a, const double b):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, false /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
-            _a=a; _b=b;
-        }
-
-    void setVP(const double *in){
-        _a=in[0];
-        _b=in[1];
-    }
-
-    void getVP(double *out){
-        out[0]=_a;
-        out[1]=_b;
-    }
-
-    void samplingFunction(const double *x, double *out){
-        /*
-          Compute the sampling function proto value, used in getAcceptance()
-        */
-        *out = -2.*(_b*(x[0]-_a)*(x[0]-_a));
-    }
-
-    double getAcceptance(const double * protoold, const double * protonew){
-        /*
-          Compute the acceptance probability
-        */
-        return exp(protonew[0]-protoold[0]);
-    }
-
-    void computeAllDerivatives(const double *x){
-        _setD1DivByWF(0, -2.*_b*(x[0]-_a));
-        _setD2DivByWF(0, -2.*_b + (-2.*_b*(x[0]-_a))*(-2.*_b*(x[0]-_a)));
-    }
-
-    double computeWFValue(const double * protovalues){
-        return exp(0.5*protovalues[0]);
-    }
-};
-
-
-
+#include "../common/ExampleFunctions.hpp"
 
 int main(){
     using namespace std;
@@ -87,21 +15,21 @@ int main(){
     MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Declare some trial wave functions
-    QuadrExponential1D1POrbital * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
+    auto * psi = new QuadrExponential1D1POrbital(-0.5, 1.0);
 
     // Declare an Hamiltonian
     // We use the harmonic oscillator with w=1 and w=2
     const double w1 = 1.;
-    HarmonicOscillator1D1P * ham1 = new HarmonicOscillator1D1P(w1, psi);
+    auto * ham1 = new HarmonicOscillator1D1P(w1, psi);
     const double w2 = 2.;
-    HarmonicOscillator1D1P * ham2 = new HarmonicOscillator1D1P(w2, psi);
+    auto * ham2 = new HarmonicOscillator1D1P(w2, psi);
 
 
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
     VMC * vmc; // VMC object we will resuse
-    const long E_NMC = 10000l; // MC samplings to use for computing the energy
+    const int E_NMC = 10000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
     double vp[psi->getNVP()];
@@ -125,8 +53,8 @@ int main(){
 
     cout << "   Optimization . . ." << endl;
 
-    // settings for better performance                    
-    vmc->getMCI()->setNfindMRT2steps(10);
+    // settings for better performance
+    vmc->getMCI()->setNfindMRT2Iterations(10);
     vmc->getMCI()->setNdecorrelationSteps(1000);
 
     vmc->nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
@@ -166,7 +94,7 @@ int main(){
     cout << "   Optimization . . ." << endl;
 
     // settings for better performance
-    vmc->getMCI()->setNfindMRT2steps(10);
+    vmc->getMCI()->setNfindMRT2Iterations(10);
     vmc->getMCI()->setNdecorrelationSteps(1000);
 
     vmc->nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);

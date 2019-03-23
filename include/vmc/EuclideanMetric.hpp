@@ -1,5 +1,5 @@
-#ifndef EUCLIDEAN_METRIC
-#define EUCLIDEAN_METRIC
+#ifndef VMC_EUCLIDEANMETRIC_HPP
+#define VMC_EUCLIDEANMETRIC_HPP
 
 #include "vmc/Metric.hpp"
 
@@ -8,13 +8,13 @@ class EuclideanMetric: public Metric
 {
 public:
     explicit EuclideanMetric(const int &nspacedim): Metric(nspacedim){}
-    ~EuclideanMetric(){}
+    ~EuclideanMetric() override= default;
 
-    double dist(const double * r1, const double * r2);
+    double dist(const double * r1, const double * r2) override;
 
-    void distD1(const double * r1, const double * r2, double * out);
+    void distD1(const double * r1, const double * r2, double * out) override;
 
-    void distD2(const double * r1, const double * r2, double * out);
+    void distD2(const double * r1, const double * r2, double * out) override;
 };
 
 

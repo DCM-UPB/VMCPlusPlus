@@ -3,48 +3,42 @@
 
 // --- compute quantities
 
-void VMC::computeVariationalEnergy(const long & Nmc, double * E, double * dE, const bool doFindMRT2step, const bool doDecorrelation)
+void VMC::computeVariationalEnergy(const int & Nmc, double * E, double * dE, const bool doFindMRT2step, const bool doDecorrelation)
 {
-    getMCI()->clearSamplingFunctions(); getMCI()->addSamplingFunction(_wf);
-    getMCI()->clearObservables(); getMCI()->addObservable(_H);
     MPIVMC::Integrate(getMCI(), Nmc, E, dE, doFindMRT2step, doDecorrelation);
 }
 
 
 // --- Optimization methods
 
-void VMC::conjugateGradientOptimization(const long &E_Nmc, const long &grad_E_Nmc)
+void VMC::conjugateGradientOptimization(const int &E_Nmc, const int &grad_E_Nmc)
 {
-    ConjugateGradientOptimization * opt = new ConjugateGradientOptimization(_wf, _H, E_Nmc, grad_E_Nmc, getMCI());
-    opt->optimizeWF();
-    delete opt;
+    ConjugateGradientOptimization opt(_wf, _H, E_Nmc, grad_E_Nmc, getMCI());
+    opt.optimizeWF();
 };
 
-void VMC::stochasticReconfigurationOptimization(const long &Nmc, const double stepSize, const bool flag_dgrad)
+void VMC::stochasticReconfigurationOptimization(const int &Nmc, const double stepSize, const bool flag_dgrad)
 {
     StochasticReconfigurationOptimization opt(_wf, _H, Nmc, getMCI(), stepSize, flag_dgrad);
     opt.optimizeWF();
 };
 
-void VMC::adamOptimization(const long &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values, const bool useAveraging,
+void VMC::adamOptimization(const int &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values, const bool useAveraging,
     const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon)
 {
-    AdamOptimization * opt = new AdamOptimization(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, useAveraging, lambda, alpha, beta1, beta2, epsilon);
-    opt->optimizeWF();
-    delete opt;
+    AdamOptimization opt(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, useAveraging, lambda, alpha, beta1, beta2, epsilon);
+    opt.optimizeWF();
 };
 
 
-void VMC::simulatedAnnealingOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params)
+void VMC::simulatedAnnealingOptimization(const int &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params)
 {
-    SimulatedAnnealingOptimization * opt = new SimulatedAnnealingOptimization(_wf, _H, Nmc, getMCI(), iota, kappa, lambda, params);
-    opt->optimizeWF();
-    delete opt;
+    SimulatedAnnealingOptimization opt(_wf, _H, Nmc, getMCI(), iota, kappa, lambda, params);
+    opt.optimizeWF();
 };
 
-void VMC::nmsimplexOptimization(const long &Nmc, const double &iota, const double &kappa, const double &lambda, const double &rstart, const double &rend, const size_t &max_n_iter)
+void VMC::nmsimplexOptimization(const int &Nmc, const double &iota, const double &kappa, const double &lambda, const double &rstart, const double &rend, const size_t &max_n_iter)
 {
-    NMSimplexOptimization * opt = new NMSimplexOptimization(_wf, _H, _mci, Nmc, iota, kappa, lambda, rstart, rend, max_n_iter);
-    opt->optimizeWF();
-    delete opt;
+    NMSimplexOptimization opt(_wf, _H, _mci, Nmc, iota, kappa, lambda, rstart, rend, max_n_iter);
+    opt.optimizeWF();
 };

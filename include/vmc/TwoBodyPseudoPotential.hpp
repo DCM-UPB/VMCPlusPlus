@@ -1,5 +1,5 @@
-#ifndef TWO_BODY_PSEUDO_POTENTIAL
-#define  TWO_BODY_PSEUDO_POTENTIAL
+#ifndef VMC_TWOBODYPSEUDOPOTENTIAL_HPP
+#define  VMC_TWOBODYPSEUDOPOTENTIAL_HPP
 
 
 #include "vmc/Metric.hpp"
@@ -31,32 +31,14 @@ private:
     double * _vfoo2;
 
 public:
-    TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1=true, bool flag_d1vd1=true, bool flag_d2vd1=true);
+    TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false);
     virtual ~TwoBodyPseudoPotential();
 
     int getNSpaceDim(){return _metric->getNSpaceDim();}
     int getNVP(){return _nvp;}
 
-
-
-    // --- Methods that must be implemented
-    // manage variational parameters
-    virtual void setVP(const double *vp) = 0;
-    virtual void getVP(double *vp) = 0;
-    // functions of the distance that define the pseudopotential
-    virtual double ur(const double &r) = 0;                           // e.g. -b/r^5
-    virtual double urD1(const double &r) = 0;                         // e.g. 5*b/r^6
-    virtual double urD2(const double &r) = 0;                         // e.g. -30*b/r^7
-    virtual void urVD1(const double &r, double * vd1) = 0;            // e.g. -1/r^5
-    virtual void urD1VD1(const double &r, double * d1vd1) = 0;        // e.g. 5/r^6
-    virtual void urD2VD1(const double &r, double * d1vd1) = 0;        // e.g. -30/r^7
-
-
-
     // -- Pair pseudopotential
     double u(const double * r1, const double * r2);
-
-
 
     // --- Derivatives
     // compute all the derivatives
@@ -71,6 +53,19 @@ public:
     bool hasVD1(){return _flag_vd1;}
     bool hasD1VD1(){return _flag_d1vd1;}
     bool hasD2VD1(){return _flag_d2vd1;}
+
+
+    // --- Methods that must be implemented
+    // manage variational parameters
+    virtual void setVP(const double *vp) = 0;
+    virtual void getVP(double *vp) = 0;
+    // functions of the distance that define the pseudopotential
+    virtual double ur(const double &r) = 0;                           // e.g. -b/r^5
+    virtual double urD1(const double &r) = 0;                         // e.g. 5*b/r^6
+    virtual double urD2(const double &r) = 0;                         // e.g. -30*b/r^7
+    virtual void urVD1(const double &r, double * vd1) = 0;            // e.g. -1/r^5
+    virtual void urD1VD1(const double &r, double * d1vd1) = 0;        // e.g. 5/r^6
+    virtual void urD2VD1(const double &r, double * d1vd1) = 0;        // e.g. -30/r^7
 };
 
 

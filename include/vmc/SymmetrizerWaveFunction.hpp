@@ -1,5 +1,5 @@
-#ifndef SYMMETRIZER_WAVE_FUNCTION
-#define SYMMETRIZER_WAVE_FUNCTION
+#ifndef VMC_SYMMETRIZERWAVEFUNCTION_HPP
+#define VMC_SYMMETRIZERWAVEFUNCTION_HPP
 
 
 #include "vmc/WaveFunction.hpp"
@@ -22,8 +22,9 @@ class SymmetrizerWaveFunction: public WaveFunction {
       in practice for more than a handful of particles.
     */
 protected:
-    WaveFunction * _wf; // we wrap around an existing wavefunction
+    WaveFunction * const _wf; // we wrap around an existing wavefunction
     const bool _flag_antisymmetric; // should we use the antisymmetrizer instead of symmetrizer?
+    bool _flag_newToOld = false; // is set to true on newToOld and set back to false after computeAllDerivates()
 
     // internal helpers
     unsigned long _npart_factorial();
@@ -32,23 +33,32 @@ protected:
     void _computeStandardDerivatives(const double * x, const double &normf);
     void _addSwapDerivatives(const double * x, const double &normf, const int * ids);
 
+    mci::SamplingFunctionInterface * _clone() const final {
+        return new SymmetrizerWaveFunction(_wf, _flag_antisymmetric);
+    }
+
+    // we have a ProtoFunctionInterface as member (_wf), so we need to implement these:
+    void _newToOld(const mci::WalkerState &wlk) override;
+    void _oldToNew() override { _wf->oldToNew(); }
+
 public:
-    SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
-        WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()), _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
+    explicit SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
+        WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()),
+        _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
 
-    virtual ~SymmetrizerWaveFunction(){}
+    ~SymmetrizerWaveFunction() override= default;
 
-    void setVP(const double * vp);
+    void setVP(const double * vp) override;
 
-    void getVP(double * vp);
+    void getVP(double * vp) override;
 
-    virtual void samplingFunction(const double * in, double * out);
+    void protoFunction(const double * in, double * out) override;
 
-    virtual double getAcceptance(const double * protoold, const double * protonew);
+    double acceptanceFunction(const double * protoold, const double * protonew) const override;
 
-    virtual void computeAllDerivatives(const double * x);
+    void computeAllDerivatives(const double * x) override;
 
-    virtual double computeWFValue(const double * protovalues);
+    double computeWFValue(const double * protovalues) const override;
 
     bool isAntiSymmetric() {return _flag_antisymmetric;}
 };

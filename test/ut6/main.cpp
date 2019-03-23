@@ -1,8 +1,7 @@
 #include "vmc/SymmetrizerWaveFunction.hpp"
-#include "vmc/PairSymmetrizerWaveFunction.hpp"
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <iostream>
 #include <random>
 
@@ -31,19 +30,16 @@ int main(){
 
     // define a non-symmetric wavefunction
     const double ai_nosym[NPART] = {0.5, -0.25, 0.0};
-    QuadrExponential1DNPOrbital * phi_nosym = new QuadrExponential1DNPOrbital(NPART, ai_nosym, GAUSS_EXPF);
+    auto * phi_nosym = new QuadrExponential1DNPOrbital(NPART, ai_nosym, GAUSS_EXPF);
 
     // fully (anti-)symmetrized wfs
-    SymmetrizerWaveFunction * phi_sym = new SymmetrizerWaveFunction(phi_nosym, false);
-    SymmetrizerWaveFunction * phi_asym = new SymmetrizerWaveFunction(phi_nosym, true); // antisymmetric version
-
-    // pair-wise (anti-)symmetrized wfs
-    PairSymmetrizerWaveFunction * phi_psym = new PairSymmetrizerWaveFunction(phi_nosym, false);
-    PairSymmetrizerWaveFunction * phi_pasym = new PairSymmetrizerWaveFunction(phi_nosym, true);
+    auto * phi_sym = new SymmetrizerWaveFunction(phi_nosym, false);
+    auto * phi_asym = new SymmetrizerWaveFunction(phi_nosym, true); // antisymmetric version
 
     // particles position and all permutations
     double * xp[6];
-    for (int i=0; i<6; ++i) xp[i] = new double[NTOTALDIM];
+    for (auto & x : xp) { x = new double[NTOTALDIM]; }
+
     xp[0][0] = 0.2; xp[0][1] = -0.5; xp[0][2] = 0.7;
     xp[1][0] = xp[0][0]; xp[1][1] = xp[0][2]; xp[1][2] = xp[0][1];
     xp[2][0] = xp[0][1]; xp[2][1] = xp[0][0]; xp[2][2] = xp[0][2];
@@ -54,43 +50,38 @@ int main(){
     bool isOdd[6] = {false, true, true, false, false, true};
 
     // compute the new protovalues
-    double protov_nosym[2], protov_sym[2], protov_asym[2], protov_psym[2], protov_pasym[2];
+    double protov_nosym[2], protov_sym[2], protov_asym[2];
     
     for (int i=0; i<6; ++i) {
         size_t offset = (i==0 ? 0 : 1);
 
-        phi_nosym->samplingFunction(xp[i], protov_nosym + offset);
-        phi_sym->samplingFunction(xp[i], protov_sym + offset);
-        phi_asym->samplingFunction(xp[i], protov_asym + offset);
-        phi_psym->samplingFunction(xp[i], protov_psym + offset);
-        phi_pasym->samplingFunction(xp[i], protov_pasym + offset);
+        phi_nosym->protoFunction(xp[i], protov_nosym + offset);
+        phi_sym->protoFunction(xp[i], protov_sym + offset);
+        phi_asym->protoFunction(xp[i], protov_asym + offset);
 
         // cout << "Perm " << i << ": ";
         // cout << " phi_nosym " << phi_nosym->computeWFValue(protov_nosym + offset);
         // cout << " phi_sym " << phi_sym->computeWFValue(protov_sym + offset);
         // cout << " phi_asym " << phi_asym->computeWFValue(protov_asym + offset) << endl;
-        // cout << " phi_psym " << phi_psym->computeWFValue(protov_psym + offset);
-        // cout << " phi_pasym " << phi_pasym->computeWFValue(protov_pasym + offset) << endl;
 
         if (i>0) {
             assert(protov_nosym[0] != protov_nosym[1]);
-            if (isOdd[i]) assert(fabs(protov_asym[0] + protov_asym[1]) < SUPERTINY);
-            else assert(fabs(protov_asym[0] - protov_asym[1]) < SUPERTINY);
+            if (isOdd[i]) { assert(fabs(protov_asym[0] + protov_asym[1]) < SUPERTINY);
+            } else { assert(fabs(protov_asym[0] - protov_asym[1]) < SUPERTINY); }
+
             assert(fabs(protov_sym[0] - protov_sym[1]) < SUPERTINY);
-        } // we can't do asserts like this for the approximately symmetrized wfs
+        }
     }
 
     std::vector<WaveFunction *> wfs;
     wfs.push_back(phi_nosym);
     wfs.push_back(phi_sym);
     wfs.push_back(phi_asym);
-    wfs.push_back(phi_psym);
-    wfs.push_back(phi_pasym);
 
-    vector<string> names {"phi_nosym", "phi_sym", "phi_asym", "phi_psym", "phi_pasym"};
+    vector<string> names {"phi_nosym", "phi_sym", "phi_asym"};
 
     double x[NTOTALDIM];
-    for (int i=0; i<NTOTALDIM; ++i) x[i] = xp[0][i];
+    for (int i=0; i<NTOTALDIM; ++i) { x[i] = xp[0][i]; }
 
     double vp[1];
     vp[0] = GAUSS_EXPF;
@@ -109,14 +100,14 @@ int main(){
         // initial wave function
         double f, fdx, fmdx, fdvp, fdxdvp, fmdxdvp;
         double samp;
-        wf->samplingFunction(x, &samp); f = wf->computeWFValue(&samp);
+        wf->protoFunction(x, &samp); f = wf->computeWFValue(&samp);
 
 
         // --- check the first derivatives
         for (int i=0; i<NTOTALDIM; ++i){
             const double origx = x[i];
             x[i] += DX;
-            wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
             const double numderiv = (fdx-f)/(DX*f);
 
             // cout << "getD1DivByWF(" << i <<") = " << wf->getD1DivByWF(i) << endl;
@@ -131,9 +122,9 @@ int main(){
         for (int i=0; i<NTOTALDIM; ++i){
             const double origx = x[i];
             x[i] = origx + DX;
-            wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
             x[i] = origx - DX;
-            wf->samplingFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
             const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
 
             // cout << "getD2DivByWF(" << i << ") = " << wf->getD2DivByWF(i) << endl;
@@ -149,7 +140,7 @@ int main(){
             const double origvp = vp[i];
             vp[i] += DX;
             wf->setVP(vp);
-            wf->samplingFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
+            wf->protoFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
             const double numderiv = (fdvp - f)/(DX*f);
 
             // cout << "getVD1DivByWF(" << i << ") = " << wf->getVD1DivByWF(i) << endl;
@@ -168,15 +159,15 @@ int main(){
                 const double origvp = vp[j];
 
                 x[i] += DX;
-                wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
 
                 x[i] = origx;
                 vp[j] += DX;
                 wf->setVP(vp);
-                wf->samplingFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
 
                 x[i] += DX;
-                wf->samplingFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
 
                 const double numderiv = (fdxdvp - fdx - fdvp + f)/(DX*DX*f);
 
@@ -198,21 +189,21 @@ int main(){
                 const double origvp = vp[j];
 
                 x[i] = origx + DX;
-                wf->samplingFunction(x, &samp); fdx = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdx = wf->computeWFValue(&samp);
 
                 vp[j] = origvp + DX;
                 wf->setVP(vp);
-                wf->samplingFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdxdvp = wf->computeWFValue(&samp);
 
                 x[i] = origx;
-                wf->samplingFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fdvp = wf->computeWFValue(&samp);
 
                 x[i] = origx - DX;
-                wf->samplingFunction(x, &samp); fmdxdvp = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fmdxdvp = wf->computeWFValue(&samp);
 
                 vp[j] = origvp;
                 wf->setVP(vp);
-                wf->samplingFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
+                wf->protoFunction(x, &samp); fmdx = wf->computeWFValue(&samp);
 
                 const double numderiv = (fdxdvp - 2.*fdvp + fmdxdvp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
 
@@ -228,11 +219,8 @@ int main(){
         ++cont;
     }
 
-    for (int i=0; i<6; ++i) delete [] xp[i];
+    for (auto & x : xp) { delete [] x; }
     
-    delete phi_pasym;
-    delete phi_psym;
-
     delete phi_asym;
     delete phi_sym;
 

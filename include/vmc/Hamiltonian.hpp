@@ -1,12 +1,12 @@
-#ifndef HAMILTONIAN
-#define HAMILTONIAN
+#ifndef VMC_HAMILTONIAN_HPP
+#define VMC_HAMILTONIAN_HPP
 
+#include "mci/ObservableFunctionInterface.hpp"
 #include "vmc/WaveFunction.hpp"
-#include "mci/MCIObservableFunctionInterface.hpp"
 
 
 // Hamiltonian: obs[0]=Totale Energy, obs[1]=Potential Energy, obs[2]=Kinetic Energy (PB), obs[3]=Kinetic Energy (JF)
-class Hamiltonian: public MCIObservableFunctionInterface
+class Hamiltonian: public mci::ObservableFunctionInterface
 {
 protected:
     const int _nspacedim;
@@ -17,8 +17,8 @@ protected:
 
 public:
     Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf, const bool usePBKE = true /* use JF+PB KE or only JF */)
-        : MCIObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
-    virtual ~Hamiltonian(){}
+        : mci::ObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
+    ~Hamiltonian() override= default;
 
     int getNSpaceDim(){return _nspacedim;}
     int getTotalNDim(){return getNDim();}
@@ -30,7 +30,7 @@ public:
     virtual double localPotentialEnergy(const double *r) = 0;
 
 
-    double localPBKineticEnergy(const double *r)
+    double localPBKineticEnergy(const double * /*r*/)
     {
         double ekin=0.;
         for (int i=0; i<_ndim; ++i)
@@ -40,18 +40,18 @@ public:
         return (-0.5*ekin);
     }
 
-    double localJFKineticEnergy(const double *r)
+    double localJFKineticEnergy(const double * /*r*/)
     {
         double ekin=0.;
         for (int i=0; i<_ndim; ++i)
             {
-                double foo = _wf->getD1DivByWF(i);
+                const double foo = _wf->getD1DivByWF(i);
                 ekin += foo*foo;
             }
         return (0.5*ekin);
     }
 
-    void observableFunction(const double * in, double *out)
+    void observableFunction(const double * in, double *out) override
     {
         out[3]=localJFKineticEnergy(in);
         out[2]= _flag_PBKE ? localPBKineticEnergy(in) : 0.;

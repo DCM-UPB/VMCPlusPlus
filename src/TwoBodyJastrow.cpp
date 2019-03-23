@@ -1,13 +1,13 @@
 #include "vmc/TwoBodyJastrow.hpp"
 
-#include <math.h>
+#include <cmath>
 // #include <iostream>
 //
 //
 // using namespace std;
 
 
-void TwoBodyJastrow::samplingFunction(const double * x, double * protov)
+void TwoBodyJastrow::protoFunction(const double * x, double * protov)
 {
     protov[0] = 0.;
     for (int i=0; i<getNPart()-1; ++i){
@@ -22,8 +22,7 @@ void TwoBodyJastrow::samplingFunction(const double * x, double * protov)
     }
 }
 
-
-double TwoBodyJastrow::getAcceptance(const double * protoold, const double * protonew)
+double TwoBodyJastrow::acceptanceFunction(const double * protoold, const double * protonew) const
 {
     return exp(2.0 * (protonew[0] - protoold[0]) );   // the factor 2 comes from the fact that the wf must be squared (sampling from psi^2)
 }
@@ -32,24 +31,28 @@ double TwoBodyJastrow::getAcceptance(const double * protoold, const double * pro
 void TwoBodyJastrow::computeAllDerivatives(const double *x)
 {
     double * d1_divbywf = _getD1DivByWF();
-    for (int i=0; i<getTotalNDim(); ++i) d1_divbywf[i] = 0.;
+    for (int i=0; i<getTotalNDim(); ++i) { d1_divbywf[i] = 0.; }
 
     double * d2_divbywf = _getD2DivByWF();
-    for (int i=0; i<getTotalNDim(); ++i) d2_divbywf[i] = 0.;
+    for (int i=0; i<getTotalNDim(); ++i) { d2_divbywf[i] = 0.; }
 
     double * vd1_divbywf = _getVD1DivByWF();;
     if (hasVD1() || hasD1VD1()){
-        for (int i=0; i<getNVP(); ++i) vd1_divbywf[i] = 0.;
+        for (int i=0; i<getNVP(); ++i) { vd1_divbywf[i] = 0.; }
     }
 
     double ** d1vd1_divbywf = _getD1VD1DivByWF();
     if (hasD1VD1()){
-        for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d1vd1_divbywf[i][j] = 0.;
+        for (int i=0; i<getTotalNDim(); ++i) {
+            for (int j=0; j<getNVP(); ++j) { d1vd1_divbywf[i][j] = 0.; }
+        }
     }
 
     double ** d2vd1_divbywf = _getD2VD1DivByWF();
     if (hasD2VD1()){
-        for (int i=0; i<getTotalNDim(); ++i) for (int j=0; j<getNVP(); ++j) d2vd1_divbywf[i][j] = 0.;
+        for (int i=0; i<getTotalNDim(); ++i) {
+            for (int j=0; j<getNVP(); ++j) { d2vd1_divbywf[i][j] = 0.; }
+        }
     }
 
     // --- compute the "pure" terms of the derivatives (they will completed with cross terms afterwards)
@@ -110,11 +113,11 @@ void TwoBodyJastrow::computeAllDerivatives(const double *x)
     }
     // second derivative
     for (int i=0; i<getTotalNDim(); ++i){
-        d2_divbywf[i] += pow(d1_divbywf[i], 2);
+        d2_divbywf[i] += d1_divbywf[i]*d1_divbywf[i];
     }
 }
 
-double TwoBodyJastrow::computeWFValue(const double * protovalues)
+double TwoBodyJastrow::computeWFValue(const double * protovalues) const
 {
     return exp(2.0 * protovalues[0]);
 }

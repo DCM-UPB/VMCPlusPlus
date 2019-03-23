@@ -1,8 +1,8 @@
 #include "vmc/EuclideanMetric.hpp"
 #include "vmc/TwoBodyPseudoPotential.hpp"
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <iostream>
 #include <random>
 
@@ -27,9 +27,9 @@ int main(){
     rd = uniform_real_distribution<double>(0.25, -0.25);
 
     // distance metric and two body-pseudopotential
-    EuclideanMetric * em = new EuclideanMetric(NSPACEDIM);
-    He3u2 * u2 = new He3u2(em);
-    PolynomialU2 * poly_u2 = new PolynomialU2(em, -0.3, -0.1);
+    auto * em = new EuclideanMetric(NSPACEDIM);
+    auto * u2 = new He3u2(em);
+    auto * poly_u2 = new PolynomialU2(em, -0.3, -0.1);
 
     // position of two particles
     double x[NSPACEDIM];
