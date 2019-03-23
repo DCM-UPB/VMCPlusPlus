@@ -32,7 +32,7 @@ void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, cons
     const double wfvalue = _wf->computeWFValue(protov);
     const double normf2 = normf * wfvalue;
 
-    // at this point the derivatives with normal coordinates are evaluated already
+    if (!_flag_newToOld) { _wf->computeAllDerivatives(x); }
 
     const int ndim = getTotalNDim();
     for (int ip=0; ip<ndim; ++ip) {
@@ -105,6 +105,7 @@ void SymmetrizerWaveFunction::_newToOld(const mci::WalkerState &wlk)
 {
     _wf->newToOld(wlk); // derivatives are computed here
     if (wlk.accepted && wlk.needsObs) {
+        _flag_newToOld = true;
         this->computeAllDerivatives(wlk.xnew);
     }
 }
@@ -161,6 +162,8 @@ void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
             ++iter;
         }
     }
+
+    _flag_newToOld = false; // reset flag
 }
 
 double SymmetrizerWaveFunction::computeWFValue(const double * protovalues) const

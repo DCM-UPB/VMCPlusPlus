@@ -4,8 +4,13 @@
 
 
 
-void MultiComponentWaveFunction::computeAllDerivatives(const double/*x*/[]){
+void MultiComponentWaveFunction::computeAllDerivatives(const double x[]){
     // ! contained wf's computeAllDerivatives() are called already in _newToOld() !
+    if (!_flag_newToOld) { // we need to compute contained derivatives
+        for (auto & wf : _wfs) {
+            wf->computeAllDerivatives(x);
+        }
+    }
 
     // first derivative
     for (int i=0; i<getTotalNDim(); ++i){
@@ -100,6 +105,8 @@ void MultiComponentWaveFunction::computeAllDerivatives(const double/*x*/[]){
              }
         }
     }
+
+    _flag_newToOld = false; // reset flag
 }
 
 double MultiComponentWaveFunction::computeWFValue(const double * protovalues) const
@@ -178,6 +185,7 @@ void MultiComponentWaveFunction::_newToOld(const mci::WalkerState &wlk) {
         wf->newToOld(wlk); // here the wf's computeAllDerivatives get called (if accepted&&needsObs)
     }
     if (wlk.accepted && wlk.needsObs) {
+        _flag_newToOld = true; // avoid derivative recomputation
         this->computeAllDerivatives(wlk.xnew);
     }
 }
