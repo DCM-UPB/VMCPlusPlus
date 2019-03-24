@@ -11,7 +11,6 @@
 class MultiComponentWaveFunction: public WaveFunction{
 private:
     std::vector<WaveFunction *> _wfs;
-    bool _flag_newToOld = false; // is set to true on newToOld and set back to false after computeAllDerivates()
 
     mci::SamplingFunctionInterface * _clone() const final {
         auto newwf = new MultiComponentWaveFunction(_nspacedim, _npart, _flag_vd1, _flag_d1vd1, _flag_d2vd1);

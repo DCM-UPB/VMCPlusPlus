@@ -49,7 +49,7 @@ int main(){
     if (myrank==0) { cout << "Computing the energy " << neval << " times, with auto-mode findMRT2step/initialDecorr (inconsistent time per CPU)." << endl;
 }
     for (int i=0; i<neval; ++i) {
-        vmc.computeVariationalEnergy(E_NMC, energy_h, d_energy_h);
+        vmc.computeEnergy(E_NMC, energy_h, d_energy_h);
         if (myrank ==0) {
             for (int j=0; j<4; ++j) {
                 energy[j] += energy_h[j];
@@ -79,7 +79,7 @@ int main(){
         cout << "Computing the energy " << neval << " times, with fixed-mode findMRT2step/initialDecorr (consistent time per CPU)." << endl;
     }
     for (int i=0; i<neval; ++i) {
-        vmc.computeVariationalEnergy(E_NMC, energy_h, d_energy_h);
+        vmc.computeEnergy(E_NMC, energy_h, d_energy_h);
         if (myrank ==0) {
             for (int j=0; j<4; ++j) {
                 energy[j] += energy_h[j];

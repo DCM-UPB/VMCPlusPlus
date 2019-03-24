@@ -25,11 +25,11 @@ int main(){
     double b1;
     gauss->getVP(&b1);
     cout << "Wave Function b     = " << b1 << endl;
-    VMC * vmc = new VMC(gauss, harm_osc);
+    auto * vmc = new VMC(gauss, harm_osc);
     vmc->getMCI()->setIRange(-10., 10.);
     double energy[4];
     double d_energy[4];
-    vmc->computeVariationalEnergy(NMC, energy, d_energy, false, false);
+    vmc->computeEnergy(NMC, energy, d_energy, false, false);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -43,7 +43,7 @@ int main(){
     // vmc->conjugateGradientOptimization(NMC, 4*NMC);
     // gauss->getVP(b);
     // cout << "Wave Function b     = " << *b << endl << endl;
-    // vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    // vmc->computeEnergy(NMC, energy, d_energy);
     // cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     // cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     // cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -57,7 +57,7 @@ int main(){
     //cout << "Wave Function b     = " << a1[1] << endl;
     //delete[] a1;
     //VMC * vmc2 = new VMC(qexp, harm_osc2);
-    //vmc2->computeVariationalEnergy(NMC, energy, d_energy);
+    //vmc2->computeEnergy(NMC, energy, d_energy);
     //cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     //cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     //cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -71,7 +71,7 @@ int main(){
     //qexp->getVP(a);
     //cout << "Wave Function a     = " << a[0] << endl;
     //cout << "Wave Function b     = " << a[1] << endl;
-    //vmc2->computeVariationalEnergy(NMC, energy, d_energy);
+    //vmc2->computeEnergy(NMC, energy, d_energy);
     //cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     //cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     //cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;

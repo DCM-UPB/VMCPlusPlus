@@ -24,7 +24,6 @@ class SymmetrizerWaveFunction: public WaveFunction {
 protected:
     WaveFunction * const _wf; // we wrap around an existing wavefunction
     const bool _flag_antisymmetric; // should we use the antisymmetrizer instead of symmetrizer?
-    bool _flag_newToOld = false; // is set to true on newToOld and set back to false after computeAllDerivates()
 
     // internal helpers
     unsigned long _npart_factorial();

@@ -40,7 +40,7 @@ public:
         } else { targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda); }
 
         // declare the Adam object
-        Adam * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
+        auto * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters
         double wfpar[_wf->getNVP()];
         // get the variational parameters

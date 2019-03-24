@@ -34,8 +34,7 @@ int main(){
     double vp[psi->getNVP()];
 
 
-
-    VMC * vmc = new VMC(psi, ham);
+    auto * vmc = new VMC(psi, ham);
 
     cout << "-> ham:    w = " << w << endl << endl;
 
@@ -45,7 +44,7 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Starting energy:" << endl;
-    vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    vmc->computeEnergy(NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -77,7 +76,7 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Optimized energy:" << endl;
-    vmc->computeVariationalEnergy(NMC, energy, d_energy);
+    vmc->computeEnergy(NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;

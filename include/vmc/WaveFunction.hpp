@@ -66,12 +66,6 @@ protected:
     void _setD2VD1DivByWF(const int &id2, const int &ivd1, const double &d2vd1_divbywf){_d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf;}
     double ** _getD2VD1DivByWF(){return _d2vd1_divbywf;}
 
-    void _newToOld(const mci::WalkerState &wlk) override {
-        if (wlk.accepted && wlk.needsObs) {
-            this->computeAllDerivatives(wlk.xnew);
-        }
-    }
-
 public:
     WaveFunction(const int &nspacedim, const int &npart, const int &ncomp/*defines number of proto values*/,
                  const int &nvp, bool flag_vd1=false, bool flag_d1vd1=false, bool flag_d2vd1=false);

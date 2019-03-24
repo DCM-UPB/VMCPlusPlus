@@ -58,6 +58,9 @@ xcuserdata
 DerivedData
 *.xcuserstate
 
+# --- CLion files
+.idea
+
 # -- project specific ignores --
 lib*
 build

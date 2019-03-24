@@ -1,9 +1,21 @@
 #include "vmc/VMC.hpp"
 #include "vmc/MPIVMC.hpp"
 
+// --- derivative callback
+
+VMC::DerivativeCallback::DerivativeCallback(WaveFunction * wf):
+        mci::CallBackOnMoveInterface(wf->getNDim()), _wf(wf) {}
+
+void VMC::DerivativeCallback::callBackFunction(const mci::WalkerState &wlk) {
+    if (wlk.accepted && wlk.needsObs) {
+        _wf->computeAllDerivatives(wlk.xnew);
+    }
+}
+
+
 // --- compute quantities
 
-void VMC::computeVariationalEnergy(const int & Nmc, double * E, double * dE, const bool doFindMRT2step, const bool doDecorrelation)
+void VMC::computeEnergy(const int Nmc, double E[], double dE[], const bool doFindMRT2step, const bool doDecorrelation)
 {
     MPIVMC::Integrate(getMCI(), Nmc, E, dE, doFindMRT2step, doDecorrelation);
 }

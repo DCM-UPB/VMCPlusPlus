@@ -41,7 +41,7 @@ int main(){
     // Case 1
     cout << "-> psi1: " << endl;
     vmc = new VMC(psi1, ham1);
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    vmc->computeEnergy(E_NMC, energy, d_energy);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -51,7 +51,7 @@ int main(){
     cout << "-> psi2: " << endl;
     delete vmc;
     vmc = new VMC(psi2, ham2);
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    vmc->computeEnergy(E_NMC, energy, d_energy);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -61,7 +61,7 @@ int main(){
     cout << "-> psi3: " << endl;
     delete vmc;
     vmc = new VMC(psi3, ham3);
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    vmc->computeEnergy(E_NMC, energy, d_energy);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -71,7 +71,7 @@ int main(){
     cout << "-> psi4: " << endl;
     delete vmc;
     vmc = new VMC(psi4, ham4);
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    vmc->computeEnergy(E_NMC, energy, d_energy);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;

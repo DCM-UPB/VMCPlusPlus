@@ -50,7 +50,7 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Starting energy:" << endl;
-    vmc->computeVariationalEnergy(G_NMC, energy, d_energy);
+    vmc->computeEnergy(G_NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -71,7 +71,7 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Optimized energy:" << endl;
-    vmc->computeVariationalEnergy(G_NMC, energy, d_energy);
+    vmc->computeEnergy(G_NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -90,7 +90,7 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Starting energy:" << endl;
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    vmc->computeEnergy(E_NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
@@ -111,7 +111,7 @@ int main(){
     cout << "       b = " << vp[1] << endl;
 
     cout << "   Optimized energy:" << endl;
-    vmc->computeVariationalEnergy(E_NMC, energy, d_energy);
+    vmc->computeEnergy(E_NMC, energy, d_energy);
     cout << "       Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;

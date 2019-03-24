@@ -18,11 +18,27 @@
 
 class VMC
 {
+    class DerivativeCallback: public mci::CallBackOnMoveInterface
+    // Small internal helper (MCI CallBack Function)
+    // Triggers WF derivative computation after MC move is accepted
+    {
+    protected:
+        WaveFunction * const _wf;
+
+        mci::CallBackOnMoveInterface * _clone() const final {
+            return new DerivativeCallback(_wf);
+        }
+
+    public:
+        explicit DerivativeCallback(WaveFunction * wf);
+
+        void callBackFunction(const mci::WalkerState &wlk) final;
+    };
+
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
     mci::MCI * const _mci;
-
 
 public:
     VMC(WaveFunction * wf, Hamiltonian * H):
@@ -33,6 +49,7 @@ public:
         }
         _mci->addSamplingFunction(std::unique_ptr<mci::SamplingFunctionInterface>(_wf));
         _mci->addObservable(std::unique_ptr<mci::ObservableFunctionInterface>(_H));
+        _mci->addCallBack(std::make_unique<DerivativeCallback>(_wf));
     }
 
     ~VMC(){
@@ -57,8 +74,8 @@ public:
     // Monte Carlo Integral within VMC should be performed using the MCI object provided by VMC
     mci::MCI * getMCI(){return _mci;}
 
-    // Computation of the variational energy
-    void computeVariationalEnergy(const int & Nmc, double * E, double * dE, bool doFindMRT2step = true, bool doDecorrelation = true);
+    // Computation of the energy
+    void computeEnergy(int Nmc, double E[], double dE[], bool doFindMRT2step = true, bool doDecorrelation = true);
 
 
     // Wave Function Optimization Methods
