@@ -21,7 +21,7 @@ private:
     }
 
     // we contain ProtoFunctionInterfaces as members, so we need to implement these:
-    void _newToOld(const mci::WalkerState &wlk) override;
+    void _newToOld() override;
     void _oldToNew() override;
 
 public:

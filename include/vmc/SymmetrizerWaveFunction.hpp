@@ -37,7 +37,7 @@ protected:
     }
 
     // we have a ProtoFunctionInterface as member (_wf), so we need to implement these:
-    void _newToOld(const mci::WalkerState &wlk) override;
+    void _newToOld() override;
     void _oldToNew() override { _wf->oldToNew(); }
 
 public:

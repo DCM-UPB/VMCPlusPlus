@@ -188,10 +188,10 @@ void MultiComponentWaveFunction::addWaveFunction(WaveFunction * wf)
 }
 
 
-void MultiComponentWaveFunction::_newToOld(const mci::WalkerState &wlk)
+void MultiComponentWaveFunction::_newToOld()
 {
     for (auto &wf : _wfs) {
-        wf->newToOld(wlk);
+        wf->newToOld();
     }
 }
 

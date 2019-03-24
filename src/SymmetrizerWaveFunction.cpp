@@ -101,9 +101,9 @@ void SymmetrizerWaveFunction::_addSwapDerivatives(const double * x, const double
     }
 }
 
-void SymmetrizerWaveFunction::_newToOld(const mci::WalkerState &wlk)
+void SymmetrizerWaveFunction::_newToOld()
 {
-    _wf->newToOld(wlk);
+    _wf->newToOld();
 }
 
 void SymmetrizerWaveFunction::computeAllDerivatives(const double * x)
