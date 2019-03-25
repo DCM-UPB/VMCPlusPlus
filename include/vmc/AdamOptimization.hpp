@@ -37,14 +37,14 @@ public:
     void optimizeWF() override
     {
         // create targetfunction
-        NoisyFunctionWithGradient * targetf;
+        nfm::NoisyFunctionWithGradient * targetf;
         if (_useSR) {
             targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
         }
         else { targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda); }
 
         // declare the Adam object
-        auto * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
+        auto * adam = new nfm::Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
         // allocate an array that will contain the wave function variational parameters
         double wfpar[_wf->getNVP()];
         // get the variational parameters

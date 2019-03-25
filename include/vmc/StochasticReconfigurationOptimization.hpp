@@ -29,7 +29,7 @@ public:
         // create targetfunction
         StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, 0., _flag_dgrad);
         // declare the Dynamic Descent object
-        DynamicDescent ddesc(targetf, _stepSize);
+        nfm::DynamicDescent ddesc(targetf, _stepSize);
         // allocate an array that will contain the wave function variational parameters
         double wfpar[_wf->getNVP()];
         // get the variational parameters

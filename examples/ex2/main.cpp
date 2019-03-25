@@ -26,7 +26,7 @@ int main()
     auto * ham2 = new HarmonicOscillator1D1P(w2, psi);
 
 
-    NFMLogManager log;
+    nfm::NFMLogManager log;
     log.setLogLevel(1); // use this to enable log printout (2 would mean verbose mode)
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;

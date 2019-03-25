@@ -23,7 +23,7 @@ int main()
     const double w = 1.;
     auto * ham = new HarmonicOscillator1D1P(w, psi);
 
-    NFMLogManager log;
+    nfm::NFMLogManager log;
     log.setLogLevel(1); // use this to enable log printout
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;

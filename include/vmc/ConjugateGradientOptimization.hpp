@@ -29,7 +29,7 @@ public:
         // create targetfunction
         EnergyGradientTargetFunction * targetf = new EnergyGradientTargetFunction(_wf, _H, _E_Nmc, _grad_E_Nmc, getMCI());
         // declare the Conjugate Gradient object
-        ConjGrad * cjgrad = new ConjGrad(targetf);
+        auto * cjgrad = new nfm::ConjGrad(targetf);
         // allocate an array that will contain the wave function variational parameters
         double wfpar[_wf->getNVP()];
         // get the variational parameters

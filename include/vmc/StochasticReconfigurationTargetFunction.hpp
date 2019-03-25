@@ -12,7 +12,7 @@
 namespace vmc
 {
 
-class StochasticReconfigurationTargetFunction: public NoisyFunctionWithGradient
+class StochasticReconfigurationTargetFunction: public nfm::NoisyFunctionWithGradient
 {
 protected:
     WaveFunction * const _wf;
@@ -26,7 +26,7 @@ protected:
     void _calcObs(const double * vp, double &f, double &df, double * grad_E = nullptr, double * dgrad_E = nullptr);
 public:
     StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):
-            NoisyFunctionWithGradient(wf->getNVP()), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {}
+            nfm::NoisyFunctionWithGradient(wf->getNVP()), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {}
 
     ~StochasticReconfigurationTargetFunction() override = default;
 
