@@ -8,7 +8,8 @@
 
 #include "../common/ExampleFunctions.hpp"
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -67,8 +68,6 @@ int main(){
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl << endl;
-
-
 
 
     delete vmc;

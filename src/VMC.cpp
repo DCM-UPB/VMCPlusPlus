@@ -9,7 +9,8 @@ namespace vmc
 VMC::DerivativeCallback::DerivativeCallback(WaveFunction * wf):
         mci::CallBackOnMoveInterface(wf->getNDim()), _wf(wf) {}
 
-void VMC::DerivativeCallback::callBackFunction(const mci::WalkerState &wlk) {
+void VMC::DerivativeCallback::callBackFunction(const mci::WalkerState &wlk)
+{
     if (wlk.accepted && wlk.needsObs) {
         _wf->computeAllDerivatives(wlk.xnew);
     }
@@ -39,7 +40,7 @@ void VMC::stochasticReconfigurationOptimization(const int &Nmc, const double ste
 };
 
 void VMC::adamOptimization(const int &Nmc, const bool useSR, const bool useGradientError, const size_t &max_n_const_values, const bool useAveraging,
-    const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon)
+                           const double &lambda, const double &alpha, const double &beta1, const double &beta2, const double &epsilon)
 {
     AdamOptimization opt(_wf, _H, getMCI(), Nmc, useSR, useGradientError, max_n_const_values, useAveraging, lambda, alpha, beta1, beta2, epsilon);
     opt.optimizeWF();

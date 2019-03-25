@@ -8,7 +8,8 @@
 
 #include "../common/ExampleFunctions.hpp"
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 

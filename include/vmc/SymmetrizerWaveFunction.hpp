@@ -6,7 +6,8 @@
 namespace vmc
 {
 
-class SymmetrizerWaveFunction: public WaveFunction {
+class SymmetrizerWaveFunction: public WaveFunction
+{
     /*
       This class wraps around an arbitrary WaveFunction and applies by default the
       general Symmetrizer operator or by optional second constructor argument instead
@@ -33,7 +34,8 @@ protected:
     void _computeStandardDerivatives(const double * x, const double &normf);
     void _addSwapDerivatives(const double * x, const double &normf, const int * ids);
 
-    mci::SamplingFunctionInterface * _clone() const final {
+    mci::SamplingFunctionInterface * _clone() const final
+    {
         return new SymmetrizerWaveFunction(_wf, _flag_antisymmetric);
     }
 
@@ -43,10 +45,10 @@ protected:
 
 public:
     explicit SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
-        WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()),
-        _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
+            WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()),
+            _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
 
-    ~SymmetrizerWaveFunction() override= default;
+    ~SymmetrizerWaveFunction() override = default;
 
     void setVP(const double * vp) override;
 
@@ -60,7 +62,7 @@ public:
 
     double computeWFValue(const double * protovalues) const override;
 
-    bool isAntiSymmetric() {return _flag_antisymmetric;}
+    bool isAntiSymmetric() { return _flag_antisymmetric; }
 };
 } // namespace vmc
 

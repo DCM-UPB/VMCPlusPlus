@@ -26,14 +26,14 @@ protected:
     void _calcObs(const double * vp, double &f, double &df, double * grad_E = nullptr, double * dgrad_E = nullptr);
 public:
     StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):
-        NoisyFunctionWithGradient(wf->getNVP()), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {}
+            NoisyFunctionWithGradient(wf->getNVP()), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {}
 
-    ~StochasticReconfigurationTargetFunction() override= default;
+    ~StochasticReconfigurationTargetFunction() override = default;
 
     // NoisyFunctionWithGradient implementation
-    void f(const double *vp, double &f, double &df) override;
-    void grad(const double *vp, double *grad_E, double *dgrad_E) override;
-    void fgrad(const double *vp, double &f, double &df, double *grad_E, double *dgrad_E) override;
+    void f(const double * vp, double &f, double &df) override;
+    void grad(const double * vp, double * grad_E, double * dgrad_E) override;
+    void fgrad(const double * vp, double &f, double &df, double * grad_E, double * dgrad_E) override;
 };
 } // namespace vmc
 

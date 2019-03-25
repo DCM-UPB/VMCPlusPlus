@@ -18,13 +18,14 @@ private:
 
 public:
     ConjugateGradientOptimization(WaveFunction * wf, Hamiltonian * H, const int &E_Nmc, const int &grad_E_Nmc, mci::MCI * mci):
-        WFOptimization(wf, H, mci),
-        _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc) {}
+            WFOptimization(wf, H, mci),
+            _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc) {}
 
-    ~ConjugateGradientOptimization() override= default;
+    ~ConjugateGradientOptimization() override = default;
 
     // optimization
-    void optimizeWF() override{
+    void optimizeWF() override
+    {
         // create targetfunction
         EnergyGradientTargetFunction * targetf = new EnergyGradientTargetFunction(_wf, _H, _E_Nmc, _grad_E_Nmc, getMCI());
         // declare the Conjugate Gradient object

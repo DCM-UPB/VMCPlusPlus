@@ -7,7 +7,8 @@
 
 #include "../common/ExampleFunctions.hpp"
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -22,7 +23,6 @@ int main(){
     auto * ham1 = new HarmonicOscillator1D1P(w1, psi);
     const double w2 = 2.;
     auto * ham2 = new HarmonicOscillator1D1P(w2, psi);
-
 
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
@@ -110,7 +110,6 @@ int main(){
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-
 
 
     delete vmc;

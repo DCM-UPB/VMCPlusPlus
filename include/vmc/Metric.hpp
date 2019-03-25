@@ -12,10 +12,10 @@ private:
 public:
     explicit Metric(const int &nspacedim): _nspacedim(nspacedim) {}
 
-    virtual ~Metric()= default;
+    virtual ~Metric() = default;
 
 
-    int getNSpaceDim(){return _nspacedim;}
+    int getNSpaceDim() { return _nspacedim; }
 
 
     // --- Methods that must be implemented

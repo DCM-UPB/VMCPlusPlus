@@ -23,36 +23,38 @@ private:
     TwoBodyPseudoPotential * const _u2;
     ParticleArrayHelper * _pah;
 
-    mci::SamplingFunctionInterface * _clone() const final {
+    mci::SamplingFunctionInterface * _clone() const final
+    {
         return new TwoBodyJastrow(_npart, _u2);
     }
 public:
     TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2):
-        WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()),
-        _u2(u2)
+            WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()),
+            _u2(u2)
     {
         _pah = new ParticleArrayHelper(u2->getNSpaceDim());
-        if (hasD1VD1() && !hasVD1()){
-            throw std::invalid_argument( "TwoBodyJastrow derivative d1vd1 requires vd1" );
+        if (hasD1VD1() && !hasVD1()) {
+            throw std::invalid_argument("TwoBodyJastrow derivative d1vd1 requires vd1");
         }
-        if (hasD2VD1() && !(hasVD1() && hasD1VD1())){
-            throw std::invalid_argument( "TwoBodyJastrow derivative d2vd1 requires vd1 and d1vd1" );
+        if (hasD2VD1() && !(hasVD1() && hasD1VD1())) {
+            throw std::invalid_argument("TwoBodyJastrow derivative d2vd1 requires vd1 and d1vd1");
         }
     }
-    ~TwoBodyJastrow() override{
+    ~TwoBodyJastrow() override
+    {
         delete _pah;
     }
 
 
-    void setVP(const double *vp) override{_u2->setVP(vp);}
-    void getVP(double *vp) override{_u2->getVP(vp);}
+    void setVP(const double * vp) override { _u2->setVP(vp); }
+    void getVP(double * vp) override { _u2->getVP(vp); }
 
 
     void protoFunction(const double * x, double * protov) override;
 
     double acceptanceFunction(const double * protoold, const double * protonew) const override;
 
-    void computeAllDerivatives(const double *x) override;
+    void computeAllDerivatives(const double * x) override;
 
     double computeWFValue(const double * protovalues) const override;
 };

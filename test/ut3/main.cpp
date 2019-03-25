@@ -9,7 +9,8 @@
 #include "TestVMCFunctions.hpp"
 
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -44,13 +45,17 @@ int main(){
 
     // pick x from a grid
     const double K = 0.75;
-    x[0] = 0.0; x[1] = 0.0; x[2] = K;
-    y[0] = K; y[1] = 0.0; y[2] = 0.0;
+    x[0] = 0.0;
+    x[1] = 0.0;
+    x[2] = K;
+    y[0] = K;
+    y[1] = 0.0;
+    y[2] = 0.0;
 
     // do NTEST tests with random x and y
-    for (int k=0; k<NTEST; ++k){
+    for (int k = 0; k < NTEST; ++k) {
         // pick random x and y
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             x[i] += rd(rgen);
             y[i] += rd(rgen);
         }
@@ -70,7 +75,7 @@ int main(){
         // --- check the first derivatives
 
         // derivative in respect to x
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
             const double fdx = u2->u(x, y);
@@ -78,11 +83,11 @@ int main(){
 
             // cout << "u2->getD1(" << i << ") = " << u2->getD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs((u2->getD1(i)-numderiv)/numderiv) < TINY );
+            assert(fabs((u2->getD1(i) - numderiv)/numderiv) < TINY);
 
             x[i] = origx;
         }
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
             const double fdx = poly_u2->u(x, y);
@@ -90,13 +95,13 @@ int main(){
 
             // cout << "poly_u2->getD1(" << i << ") = " << poly_u2->getD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs((poly_u2->getD1(i)-numderiv)/numderiv) < TINY );
+            assert(fabs((poly_u2->getD1(i) - numderiv)/numderiv) < TINY);
 
             x[i] = origx;
         }
 
         // derivative in respect to y
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origy = y[i];
             y[i] += DX;
             const double fdy = u2->u(x, y);
@@ -104,11 +109,11 @@ int main(){
 
             // cout << "u2->getD1(" << i+NSPACEDIM << ") = " << u2->getD1(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs((u2->getD1(i+NSPACEDIM)-numderiv)/numderiv) < TINY );
+            assert(fabs((u2->getD1(i + NSPACEDIM) - numderiv)/numderiv) < TINY);
 
             y[i] = origy;
         }
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origy = y[i];
             y[i] += DX;
             const double fdy = poly_u2->u(x, y);
@@ -116,7 +121,7 @@ int main(){
 
             // cout << "poly_u2->getD1(" << i+NSPACEDIM << ") = " << poly_u2->getD1(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs((poly_u2->getD1(i+NSPACEDIM)-numderiv)/numderiv) < TINY );
+            assert(fabs((poly_u2->getD1(i + NSPACEDIM) - numderiv)/numderiv) < TINY);
 
             y[i] = origy;
         }
@@ -126,7 +131,7 @@ int main(){
         // -- check the second derivatives
 
         // derivative in respect to x
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
             const double fdx = u2->u(x, y);
@@ -136,11 +141,11 @@ int main(){
 
             // cout << "u2->getD2(" << i << ") = " << u2->getD2(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (u2->getD2(i)-numderiv)/numderiv ) < TINY );
+            assert(fabs((u2->getD2(i) - numderiv)/numderiv) < TINY);
 
             x[i] = origx;
         }
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
             const double fdx = poly_u2->u(x, y);
@@ -150,13 +155,13 @@ int main(){
 
             // cout << "poly_u2->getD2(" << i << ") = " << poly_u2->getD2(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (poly_u2->getD2(i)-numderiv)/numderiv ) < TINY );
+            assert(fabs((poly_u2->getD2(i) - numderiv)/numderiv) < TINY);
 
             x[i] = origx;
         }
 
         // derivative in respect to y
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origy = y[i];
             y[i] += DX;
             const double fdy = u2->u(x, y);
@@ -166,11 +171,11 @@ int main(){
 
             // cout << "u2->getD2(" << i+NSPACEDIM << ") = " << u2->getD2(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (u2->getD2(i+NSPACEDIM)-numderiv)/numderiv ) < TINY );
+            assert(fabs((u2->getD2(i + NSPACEDIM) - numderiv)/numderiv) < TINY);
 
             y[i] = origy;
         }
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origy = y[i];
             y[i] += DX;
             const double fdy = poly_u2->u(x, y);
@@ -180,7 +185,7 @@ int main(){
 
             // cout << "poly_u2->getD2(" << i+NSPACEDIM << ") = " << poly_u2->getD2(i+NSPACEDIM) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (poly_u2->getD2(i+NSPACEDIM)-numderiv)/numderiv ) < TINY );
+            assert(fabs((poly_u2->getD2(i + NSPACEDIM) - numderiv)/numderiv) < TINY);
 
             y[i] = origy;
         }
@@ -189,30 +194,30 @@ int main(){
 
         // -- check the first variational derivative
 
-        for (int i=0; i<u2->getNVP(); ++i){
+        for (int i = 0; i < u2->getNVP(); ++i) {
             const double origvp = vp[i];
             vp[i] = origvp + DX;
             u2->setVP(vp);
-            const double fdp = u2->u(x,y);
+            const double fdp = u2->u(x, y);
             const double numderiv = (fdp - f)/DX;
 
             // cout << "u2->getVD1(" << i << ") = " << u2->getVD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs(( u2->getVD1(i)-numderiv)/numderiv ) < TINY );
+            assert(fabs((u2->getVD1(i) - numderiv)/numderiv) < TINY);
 
             vp[i] = origvp;
             u2->setVP(vp);
         }
-        for (int i=0; i<poly_u2->getNVP(); ++i){
+        for (int i = 0; i < poly_u2->getNVP(); ++i) {
             const double origvp = poly_vp[i];
             poly_vp[i] = origvp + DX;
             poly_u2->setVP(poly_vp);
-            const double fdp = poly_u2->u(x,y);
+            const double fdp = poly_u2->u(x, y);
             const double numderiv = (fdp - pf)/DX;
 
             // cout << "poly_u2->getVD1(" << i << ") = " << poly_u2->getVD1(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs(( poly_u2->getVD1(i)-numderiv)/numderiv ) < TINY );
+            assert(fabs((poly_u2->getVD1(i) - numderiv)/numderiv) < TINY);
 
             poly_vp[i] = origvp;
             poly_u2->setVP(poly_vp);
@@ -223,8 +228,8 @@ int main(){
         // --- check the first cross derivative
 
         // derivative in respect to x
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < u2->getNVP(); ++j) {
                 const double origx = x[i];
                 const double origvp = vp[j];
 
@@ -243,15 +248,15 @@ int main(){
 
                 // cout << "u2->getD1VD1(" << i << ", " << j << ") = " << u2->getD1VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (u2->getD1VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((u2->getD1VD1(i, j) - numderiv)/numderiv) < TINY);
 
                 x[i] = origx;
                 vp[j] = origvp;
                 u2->setVP(vp);
             }
         }
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<poly_u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < poly_u2->getNVP(); ++j) {
                 const double origx = x[i];
                 const double origvp = poly_vp[j];
 
@@ -270,7 +275,7 @@ int main(){
 
                 // cout << "poly_u2->getD1VD1(" << i << ", " << j << ") = " << poly_u2->getD1VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (poly_u2->getD1VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((poly_u2->getD1VD1(i, j) - numderiv)/numderiv) < TINY);
 
                 x[i] = origx;
                 poly_vp[j] = origvp;
@@ -279,8 +284,8 @@ int main(){
         }
 
         // derivative in respect to y
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < u2->getNVP(); ++j) {
                 const double origy = y[i];
                 const double origvp = vp[j];
 
@@ -299,15 +304,15 @@ int main(){
 
                 // cout << "u2->getD1VD1(" << i+NSPACEDIM << ", " << j << ") = " << u2->getD1VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (u2->getD1VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((u2->getD1VD1(i + NSPACEDIM, j) - numderiv)/numderiv) < TINY);
 
                 y[i] = origy;
                 vp[j] = origvp;
                 u2->setVP(vp);
             }
         }
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<poly_u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < poly_u2->getNVP(); ++j) {
                 const double origy = y[i];
                 const double origvp = poly_vp[j];
 
@@ -326,7 +331,7 @@ int main(){
 
                 // cout << "poly_u2->getD1VD1(" << i+NSPACEDIM << ", " << j << ") = " << poly_u2->getD1VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (poly_u2->getD1VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((poly_u2->getD1VD1(i + NSPACEDIM, j) - numderiv)/numderiv) < TINY);
 
                 y[i] = origy;
                 poly_vp[j] = origvp;
@@ -339,8 +344,8 @@ int main(){
         // --- check the second cross derivative
 
         // derivative in respect to x
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < u2->getNVP(); ++j) {
                 const double origx = x[i];
                 const double origvp = vp[j];
 
@@ -362,21 +367,21 @@ int main(){
 
                 vp[j] = origvp + DX;
                 u2->setVP(vp);
-                const double fmdxdp = u2->u(x,y);
+                const double fmdxdp = u2->u(x, y);
 
                 const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*f - fmdx)/(DX*DX*DX);
 
                 // cout << "u2->getD2VD1(" << i << ", " << j << ") = " << u2->getD2VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (u2->getD2VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((u2->getD2VD1(i, j) - numderiv)/numderiv) < TINY);
 
                 x[i] = origx;
                 vp[j] = origvp;
                 u2->setVP(vp);
             }
         }
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<poly_u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < poly_u2->getNVP(); ++j) {
                 const double origx = x[i];
                 const double origvp = poly_vp[j];
 
@@ -398,13 +403,13 @@ int main(){
 
                 poly_vp[j] = origvp + DX;
                 poly_u2->setVP(poly_vp);
-                const double fmdxdp = poly_u2->u(x,y);
+                const double fmdxdp = poly_u2->u(x, y);
 
                 const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*pf - fmdx)/(DX*DX*DX);
 
                 // cout << "poly_u2->getD2VD1(" << i << ", " << j << ") = " << poly_u2->getD2VD1(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (poly_u2->getD2VD1(i, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((poly_u2->getD2VD1(i, j) - numderiv)/numderiv) < TINY);
 
                 x[i] = origx;
                 poly_vp[j] = origvp;
@@ -413,8 +418,8 @@ int main(){
         }
 
         // derivative in respect to y
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < u2->getNVP(); ++j) {
                 const double origy = y[i];
                 const double origvp = vp[j];
 
@@ -436,21 +441,21 @@ int main(){
 
                 vp[j] = origvp + DX;
                 u2->setVP(vp);
-                const double fmdxdp = u2->u(x,y);
+                const double fmdxdp = u2->u(x, y);
 
                 const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*f - fmdx)/(DX*DX*DX);
 
                 // cout << "u2->getD2VD1(" << i+NSPACEDIM << ", " << j << ") = " << u2->getD2VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (u2->getD2VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((u2->getD2VD1(i + NSPACEDIM, j) - numderiv)/numderiv) < TINY);
 
                 y[i] = origy;
                 vp[j] = origvp;
                 u2->setVP(vp);
             }
         }
-        for (int i=0; i<NSPACEDIM; ++i){
-            for (int j=0; j<poly_u2->getNVP(); ++j){
+        for (int i = 0; i < NSPACEDIM; ++i) {
+            for (int j = 0; j < poly_u2->getNVP(); ++j) {
                 const double origy = y[i];
                 const double origvp = poly_vp[j];
 
@@ -472,13 +477,13 @@ int main(){
 
                 poly_vp[j] = origvp + DX;
                 poly_u2->setVP(poly_vp);
-                const double fmdxdp = poly_u2->u(x,y);
+                const double fmdxdp = poly_u2->u(x, y);
 
                 const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*pf - fmdx)/(DX*DX*DX);
 
                 // cout << "poly_u2->getD2VD1(" << i+NSPACEDIM << ", " << j << ") = " << poly_u2->getD2VD1(i+NSPACEDIM, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (poly_u2->getD2VD1(i+NSPACEDIM, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((poly_u2->getD2VD1(i + NSPACEDIM, j) - numderiv)/numderiv) < TINY);
 
                 y[i] = origy;
                 poly_vp[j] = origvp;

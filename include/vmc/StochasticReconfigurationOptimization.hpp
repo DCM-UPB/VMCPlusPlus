@@ -18,12 +18,14 @@ private:
     const bool _flag_dgrad;
 
 public:
-    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const int &Nmc, mci::MCI * mci, const double stepSize = 1., const bool flag_dgrad = false): WFOptimization(wf, H, mci), _Nmc(Nmc), _stepSize(stepSize), _flag_dgrad(flag_dgrad) {}
+    StochasticReconfigurationOptimization(WaveFunction * wf, Hamiltonian * H, const int &Nmc, mci::MCI * mci, const double stepSize = 1., const bool flag_dgrad = false):
+            WFOptimization(wf, H, mci), _Nmc(Nmc), _stepSize(stepSize), _flag_dgrad(flag_dgrad) {}
 
-    ~StochasticReconfigurationOptimization() override= default;
+    ~StochasticReconfigurationOptimization() override = default;
 
     // optimization
-    void optimizeWF() override{
+    void optimizeWF() override
+    {
         // create targetfunction
         StochasticReconfigurationTargetFunction * targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, 0., _flag_dgrad);
         // declare the Dynamic Descent object

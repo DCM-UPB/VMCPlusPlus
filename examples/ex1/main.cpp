@@ -8,7 +8,8 @@
 #include "../common/ExampleFunctions.hpp" // look here for the used WFs / Hamiltonian
 
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -26,7 +27,6 @@ int main(){
     auto * ham2 = new HarmonicOscillator1D1P(1., psi2);
     auto * ham3 = new HarmonicOscillator1D1P(1., psi3);
     auto * ham4 = new HarmonicOscillator1D1P(1., psi4);
-
 
 
     cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;

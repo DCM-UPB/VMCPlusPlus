@@ -6,7 +6,8 @@
 #include <random>
 
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -20,7 +21,7 @@ int main(){
     double x[NSPACEDIM];
     double y[NSPACEDIM];
 
-    for (int i=0; i<NSPACEDIM; ++i){
+    for (int i = 0; i < NSPACEDIM; ++i) {
         x[i] = 2.;
         y[i] = -1.;
     }
@@ -28,8 +29,8 @@ int main(){
 
 
     // --- check that the distance is computed correctly
-    assert( em.dist(x, y) == 3.*sqrt(NSPACEDIM) );
-    assert( em.dist(y, x) == 3.*sqrt(NSPACEDIM) );
+    assert(em.dist(x, y) == 3.*sqrt(NSPACEDIM));
+    assert(em.dist(y, x) == 3.*sqrt(NSPACEDIM));
 
 
 
@@ -44,13 +45,13 @@ int main(){
     uniform_real_distribution<double> rd1, rd2;
     rgen = std::mt19937_64(rdev());
     rgen.seed(18984687);
-    rd1 = uniform_real_distribution<double>(-5,-1);
-    rd2 = uniform_real_distribution<double>(1,5);
+    rd1 = uniform_real_distribution<double>(-5, -1);
+    rd2 = uniform_real_distribution<double>(1, 5);
 
     // make NTEST tests, with random x and y
-    for (int k=0; k<NTEST; ++k){
+    for (int k = 0; k < NTEST; ++k) {
         // pick random x and y
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             x[i] = rd1(rgen);
             y[i] = rd2(rgen);
         }
@@ -66,7 +67,7 @@ int main(){
         em.distD1(y, x, analderivyx);
 
         // check derivative in respect to x
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
             const double fdx = em.dist(x, y);
@@ -74,14 +75,14 @@ int main(){
 
             // cout << "analderivxy[" <<  i << "] = " << analderivxy[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs(analderivxy[i]-numderiv)/numderiv < TINY );
-            assert( fabs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert(fabs(analderivxy[i] - numderiv)/numderiv < TINY);
+            assert(fabs(analderivyx[i + NSPACEDIM] - numderiv)/numderiv < TINY);
 
             x[i] = origx;
         }
 
         // check derivative in respect to y
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origy = y[i];
             y[i] += DX;
             const double fdy = em.dist(x, y);
@@ -89,8 +90,8 @@ int main(){
 
             // cout << "analderivyx[" <<  i << "] = " << analderivyx[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs(analderivyx[i]-numderiv)/numderiv < TINY );
-            assert( fabs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert(fabs(analderivyx[i] - numderiv)/numderiv < TINY);
+            assert(fabs(analderivxy[i + NSPACEDIM] - numderiv)/numderiv < TINY);
 
             y[i] = origy;
         }
@@ -103,7 +104,7 @@ int main(){
         em.distD2(y, x, analderivyx);
 
         // check derivative in respect to x
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
             const double fdx = em.dist(x, y);
@@ -113,14 +114,14 @@ int main(){
 
             // cout << "analderivxy[" <<  i << "] = " << analderivxy[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs(analderivxy[i]-numderiv)/numderiv < TINY );
-            assert( fabs(analderivyx[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert(fabs(analderivxy[i] - numderiv)/numderiv < TINY);
+            assert(fabs(analderivyx[i + NSPACEDIM] - numderiv)/numderiv < TINY);
 
             x[i] = origx;
         }
 
         // check derivative in respect to y
-        for (int i=0; i<NSPACEDIM; ++i){
+        for (int i = 0; i < NSPACEDIM; ++i) {
             const double origy = y[i];
             y[i] += DX;
             const double fdy = em.dist(x, y);
@@ -130,8 +131,8 @@ int main(){
 
             // cout << "analderivyx[" <<  i << "] = " << analderivyx[i] << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs(analderivyx[i]-numderiv)/numderiv < TINY );
-            assert( fabs(analderivxy[i+NSPACEDIM]-numderiv)/numderiv < TINY );
+            assert(fabs(analderivyx[i] - numderiv)/numderiv < TINY);
+            assert(fabs(analderivxy[i + NSPACEDIM] - numderiv)/numderiv < TINY);
 
             y[i] = origy;
         }

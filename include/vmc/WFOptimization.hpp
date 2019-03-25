@@ -8,7 +8,8 @@
 namespace vmc
 {
 
-class WFOptimization{
+class WFOptimization
+{
 protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
@@ -16,14 +17,14 @@ protected:
 
 public:
     WFOptimization(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci):
-        _wf(wf), _H(H), _mci(mci) {}
+            _wf(wf), _H(H), _mci(mci) {}
 
-    virtual ~WFOptimization()= default;
+    virtual ~WFOptimization() = default;
 
     // getters
-    WaveFunction * getWF(){return _wf;}
-    Hamiltonian * getH(){return _H;}
-    mci::MCI * getMCI(){return _mci;};
+    WaveFunction * getWF() { return _wf; }
+    Hamiltonian * getH() { return _H; }
+    mci::MCI * getMCI() { return _mci; };
 
     // optimize the wf
     virtual void optimizeWF() = 0;

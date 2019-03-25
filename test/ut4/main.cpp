@@ -8,7 +8,8 @@
 #include "TestVMCFunctions.hpp"
 
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -30,13 +31,14 @@ int main(){
     auto * em = new EuclideanMetric(NSPACEDIM);
 
     // make the tests using two different pseudo-potentials
-    for (int iu2=0; iu2<2; ++iu2) {
+    for (int iu2 = 0; iu2 < 2; ++iu2) {
         // declare the pseudo-potential and the Jastrow
         TwoBodyPseudoPotential * u2;
         TwoBodyJastrow * J;
-        if (iu2 == 0){
+        if (iu2 == 0) {
             u2 = new PolynomialU2(em, -0.3, -0.1);
-        } else if (iu2==1){
+        }
+        else if (iu2 == 1) {
             u2 = new He3u2(em);
         }
         J = new TwoBodyJastrow(NPART, u2);
@@ -47,14 +49,20 @@ int main(){
 
         // pick x from a grid
         const double K = 0.75;
-        x[0] = 0.0; x[1] = 0.0; x[2] = K;
-        x[3] = K; x[4] = 0.0; x[5] = 0.0;
-        x[6] = 0.0; x[7] = K; x[8] = 0.0;
+        x[0] = 0.0;
+        x[1] = 0.0;
+        x[2] = K;
+        x[3] = K;
+        x[4] = 0.0;
+        x[5] = 0.0;
+        x[6] = 0.0;
+        x[7] = K;
+        x[8] = 0.0;
 
         // add randomness to x
-        for (int i=0; i<NPART; ++i){
-            for (int j=0; j<NSPACEDIM; ++j){
-                x[i*NSPACEDIM+j] += rd(rgen);
+        for (int i = 0; i < NPART; ++i) {
+            for (int j = 0; j < NSPACEDIM; ++j) {
+                x[i*NSPACEDIM + j] += rd(rgen);
             }
         }
 
@@ -69,53 +77,58 @@ int main(){
 
         // initial wave function
         double f, fdx, fmdx, fdp, fdxdp, fmdxdp;
-        J->protoFunction(x, &f); f = exp(f);
+        J->protoFunction(x, &f);
+        f = exp(f);
         // cout << "f = " << f << endl;
 
 
         // --- check the first derivatives
-        for (int i=0; i<NPART*NSPACEDIM; ++i){
+        for (int i = 0; i < NPART*NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] += DX;
-            J->protoFunction(x, &fdx); fdx = exp(fdx);
-            const double numderiv = (fdx-f)/(DX*f);
+            J->protoFunction(x, &fdx);
+            fdx = exp(fdx);
+            const double numderiv = (fdx - f)/(DX*f);
 
             // cout << "getD1DivByWF(" << i <<") = " << J->getD1DivByWF(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (J->getD1DivByWF(i) - numderiv)/numderiv) < TINY );
+            assert(fabs((J->getD1DivByWF(i) - numderiv)/numderiv) < TINY);
 
             x[i] = origx;
         }
 
 
         // --- check the second derivatives
-        for (int i=0; i<NPART*NSPACEDIM; ++i){
+        for (int i = 0; i < NPART*NSPACEDIM; ++i) {
             const double origx = x[i];
             x[i] = origx + DX;
-            J->protoFunction(x, &fdx); fdx = exp(fdx);
+            J->protoFunction(x, &fdx);
+            fdx = exp(fdx);
             x[i] = origx - DX;
-            J->protoFunction(x, &fmdx); fmdx = exp(fmdx);
-            const double numderiv = (fdx - 2.*f + fmdx) / (DX*DX*f);
+            J->protoFunction(x, &fmdx);
+            fmdx = exp(fmdx);
+            const double numderiv = (fdx - 2.*f + fmdx)/(DX*DX*f);
 
             // cout << "getD2DivByWF(" << i << ") = " << J->getD2DivByWF(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (J->getD2DivByWF(i) - numderiv)/numderiv) < TINY );
+            assert(fabs((J->getD2DivByWF(i) - numderiv)/numderiv) < TINY);
 
             x[i] = origx;
         }
 
 
         // -- check the first variational derivative
-        for (int i=0; i<J->getNVP(); ++i){
+        for (int i = 0; i < J->getNVP(); ++i) {
             const double origvp = vp[i];
             vp[i] += DX;
             J->setVP(vp);
-            J->protoFunction(x, &fdp); fdp = exp(fdp);
+            J->protoFunction(x, &fdp);
+            fdp = exp(fdp);
             const double numderiv = (fdp - f)/(DX*f);
 
             // cout << "getVD1DivByWF(" << i << ") = " << J->getVD1DivByWF(i) << endl;
             // cout << "numderiv = " << numderiv << endl << endl;
-            assert( fabs( (J->getVD1DivByWF(i) - numderiv)/numderiv ) < TINY );
+            assert(fabs((J->getVD1DivByWF(i) - numderiv)/numderiv) < TINY);
 
             vp[i] = origvp;
             J->setVP(vp);
@@ -123,27 +136,30 @@ int main(){
 
 
         // --- check the first cross derivative
-        for (int i=0; i<NPART*NSPACEDIM; ++i){
-            for (int j=0; j<J->getNVP(); ++j){
+        for (int i = 0; i < NPART*NSPACEDIM; ++i) {
+            for (int j = 0; j < J->getNVP(); ++j) {
                 const double origx = x[i];
                 const double origvp = vp[j];
 
                 x[i] += DX;
-                J->protoFunction(x, &fdx); fdx = exp(fdx);
+                J->protoFunction(x, &fdx);
+                fdx = exp(fdx);
 
                 x[i] = origx;
                 vp[j] += DX;
                 J->setVP(vp);
-                J->protoFunction(x, &fdp); fdp = exp(fdp);
+                J->protoFunction(x, &fdp);
+                fdp = exp(fdp);
 
                 x[i] += DX;
-                J->protoFunction(x, &fdxdp); fdxdp = exp(fdxdp);
+                J->protoFunction(x, &fdxdp);
+                fdxdp = exp(fdxdp);
 
                 const double numderiv = (fdxdp - fdx - fdp + f)/(DX*DX*f);
 
                 // cout << "getD1VD1DivByWF(" << i << ", " << j << ") = " << J->getD1VD1DivByWF(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (J->getD1VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((J->getD1VD1DivByWF(i, j) - numderiv)/numderiv) < TINY);
 
                 x[i] = origx;
                 vp[j] = origvp;
@@ -154,33 +170,38 @@ int main(){
 
 
         // --- check the second cross derivative
-        for (int i=0; i<NPART*NSPACEDIM; ++i){
-            for (int j=0; j<J->getNVP(); ++j){
+        for (int i = 0; i < NPART*NSPACEDIM; ++i) {
+            for (int j = 0; j < J->getNVP(); ++j) {
                 const double origx = x[i];
                 const double origvp = vp[j];
 
                 x[i] = origx + DX;
-                J->protoFunction(x, &fdx); fdx = exp(fdx);
+                J->protoFunction(x, &fdx);
+                fdx = exp(fdx);
 
                 vp[j] = origvp + DX;
                 J->setVP(vp);
-                J->protoFunction(x, &fdxdp); fdxdp = exp(fdxdp);
+                J->protoFunction(x, &fdxdp);
+                fdxdp = exp(fdxdp);
 
                 x[i] = origx;
-                J->protoFunction(x, &fdp); fdp = exp(fdp);
+                J->protoFunction(x, &fdp);
+                fdp = exp(fdp);
 
                 x[i] = origx - DX;
-                J->protoFunction(x, &fmdxdp); fmdxdp = exp(fmdxdp);
+                J->protoFunction(x, &fmdxdp);
+                fmdxdp = exp(fmdxdp);
 
                 vp[j] = origvp;
                 J->setVP(vp);
-                J->protoFunction(x, &fmdx); fmdx = exp(fmdx);
+                J->protoFunction(x, &fmdx);
+                fmdx = exp(fmdx);
 
                 const double numderiv = (fdxdp - 2.*fdp + fmdxdp - fdx + 2.*f - fmdx)/(DX*DX*DX*f);
 
                 // cout << "getD2VD1DivByWF(" << i << ", " << j << ") = " << J->getD2VD1DivByWF(i, j) << endl;
                 // cout << "numderiv = " << numderiv << endl << endl;
-                assert( fabs( (J->getD2VD1DivByWF(i, j)-numderiv)/numderiv ) < TINY );
+                assert(fabs((J->getD2VD1DivByWF(i, j) - numderiv)/numderiv) < TINY);
 
                 x[i] = origx;
                 vp[j] = origvp;

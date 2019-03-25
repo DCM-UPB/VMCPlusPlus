@@ -9,7 +9,8 @@
 
 #include "../common/ExampleFunctions.hpp"
 
-int main(){
+int main()
+{
     using namespace std;
     using namespace vmc;
 
@@ -27,7 +28,7 @@ int main(){
     const int E_NMC = 20000l; // MC samplings to use for computing the energy
     double energy[4], energy_h[4]; // energy
     double d_energy[4], d_energy_h[4]; // energy error bar
-    for (int i=0; i<4; ++i) {
+    for (int i = 0; i < 4; ++i) {
         energy[i] = 0.;
         d_energy[i] = 0.;
     }
@@ -40,31 +41,33 @@ int main(){
     vmc.getMCI()->storeObservablesOnFile(obsfile, 1);
     vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile, 1);
 
-    if (myrank==0) { cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
-}
+    if (myrank == 0) {
+        cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
+    }
 
     const int neval = 5;
     // First compute the energy with auto-mode findMRT2step/initialDecorr/blocking
-    if (myrank==0) { cout << "Computing the energy " << neval << " times, with auto-mode findMRT2step/initialDecorr (inconsistent time per CPU)." << endl;
-}
-    for (int i=0; i<neval; ++i) {
+    if (myrank == 0) {
+        cout << "Computing the energy " << neval << " times, with auto-mode findMRT2step/initialDecorr (inconsistent time per CPU)." << endl;
+    }
+    for (int i = 0; i < neval; ++i) {
         vmc.computeEnergy(E_NMC, energy_h, d_energy_h);
-        if (myrank ==0) {
-            for (int j=0; j<4; ++j) {
+        if (myrank == 0) {
+            for (int j = 0; j < 4; ++j) {
                 energy[j] += energy_h[j];
                 d_energy[j] += d_energy_h[j]*d_energy_h[j];
             }
             cout << "Total Energy        = " << energy_h[0] << " +- " << d_energy_h[0] << endl;
         }
     }
-    if (myrank==0) {
+    if (myrank == 0) {
         cout << "On average:" << endl;
         cout << "Total Energy        = " << energy[0]/neval << " +- " << sqrt(d_energy[0])/neval << endl;
         cout << "Potential Energy    = " << energy[1]/neval << " +- " << sqrt(d_energy[1])/neval << endl;
         cout << "Kinetic (PB) Energy = " << energy[2]/neval << " +- " << sqrt(d_energy[2])/neval << endl;
         cout << "Kinetic (JF) Energy = " << energy[3]/neval << " +- " << sqrt(d_energy[3])/neval << endl << endl;
     }
-    for (int i=0; i<4; ++i) {
+    for (int i = 0; i < 4; ++i) {
         energy[i] = 0.;
         d_energy[i] = 0.;
     }
@@ -74,20 +77,20 @@ int main(){
     vmc.getMCI()->setNfindMRT2Iterations(50);
     vmc.getMCI()->setNdecorrelationSteps(5000);
 
-    if (myrank==0) {
+    if (myrank == 0) {
         cout << "Computing the energy " << neval << " times, with fixed-mode findMRT2step/initialDecorr (consistent time per CPU)." << endl;
     }
-    for (int i=0; i<neval; ++i) {
+    for (int i = 0; i < neval; ++i) {
         vmc.computeEnergy(E_NMC, energy_h, d_energy_h);
-        if (myrank ==0) {
-            for (int j=0; j<4; ++j) {
+        if (myrank == 0) {
+            for (int j = 0; j < 4; ++j) {
                 energy[j] += energy_h[j];
                 d_energy[j] += d_energy_h[j]*d_energy_h[j];
             }
             cout << "Total Energy        = " << energy_h[0] << " +- " << d_energy_h[0] << endl;
         }
     }
-    if (myrank==0) {
+    if (myrank == 0) {
         cout << "On average:" << endl;
         cout << "Total Energy        = " << energy[0]/neval << " +- " << sqrt(d_energy[0])/neval << endl;
         cout << "Potential Energy    = " << energy[1]/neval << " +- " << sqrt(d_energy[1])/neval << endl;

@@ -9,8 +9,8 @@ namespace vmc
 class EuclideanMetric: public Metric
 {
 public:
-    explicit EuclideanMetric(const int &nspacedim): Metric(nspacedim){}
-    ~EuclideanMetric() override= default;
+    explicit EuclideanMetric(const int &nspacedim): Metric(nspacedim) {}
+    ~EuclideanMetric() override = default;
 
     double dist(const double * r1, const double * r2) override;
 
