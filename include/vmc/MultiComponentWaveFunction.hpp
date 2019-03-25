@@ -6,7 +6,8 @@
 
 #include <vector>
 
-
+namespace vmc
+{
 
 class MultiComponentWaveFunction: public WaveFunction{
 private:
@@ -46,6 +47,6 @@ public:
 
     double computeWFValue(const double * protovalues) const override;
 };
-
+} // namespace vmc
 
 #endif

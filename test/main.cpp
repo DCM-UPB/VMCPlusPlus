@@ -4,13 +4,13 @@
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
-#include "vmc/WaveFunction.hpp"
 
 #include "TestVMCFunctions.hpp"
 
 
 int main(){
     using namespace std;
+    using namespace vmc;
 
     MPIVMC::Init();
 

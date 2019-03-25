@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cmath>
-#include <iostream>
 #include <random>
 
 #include "TestVMCFunctions.hpp"
@@ -10,6 +9,7 @@
 
 int main(){
     using namespace std;
+    using namespace vmc;
 
     // constants
     const int NSPACEDIM = 1;

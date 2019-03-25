@@ -3,6 +3,9 @@
 
 #include <gsl/gsl_multimin.h>
 
+namespace vmc
+{
+
 struct vmc_nms
 {
     WaveFunction * wf;
@@ -123,3 +126,4 @@ void NMSimplexOptimization::optimizeWF()
     gsl_vector_free(ss);
     gsl_multimin_fminimizer_free(s);
 }
+} // namespace vmc

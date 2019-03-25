@@ -2,12 +2,10 @@
 
 #include "vmc/MPIVMC.hpp"
 
-#include <cmath>
-#include <gsl/gsl_siman.h>
-#include <iostream>
-
-namespace vmc_siman{
-
+namespace vmc
+{
+namespace vmc_siman
+{
     WaveFunction * wf;
     Hamiltonian * H;
     int Nmc;
@@ -121,3 +119,4 @@ void SimulatedAnnealingOptimization::optimizeWF()
     // free resources
     gsl_rng_free(r);
 }
+} // namespace vmc

@@ -4,6 +4,8 @@
 
 
 int main(){
+    using namespace vmc;
+
     const int NPART = 3;
     const int NSPACEDIM = 3;
     const int RANDOMINT = 37;

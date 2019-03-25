@@ -1,17 +1,15 @@
 #include <cmath>
 #include <iostream>
-#include <stdexcept>
 
 #include "vmc/AdamOptimization.hpp"
-#include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
-#include "vmc/WaveFunction.hpp"
 
 #include "../common/ExampleFunctions.hpp"
 
 int main(){
     using namespace std;
+    using namespace vmc;
 
     MPIVMC::Init(); // make this usable with a MPI-compiled library
 

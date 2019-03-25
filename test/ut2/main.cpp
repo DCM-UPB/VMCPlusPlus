@@ -8,6 +8,8 @@
 
 int main(){
     using namespace std;
+    using namespace vmc;
+
     const int NSPACEDIM = 3;
     const double DX = 0.005;
     const double TINY = 0.01;

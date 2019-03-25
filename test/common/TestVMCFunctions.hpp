@@ -9,7 +9,7 @@
 #include "vmc/WaveFunction.hpp"
 
 
-class QuadrExponential1D1POrbital: public WaveFunction
+class QuadrExponential1D1POrbital: public vmc::WaveFunction
 {
 protected:
     double _a, _b;
@@ -19,7 +19,7 @@ protected:
     }
 
 public:
-    QuadrExponential1D1POrbital(const double a, const double b): WaveFunction(1, 1, 1, 2, true, false, false)
+    QuadrExponential1D1POrbital(const double a, const double b): vmc::WaveFunction(1, 1, 1, 2, true, false, false)
         {_a=a; _b=b;}
 
     void setVP(const double *in) final
@@ -67,7 +67,7 @@ public:
   Trial Wave Function for N particles in 1 dimension, that uses parameters ai and b, with fixed ai and variational b.
   Psi  =  exp( -b * sum((xi-ai)^2) )
 */
-class QuadrExponential1DNPOrbital: public WaveFunction
+class QuadrExponential1DNPOrbital: public vmc::WaveFunction
 {
 protected:
     double * _a;
@@ -80,7 +80,7 @@ protected:
 
 public:
     QuadrExponential1DNPOrbital(const int &npart, const double * a, const double &b):
-    WaveFunction(1, npart, 1, 1, true, true, true), _b(b), _bi(1./b)
+    vmc::WaveFunction(1, npart, 1, 1, true, true, true), _b(b), _bi(1./b)
     {
         _a=new double[npart];
         for (int i=0; i<npart; ++i) { _a[i] = a[i]; }
@@ -143,7 +143,7 @@ public:
 };
 
 
-class Gaussian1D1POrbital: public WaveFunction
+class Gaussian1D1POrbital: public vmc::WaveFunction
 {
 protected:
     double _b;
@@ -154,7 +154,7 @@ protected:
 
 public:
     explicit Gaussian1D1POrbital(const double b):
-    WaveFunction(1, 1, 1, 1, false, false, false){
+    vmc::WaveFunction(1, 1, 1, 1, false, false, false){
         _b=b;
     }
 
@@ -195,7 +195,7 @@ public:
 };
 
 
-class HarmonicOscillator1D1P: public Hamiltonian
+class HarmonicOscillator1D1P: public vmc::Hamiltonian
 {
 protected:
     double _w;
@@ -205,7 +205,7 @@ protected:
     }
 
 public:
-    HarmonicOscillator1D1P(const double w, WaveFunction * wf): Hamiltonian(1, 1, wf) {_w=w;}
+    HarmonicOscillator1D1P(const double w, vmc::WaveFunction * wf): vmc::Hamiltonian(1, 1, wf) {_w=w;}
     double localPotentialEnergy(const double *r) final
     {
         return (0.5*_w*_w*(*r)*(*r));
@@ -213,7 +213,7 @@ public:
 };
 
 
-class He3u2: public TwoBodyPseudoPotential
+class He3u2: public vmc::TwoBodyPseudoPotential
 {
 /*
     u(r) = b/r^5
@@ -222,8 +222,8 @@ private:
     double _b;
 
 public:
-    explicit He3u2(EuclideanMetric * em):
-    TwoBodyPseudoPotential(em, 1, true, true, true){
+    explicit He3u2(vmc::EuclideanMetric * em):
+            vmc::TwoBodyPseudoPotential(em, 1, true, true, true){
         _b = -1.;
     }
 
@@ -257,7 +257,7 @@ public:
 
 
 
-class PolynomialU2: public TwoBodyPseudoPotential{
+class PolynomialU2: public vmc::TwoBodyPseudoPotential{
 /*
     u(r) = a * r^2 + b * r^3
 */
@@ -266,8 +266,8 @@ private:
     double _a, _b;
 
 public:
-    PolynomialU2(EuclideanMetric * em, double a, double b):
-    TwoBodyPseudoPotential(em, 2, true, true, true){
+    PolynomialU2(vmc::EuclideanMetric * em, double a, double b):
+            vmc::TwoBodyPseudoPotential(em, 2, true, true, true){
         _a = a;
         _b = b;
     }
@@ -308,7 +308,7 @@ public:
 };
 
 
-class FlatU2: public TwoBodyPseudoPotential{
+class FlatU2: public vmc::TwoBodyPseudoPotential{
 /*
     u(r) = K
 */
@@ -316,8 +316,8 @@ private:
     double _K;
 
 public:
-    FlatU2(EuclideanMetric * em, const double &K):
-    TwoBodyPseudoPotential(em, 1, true, true, true){
+    FlatU2(vmc::EuclideanMetric * em, const double &K):
+            vmc::TwoBodyPseudoPotential(em, 1, true, true, true){
         _K = K;
     }
 

@@ -15,6 +15,8 @@
 #include <gsl/gsl_siman.h>
 #include <stdexcept>
 
+namespace vmc
+{
 
 class VMC
 {
@@ -90,6 +92,6 @@ public:
 
     void nmsimplexOptimization(const int &Nmc, const double &iota, const double &kappa, const double &lambda, const double &rstart = 1.0, const double &rend = 0.01, const size_t &max_n_iter = 0);
 };
-
+} // namespace vmc
 
 #endif

@@ -16,7 +16,7 @@
   Hamiltonian describing a 1-particle harmonic oscillator:
   H  =  p^2 / 2m  +  1/2 * w^2 * x^2
 */
-class HarmonicOscillator1D1P: public Hamiltonian
+class HarmonicOscillator1D1P: public vmc::Hamiltonian
 {
 protected:
     double _w;
@@ -26,8 +26,8 @@ protected:
     }
 
 public:
-    HarmonicOscillator1D1P(double w, WaveFunction * wf):
-        Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
+    HarmonicOscillator1D1P(double w, vmc::WaveFunction * wf):
+        vmc::Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) {_w=w;}
 
     // potential energy
     double localPotentialEnergy(const double *r) final
@@ -43,7 +43,7 @@ public:
   Psi  =  exp( -b * (x-a)^2 )
   Notice that the corresponding probability density (sampling function) is Psi^2.
 */
-class QuadrExponential1D1POrbital: public WaveFunction{
+class QuadrExponential1D1POrbital: public vmc::WaveFunction{
 protected:
     double _a, _b;
 
@@ -53,7 +53,7 @@ protected:
 
 public:
     QuadrExponential1D1POrbital(double a, double b, bool flag_vd1 = false):
-    WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, flag_vd1 /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
+    vmc::WaveFunction(1 /*num space dimensions*/, 1 /*num particles*/, 1 /*num wf components*/, 2 /*num variational parameters*/, flag_vd1 /*VD1*/, false /*D1VD1*/, false /*D2VD1*/) {
             _a=a; _b=b;
         }
 
@@ -103,7 +103,7 @@ public:
   Psi  =  exp( -b * x^2 )
   Notice that the corresponding probability density (sampling function) is Psi^2.
 */
-class Gaussian1D1POrbital: public WaveFunction
+class Gaussian1D1POrbital: public vmc::WaveFunction
 {
 protected:
     double _b;
@@ -114,7 +114,7 @@ protected:
 
 public:
     explicit Gaussian1D1POrbital(double b, bool flag_vd1 = false):
-    WaveFunction(1, 1, 1, 1, flag_vd1, false, false){
+    vmc::WaveFunction(1, 1, 1, 1, flag_vd1, false, false){
         _b=b;
     }
 

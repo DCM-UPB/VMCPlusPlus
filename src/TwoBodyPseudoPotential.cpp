@@ -1,6 +1,7 @@
 #include "vmc/TwoBodyPseudoPotential.hpp"
 
-
+namespace vmc
+{
 
 double TwoBodyPseudoPotential::u(const double * r1, const double * r2){
     return ur(_metric->dist(r1, r2));
@@ -119,3 +120,4 @@ TwoBodyPseudoPotential::~TwoBodyPseudoPotential(){
         delete[] _vfoo2; _vfoo2 = nullptr;
     }
 }
+} // namespace vmc

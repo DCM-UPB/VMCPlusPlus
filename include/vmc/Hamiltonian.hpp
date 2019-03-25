@@ -4,6 +4,8 @@
 #include "mci/ObservableFunctionInterface.hpp"
 #include "vmc/WaveFunction.hpp"
 
+namespace vmc
+{
 
 // Hamiltonian: obs[0]=Totale Energy, obs[1]=Potential Energy, obs[2]=Kinetic Energy (PB), obs[3]=Kinetic Energy (JF)
 class Hamiltonian: public mci::ObservableFunctionInterface
@@ -59,6 +61,6 @@ public:
         out[0]= _flag_PBKE ? out[1]+out[2] : out[1]+out[3];
     }
 };
-
+} // namespace vmc
 
 #endif

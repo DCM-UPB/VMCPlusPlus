@@ -1,6 +1,8 @@
 #ifndef VMC_PARTICLEARRAYHELPER_HPP
 #define VMC_PARTICLEARRAYHELPER_HPP
 
+namespace vmc
+{
 /*
 Tools for managing 1D arrays which represent the matrix:
     x[i][j] = coordinate j of the particle i
@@ -14,8 +16,6 @@ Example: npart=2 nspacedim=3   ->   1st particle = {x1, x2, x3}   2nd particle =
 IMPORTANT: the out-of boundary check (for the index i, which might exceed npart) is not made for perfomance reasons.
 Since this class most likely will be used within the library, unit tests on the classes which make uses of this class should rule out errors.
 */
-
-
 class ParticleArrayHelper
 {
 private:
@@ -31,6 +31,6 @@ public:
 
     void addArrayToParticleArray(double * x, const int &i, const double * toadd);
 };
-
+} // namespace vmc
 
 #endif

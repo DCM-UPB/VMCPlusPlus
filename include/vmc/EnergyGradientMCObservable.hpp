@@ -7,7 +7,8 @@
 
 #include <iostream>
 
-
+namespace vmc
+{
 
 class EnergyGradientMCObservable: public mci::ObservableFunctionInterface
 {
@@ -37,6 +38,6 @@ public:
         }
     }
 };
-
+} // namespace vmc
 
 #endif

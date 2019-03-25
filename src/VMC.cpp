@@ -1,6 +1,9 @@
 #include "vmc/VMC.hpp"
 #include "vmc/MPIVMC.hpp"
 
+namespace vmc
+{
+
 // --- derivative callback
 
 VMC::DerivativeCallback::DerivativeCallback(WaveFunction * wf):
@@ -54,3 +57,4 @@ void VMC::nmsimplexOptimization(const int &Nmc, const double &iota, const double
     NMSimplexOptimization opt(_wf, _H, _mci, Nmc, iota, kappa, lambda, rstart, rend, max_n_iter);
     opt.optimizeWF();
 };
+} // namespace vmc

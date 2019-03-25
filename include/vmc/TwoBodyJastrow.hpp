@@ -7,7 +7,8 @@
 
 #include <stdexcept>
 
-
+namespace vmc
+{
 /*
 TwoBodyJastrow is a virtual class (or interface) for any 2-body Jastrow of the form:
 
@@ -16,8 +17,6 @@ TwoBodyJastrow is a virtual class (or interface) for any 2-body Jastrow of the f
 where R contains all the particle coordinates, sum_ij is a sum over all the particle pairs (i, j) and r_ij is the distance between the particles i and j.
 u is a 2-body pseudopotential, and must be implemented as TwoBodyPseudoPotential.
 */
-
-
 class TwoBodyJastrow: public WaveFunction
 {
 private:
@@ -57,34 +56,6 @@ public:
 
     double computeWFValue(const double * protovalues) const override;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+} // namespace vmc
 
 #endif

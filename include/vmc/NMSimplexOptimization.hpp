@@ -6,6 +6,9 @@
 #include "vmc/WFOptimization.hpp"
 #include "vmc/WaveFunction.hpp"
 
+namespace vmc
+{
+
 class NMSimplexOptimization: public WFOptimization
 {
 protected:
@@ -28,5 +31,6 @@ public:
     // optimization
     void optimizeWF() override;
 };
+} // namespace vmc
 
 #endif

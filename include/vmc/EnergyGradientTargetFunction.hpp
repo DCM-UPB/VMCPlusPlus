@@ -1,12 +1,14 @@
 #ifndef VMC_ENERGYGRADIENTTARGETFUNCTION_HPP
 #define VMC_ENERGYGRADIENTTARGETFUNCTION_HPP
 
-
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/WaveFunction.hpp"
 
 #include "mci/MCIntegrator.hpp"
 #include "nfm/NoisyFunction.hpp"
+
+namespace vmc
+{
 
 class EnergyGradientTargetFunction: public NoisyFunctionWithGradient
 {
@@ -31,6 +33,6 @@ public:
     void grad(const double *vp, double *grad_E, double *dgrad_E) override;
     void fgrad(const double *vp, double &f, double &df, double *grad_E, double *dgrad_E) override;
 };
-
+} // namespace vmc
 
 #endif

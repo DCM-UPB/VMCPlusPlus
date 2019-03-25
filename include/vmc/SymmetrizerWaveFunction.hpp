@@ -1,9 +1,10 @@
 #ifndef VMC_SYMMETRIZERWAVEFUNCTION_HPP
 #define VMC_SYMMETRIZERWAVEFUNCTION_HPP
 
-
 #include "vmc/WaveFunction.hpp"
 
+namespace vmc
+{
 
 class SymmetrizerWaveFunction: public WaveFunction {
     /*
@@ -61,6 +62,6 @@ public:
 
     bool isAntiSymmetric() {return _flag_antisymmetric;}
 };
-
+} // namespace vmc
 
 #endif

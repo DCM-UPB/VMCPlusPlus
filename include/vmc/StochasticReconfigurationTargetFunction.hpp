@@ -9,7 +9,8 @@
 
 #include <iostream>
 
-
+namespace vmc
+{
 
 class StochasticReconfigurationTargetFunction: public NoisyFunctionWithGradient
 {
@@ -34,6 +35,6 @@ public:
     void grad(const double *vp, double *grad_E, double *dgrad_E) override;
     void fgrad(const double *vp, double &f, double &df, double *grad_E, double *dgrad_E) override;
 };
-
+} // namespace vmc
 
 #endif

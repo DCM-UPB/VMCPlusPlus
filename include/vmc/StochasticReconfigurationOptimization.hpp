@@ -7,7 +7,8 @@
 
 #include "mci/MCIntegrator.hpp"
 
-
+namespace vmc
+{
 
 class StochasticReconfigurationOptimization: public WFOptimization
 {
@@ -42,7 +43,6 @@ public:
         delete targetf;
     }
 };
-
-
+} // namespace vmc
 
 #endif

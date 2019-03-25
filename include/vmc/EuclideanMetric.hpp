@@ -3,6 +3,8 @@
 
 #include "vmc/Metric.hpp"
 
+namespace vmc
+{
 
 class EuclideanMetric: public Metric
 {
@@ -16,6 +18,6 @@ public:
 
     void distD2(const double * r1, const double * r2, double * out) override;
 };
-
+} // namespace vmc
 
 #endif

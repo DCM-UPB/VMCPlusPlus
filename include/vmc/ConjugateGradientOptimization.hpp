@@ -7,7 +7,8 @@
 
 #include "mci/MCIntegrator.hpp"
 
-
+namespace vmc
+{
 
 class ConjugateGradientOptimization: public WFOptimization
 {
@@ -44,6 +45,6 @@ public:
         delete targetf;
     }
 };
-
+} // namespace vmc
 
 #endif

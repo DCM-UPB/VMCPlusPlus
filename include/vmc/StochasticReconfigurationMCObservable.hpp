@@ -5,7 +5,8 @@
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/WaveFunction.hpp"
 
-
+namespace vmc
+{
 
 class StochasticReconfigurationMCObservable: public mci::ObservableFunctionInterface
 {
@@ -49,6 +50,6 @@ public:
         }
     }
 };
-
+} // namespace vmc
 
 #endif

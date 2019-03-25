@@ -5,6 +5,9 @@
 
 #include <gsl/gsl_siman.h>
 
+namespace vmc
+{
+
 class SimulatedAnnealingOptimization: public WFOptimization
 {
 public:
@@ -15,6 +18,6 @@ public:
     // optimization
     void optimizeWF() override;
 };
-
+} // namespace vmc
 
 #endif

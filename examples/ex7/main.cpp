@@ -1,11 +1,9 @@
 #include <cmath>
 #include <iostream>
-#include <stdexcept>
 
 #include "nfm/ConjGrad.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/VMC.hpp"
-#include "vmc/WaveFunction.hpp"
 
 #include "vmc/MPIVMC.hpp" // this example requires MPI!
 
@@ -13,6 +11,7 @@
 
 int main(){
     using namespace std;
+    using namespace vmc;
 
     int myrank = MPIVMC::Init();
     cout << "Hello from rank " << myrank << endl;

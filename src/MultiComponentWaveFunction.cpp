@@ -1,7 +1,7 @@
 #include "vmc/MultiComponentWaveFunction.hpp"
 
-#include <stdexcept>
-
+namespace vmc
+{
 
 void MultiComponentWaveFunction::computeAllDerivatives(const double x[])
 {
@@ -201,3 +201,4 @@ void MultiComponentWaveFunction::_oldToNew()
         wf->oldToNew();
     }
 }
+} // namespace vmc

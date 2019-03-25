@@ -1,9 +1,10 @@
 #ifndef VMC_TWOBODYPSEUDOPOTENTIAL_HPP
-#define  VMC_TWOBODYPSEUDOPOTENTIAL_HPP
-
+#define VMC_TWOBODYPSEUDOPOTENTIAL_HPP
 
 #include "vmc/Metric.hpp"
 
+namespace vmc
+{
 
 class TwoBodyPseudoPotential
 {
@@ -67,6 +68,6 @@ public:
     virtual void urD1VD1(const double &r, double * d1vd1) = 0;        // e.g. 5/r^6
     virtual void urD2VD1(const double &r, double * d1vd1) = 0;        // e.g. -30/r^7
 };
-
+} // namespace vmc
 
 #endif

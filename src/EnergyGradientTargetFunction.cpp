@@ -3,6 +3,9 @@
 #include "vmc/EnergyGradientMCObservable.hpp"
 #include "vmc/MPIVMC.hpp"
 
+namespace vmc
+{
+
 void EnergyGradientTargetFunction::f(const double *vp, double &f, double &df)
 {
     // set the variational parameters given as input
@@ -60,3 +63,4 @@ void EnergyGradientTargetFunction::fgrad(const double *vp, double &f, double &df
     }
     _mci->popObservable(); // remove the gradient obs (it will be deleted)
 }
+} // namespace vmc

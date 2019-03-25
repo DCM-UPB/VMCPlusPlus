@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+namespace vmc
+{
 
 double EuclideanMetric::dist(const double * r1, const double * r2){
     double dist = 0.;
@@ -29,3 +31,4 @@ void EuclideanMetric::distD2(const double * r1, const double * r2, double * out)
         out[getNSpaceDim()+i] = ( rpow2 - ripow2 ) / rpow3;
     }
 }
+} // namespace vmc

@@ -6,6 +6,8 @@
 //
 // using namespace std;
 
+namespace vmc
+{
 
 void TwoBodyJastrow::protoFunction(const double * x, double * protov)
 {
@@ -121,3 +123,4 @@ double TwoBodyJastrow::computeWFValue(const double * protovalues) const
 {
     return exp(2.0 * protovalues[0]);
 }
+} // namespace vmc

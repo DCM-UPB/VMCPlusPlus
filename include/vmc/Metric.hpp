@@ -1,6 +1,8 @@
 #ifndef VMC_METRIC_HPP
 #define VMC_METRIC_HPP
 
+namespace vmc
+{
 
 class Metric
 {
@@ -23,6 +25,6 @@ public:
 
     virtual void distD2(const double * r1, const double * r2, double * out) = 0;
 };
-
+} // namespace vmc
 
 #endif

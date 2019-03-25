@@ -2,7 +2,8 @@
 
 #include <algorithm>
 
-
+namespace vmc
+{
 
 double * ParticleArrayHelper::getParticleArray(double * x, const int &i){
     return x+i*_nspacedim;
@@ -25,3 +26,4 @@ void ParticleArrayHelper::addArrayToParticleArray(double * x, const int &i, cons
         x[istart + k] += toadd[k];
     }
 }
+} // namespace vmc

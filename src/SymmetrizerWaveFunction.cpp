@@ -1,8 +1,9 @@
 #include "vmc/SymmetrizerWaveFunction.hpp"
 
-#include <algorithm>
 #include <cmath>
-#include <numeric>
+
+namespace vmc
+{
 
 unsigned long SymmetrizerWaveFunction::_npart_factorial()
 {
@@ -234,3 +235,4 @@ void SymmetrizerWaveFunction::setVP(const double * vp)
 {
     _wf->setVP(vp);
 }
+} // namespace vmc

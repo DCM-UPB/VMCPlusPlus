@@ -5,6 +5,8 @@
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/WaveFunction.hpp"
 
+namespace vmc
+{
 
 class WFOptimization{
 protected:
@@ -26,7 +28,7 @@ public:
     // optimize the wf
     virtual void optimizeWF() = 0;
 };
-
+} // namespace vmc
 
 
 #endif

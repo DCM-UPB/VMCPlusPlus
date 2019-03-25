@@ -8,7 +8,8 @@
 
 #include "mci/MCIntegrator.hpp"
 
-
+namespace vmc
+{
 
 class AdamOptimization: public WFOptimization
 {
@@ -26,18 +27,21 @@ private:
 public:
     AdamOptimization(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const bool useSR = false, const bool useGradientError = false, const size_t &max_n_const_values = 20,
                      const bool useAveraging = false, const double &lambda = 0., const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8):
-        WFOptimization(wf, H, mci),
-        _Nmc(Nmc), _useSR(useSR), _useGradientError(useGradientError), _useAveraging(useAveraging), _max_n_const_values(max_n_const_values),
-        _lambda(lambda), _alpha(alpha), _beta1(beta1), _beta2(beta2), _epsilon(epsilon) {}
+            WFOptimization(wf, H, mci),
+            _Nmc(Nmc), _useSR(useSR), _useGradientError(useGradientError), _useAveraging(useAveraging), _max_n_const_values(max_n_const_values),
+            _lambda(lambda), _alpha(alpha), _beta1(beta1), _beta2(beta2), _epsilon(epsilon) {}
 
-    ~AdamOptimization() override= default;
+    ~AdamOptimization() override = default;
 
     // optimization
-    void optimizeWF() override{
+    void optimizeWF() override
+    {
         // create targetfunction
         NoisyFunctionWithGradient * targetf;
-        if (_useSR) { targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
-        } else { targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda); }
+        if (_useSR) {
+            targetf = new StochasticReconfigurationTargetFunction(_wf, _H, getMCI(), _Nmc, _lambda, false);
+        }
+        else { targetf = new EnergyGradientTargetFunction(_wf, _H, _Nmc, _Nmc, getMCI(), _lambda); }
 
         // declare the Adam object
         auto * adam = new Adam(targetf, _useGradientError, _max_n_const_values, _useAveraging, _alpha, _beta1, _beta2, _epsilon);
@@ -57,7 +61,7 @@ public:
         delete targetf;
     }
 };
-
+} // namespace vmc
 
 
 #endif

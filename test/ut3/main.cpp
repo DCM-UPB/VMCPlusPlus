@@ -11,6 +11,7 @@
 
 int main(){
     using namespace std;
+    using namespace vmc;
 
     // constants
     const int NSPACEDIM = 3;

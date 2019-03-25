@@ -2,14 +2,11 @@
 #include "vmc/MPIVMC.hpp"
 #include "vmc/StochasticReconfigurationMCObservable.hpp"
 
-#include <numeric>
-
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_multimin.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_vector.h>
+
+namespace vmc
+{
 
 void add_norm_f(const double * const vp, const int &nvp, double &f, const double &lambda)
 {
@@ -181,3 +178,4 @@ void StochasticReconfigurationTargetFunction::fgrad(const double *vp, double &f,
     _calcObs(vp, f, df, grad_E, dgrad_E);
     if (_lambda_reg > 0) { add_norm_fgrad(vp, _wf->getNVP(), f, grad_E, _lambda_reg); }
 }
+} // namespace vmc
