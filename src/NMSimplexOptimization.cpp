@@ -55,7 +55,7 @@ double vmc_cost(const gsl_vector * v, void * params)
     // compute the energy and its standard deviation
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
+    MPIVMC::Integrate(*mci, Nmc, energy, d_energy, true, true);
 
     // compute the normalization
     double norm = 0.;

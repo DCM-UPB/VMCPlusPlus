@@ -35,8 +35,8 @@ public:
     TwoBodyPseudoPotential(Metric * metric, int nvp, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false);
     virtual ~TwoBodyPseudoPotential();
 
-    int getNSpaceDim() { return _metric->getNSpaceDim(); }
-    int getNVP() { return _nvp; }
+    int getNSpaceDim() const { return _metric->getNSpaceDim(); }
+    int getNVP() const { return _nvp; }
 
     // -- Pair pseudopotential
     double u(const double * r1, const double * r2);
@@ -45,21 +45,21 @@ public:
     // compute all the derivatives
     void computeAllDerivatives(const double * r1, const double * r2);
     // get the derivatives
-    double getD1(int id1) { return _d1[id1]; }
-    double getD2(int id2) { return _d2[id2]; }
-    double getVD1(int ivd1) { return _vd1[ivd1]; }
-    double getD1VD1(int id1, int ivd1) { return _d1vd1[id1][ivd1]; }
-    double getD2VD1(int id2, int ivd1) { return _d2vd1[id2][ivd1]; }
+    double getD1(int id1) const { return _d1[id1]; }
+    double getD2(int id2) const { return _d2[id2]; }
+    double getVD1(int ivd1) const { return _vd1[ivd1]; }
+    double getD1VD1(int id1, int ivd1) const { return _d1vd1[id1][ivd1]; }
+    double getD2VD1(int id2, int ivd1) const { return _d2vd1[id2][ivd1]; }
     // has the variational derivatives?
-    bool hasVD1() { return _flag_vd1; }
-    bool hasD1VD1() { return _flag_d1vd1; }
-    bool hasD2VD1() { return _flag_d2vd1; }
+    bool hasVD1() const { return _flag_vd1; }
+    bool hasD1VD1() const { return _flag_d1vd1; }
+    bool hasD2VD1() const { return _flag_d2vd1; }
 
 
     // --- Methods that must be implemented
     // manage variational parameters
     virtual void setVP(const double * vp) = 0;
-    virtual void getVP(double * vp) = 0;
+    virtual void getVP(double * vp) const = 0;
     // functions of the distance that define the pseudopotential
     virtual double ur(double r) = 0;                           // e.g. -b/r^5
     virtual double urD1(double r) = 0;                         // e.g. 5*b/r^6

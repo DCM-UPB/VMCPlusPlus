@@ -5,7 +5,7 @@
 namespace vmc
 {
 
-unsigned long SymmetrizerWaveFunction::_npart_factorial()
+unsigned long SymmetrizerWaveFunction::_npart_factorial() const
 {
     unsigned long fac = 1;
     const auto npart = static_cast<unsigned long>(_npart);
@@ -225,7 +225,7 @@ void SymmetrizerWaveFunction::protoFunction(const double * in, double * out)
 }
 
 
-void SymmetrizerWaveFunction::getVP(double * vp)
+void SymmetrizerWaveFunction::getVP(double * vp) const
 {
     _wf->getVP(vp);
 }

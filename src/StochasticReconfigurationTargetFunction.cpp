@@ -51,7 +51,7 @@ void StochasticReconfigurationTargetFunction::_integrate(const double * const vp
     }
 
     // perform the integral and store the values (skip extra burning phase on gradient runs (only findMRT2))
-    MPIVMC::Integrate(_mci, _Nmc, obs, dobs, true, !flag_grad);
+    MPIVMC::Integrate(*_mci, _Nmc, obs, dobs, true, !flag_grad);
 
     // remove gradient obs again
     if (flag_grad) { _mci->popObservable(); }

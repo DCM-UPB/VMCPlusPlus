@@ -32,7 +32,7 @@ inline double simanTarget(void * xp)
     // compute the energy and its standard deviation
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
+    MPIVMC::Integrate(*mci, Nmc, energy, d_energy, true, true);
 
     // compute the normalization
     const double norm = sqrt(std::inner_product(x, x + wf->getNVP(), x, 0.))/wf->getNVP();

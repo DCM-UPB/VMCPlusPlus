@@ -23,11 +23,11 @@ public:
             mci::ObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
     ~Hamiltonian() override = default;
 
-    int getNSpaceDim() { return _nspacedim; }
-    int getTotalNDim() { return getNDim(); }
-    int getNPart() { return _npart; }
+    int getNSpaceDim() const { return _nspacedim; }
+    int getTotalNDim() const { return getNDim(); }
+    int getNPart() const { return _npart; }
 
-    bool hasPBKE() { return _flag_PBKE; }
+    bool hasPBKE() const { return _flag_PBKE; }
 
     // Potential energy --- MUST BE IMPLEMENTED
     virtual double localPotentialEnergy(const double * r) = 0;

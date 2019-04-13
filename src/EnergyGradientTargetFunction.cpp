@@ -13,7 +13,7 @@ nfm::NoisyValue EnergyGradientTargetFunction::f(const std::vector<double> &vp)
     // perform the integral and store the values
     double obs[4];
     double dobs[4];
-    MPIVMC::Integrate(_mci, _E_Nmc, obs, dobs, true, true);
+    MPIVMC::Integrate(*_mci, _E_Nmc, obs, dobs, true, true);
     nfm::NoisyValue f{obs[0], dobs[0]};
 
     if (_lambda_reg > 0.) { // compute the regularization term
@@ -41,7 +41,7 @@ nfm::NoisyValue EnergyGradientTargetFunction::fgrad(const std::vector<double> &v
     // perform the integral and store the values
     double obs[4 + 2*_wf->getNVP()];
     double dobs[4 + 2*_wf->getNVP()];
-    MPIVMC::Integrate(_mci, _grad_E_Nmc, obs, dobs, true, true);
+    MPIVMC::Integrate(*_mci, _grad_E_Nmc, obs, dobs, true, true);
     _mci->popObservable(); // remove the gradient obs (it will be deleted)
     // create pointers for ease of use and readability
     const double * const H = obs;

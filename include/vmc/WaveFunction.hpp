@@ -53,35 +53,35 @@ protected:
     // --- getters and setters for the derivatives
     // first derivative divided by the wf
     void _setD1DivByWF(int id1, double d1_divbywf) { _d1_divbywf[id1] = d1_divbywf; }
-    double * _getD1DivByWF() { return _d1_divbywf; }
+    double * _getD1DivByWF() const { return _d1_divbywf; }
     // second derivative divided by the wf
     void _setD2DivByWF(int id2, double d2_divbywf) { _d2_divbywf[id2] = d2_divbywf; }
-    double * _getD2DivByWF() { return _d2_divbywf; }
+    double * _getD2DivByWF() const { return _d2_divbywf; }
     // variational derivative divided by the wf
     void _setVD1DivByWF(int ivd1, double vd1_divbywf) { _vd1_divbywf[ivd1] = vd1_divbywf; }
-    double * _getVD1DivByWF() { return _vd1_divbywf; }
+    double * _getVD1DivByWF() const { return _vd1_divbywf; }
     // cross derivative: first derivative and first variational derivative divided by the wf
     void _setD1VD1DivByWF(int id1, int ivd1, double d1vd1_divbywf) { _d1vd1_divbywf[id1][ivd1] = d1vd1_divbywf; }
-    double ** _getD1VD1DivByWF() { return _d1vd1_divbywf; }
+    double ** _getD1VD1DivByWF() const { return _d1vd1_divbywf; }
     // cross derivative: second derivative and first variational derivative divided by the wf
     void _setD2VD1DivByWF(int id2, int ivd1, double d2vd1_divbywf) { _d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf; }
-    double ** _getD2VD1DivByWF() { return _d2vd1_divbywf; }
+    double ** _getD2VD1DivByWF() const { return _d2vd1_divbywf; }
 
 public:
     WaveFunction(int nspacedim, int npart, int ncomp/*defines number of proto values*/,
                  int nvp, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false);
     ~WaveFunction() override;
 
-    int getNSpaceDim() { return _nspacedim; }
-    int getTotalNDim() { return mci::SamplingFunctionInterface::getNDim(); }
-    int getNPart() { return _npart; }
-    int getNVP() { return _nvp; }
+    int getNSpaceDim() const { return _nspacedim; }
+    int getTotalNDim() const { return this->getNDim(); }
+    int getNPart() const { return _npart; }
+    int getNVP() const { return _nvp; }
 
 
     // --- interface for manipulating the variational parameters
     void setNVP(int nvp);
     virtual void setVP(const double * vp) = 0;    // --- MUST BE IMPLEMENTED
-    virtual void getVP(double * vp) = 0;    // --- MUST BE IMPLEMENTED
+    virtual void getVP(double * vp) const = 0;    // --- MUST BE IMPLEMENTED
 
 
     // --- computation of the derivatives
@@ -106,18 +106,18 @@ public:
 
     // --- getters and setters for the derivatives
     // first derivative divided by the wf
-    double getD1DivByWF(int id1) { return _d1_divbywf[id1]; }
+    double getD1DivByWF(int id1) const { return _d1_divbywf[id1]; }
     // second derivative divided by the wf
-    double getD2DivByWF(int id2) { return _d2_divbywf[id2]; }
+    double getD2DivByWF(int id2) const { return _d2_divbywf[id2]; }
     // variational derivative divided by the wf
-    bool hasVD1() { return _flag_vd1; }
-    double getVD1DivByWF(int ivd1) { return _vd1_divbywf[ivd1]; }
+    bool hasVD1() const { return _flag_vd1; }
+    double getVD1DivByWF(int ivd1) const { return _vd1_divbywf[ivd1]; }
     // cross derivative: first derivative and first variational derivative divided by the wf
-    bool hasD1VD1() { return _flag_d1vd1; }
-    double getD1VD1DivByWF(int id1, int ivd1) { return _d1vd1_divbywf[id1][ivd1]; }
+    bool hasD1VD1() const { return _flag_d1vd1; }
+    double getD1VD1DivByWF(int id1, int ivd1) const { return _d1vd1_divbywf[id1][ivd1]; }
     // cross derivative: second derivative and first variational derivative divided by the wf
-    bool hasD2VD1() { return _flag_d2vd1; }
-    double getD2VD1DivByWF(int id2, int ivd1) { return _d2vd1_divbywf[id2][ivd1]; }
+    bool hasD2VD1() const { return _flag_d2vd1; }
+    double getD2VD1DivByWF(int id2, int ivd1) const { return _d2vd1_divbywf[id2][ivd1]; }
 };
 } // namespace vmc
 

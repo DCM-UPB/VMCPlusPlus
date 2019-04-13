@@ -28,7 +28,7 @@ protected:
     const bool _flag_antisymmetric; // should we use the antisymmetrizer instead of symmetrizer?
 
     // internal helpers
-    unsigned long _npart_factorial();
+    unsigned long _npart_factorial() const;
     void _swapPositions(double * x, int i, int j);
     void _swapIndices(int * ids, int i, int j);
     void _computeStandardDerivatives(const double * x, double normf);
@@ -52,7 +52,7 @@ public:
 
     void setVP(const double * vp) override;
 
-    void getVP(double * vp) override;
+    void getVP(double * vp) const override;
 
     void protoFunction(const double * in, double * out) override;
 
@@ -62,7 +62,7 @@ public:
 
     double computeWFValue(const double * protovalues) const override;
 
-    bool isAntiSymmetric() { return _flag_antisymmetric; }
+    bool isAntiSymmetric() const { return _flag_antisymmetric; }
 };
 } // namespace vmc
 

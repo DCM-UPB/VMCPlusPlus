@@ -47,7 +47,7 @@ public:
 
 
     void setVP(const double * vp) override { _u2->setVP(vp); }
-    void getVP(double * vp) override { _u2->getVP(vp); }
+    void getVP(double * vp) const override { _u2->getVP(vp); }
 
 
     void protoFunction(const double * x, double * protov) override;

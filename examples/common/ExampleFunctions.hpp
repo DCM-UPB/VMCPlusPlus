@@ -50,7 +50,7 @@ protected:
 
     mci::SamplingFunctionInterface * _clone() const final
     {
-        return new QuadrExponential1D1POrbital(_a, _b, _flag_vd1);
+        return new QuadrExponential1D1POrbital(_a, _b, this->hasVD1());
     }
 
 public:
@@ -67,7 +67,7 @@ public:
         _b = in[1];
     }
 
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         out[0] = _a;
         out[1] = _b;
@@ -135,7 +135,7 @@ public:
         using namespace std;
         //cout << "change b! " << _b << endl;
     }
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         *out = _b;
     }

@@ -40,7 +40,7 @@ public:
 
     void setVP(const double * vp) override;
 
-    void getVP(double * vp) override;
+    void getVP(double * vp) const override;
 
     void protoFunction(const double * in, double * out) override;
 

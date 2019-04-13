@@ -144,7 +144,7 @@ void MultiComponentWaveFunction::protoFunction(const double * in, double * out)
 }
 
 
-void MultiComponentWaveFunction::getVP(double * vp)
+void MultiComponentWaveFunction::getVP(double * vp) const
 {
     int contvp = 0;
     for (WaveFunction * wf : _wfs) {

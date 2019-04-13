@@ -15,7 +15,7 @@ public:
     virtual ~Metric() = default;
 
 
-    int getNSpaceDim() { return _nspacedim; }
+    int getNSpaceDim() const { return _nspacedim; }
 
 
     // --- Methods that must be implemented

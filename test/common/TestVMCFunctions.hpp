@@ -36,7 +36,7 @@ public:
         using namespace std;
         //cout << "change a and b! " << _a << "   " << _b << endl;
     }
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         out[0] = _a;
         out[1] = _b;
@@ -103,7 +103,7 @@ public:
         _b = in[0];
     }
 
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         out[0] = _b;
     }
@@ -164,7 +164,7 @@ protected:
 
 public:
     explicit Gaussian1D1POrbital(const double b):
-            vmc::WaveFunction(1, 1, 1, 1, false, false, false)
+            vmc::WaveFunction(1, 1, 1, 1, true, false, false)
     {
         _b = b;
     }
@@ -176,7 +176,7 @@ public:
         using namespace std;
         //cout << "change b! " << _b << endl;
     }
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         *out = _b;
     }
@@ -242,7 +242,7 @@ public:
     }
 
     void setVP(const double * vp) final { _b = vp[0]; }
-    void getVP(double * vp) final { vp[0] = _b; }
+    void getVP(double * vp) const final { vp[0] = _b; }
 
     double ur(const double dist) final
     {
@@ -298,7 +298,7 @@ public:
         _a = vp[0];
         _b = vp[1];
     }
-    void getVP(double * vp) final
+    void getVP(double * vp) const final
     {
         vp[0] = _a;
         vp[1] = _b;
@@ -358,7 +358,7 @@ public:
     {
         _K = vp[0];
     }
-    void getVP(double * vp) final
+    void getVP(double * vp) const final
     {
         vp[0] = _K;
     }
