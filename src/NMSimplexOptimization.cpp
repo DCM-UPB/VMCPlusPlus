@@ -17,7 +17,7 @@ struct vmc_nms
     double lambda;
     double rstart;
     double rend;
-    int max_n_iter;
+    size_t max_n_iter;
 
     void initFromOptimizer(NMSimplexOptimization * wfopt)
     {
@@ -44,9 +44,10 @@ double vmc_cost(const gsl_vector * v, void * params)
     const double kappa = (static_cast<struct vmc_nms *>(params))->kappa;
     const double lambda = (static_cast<struct vmc_nms *>(params))->lambda;
 
-    double vpar[wf->getNVP()];
+    const auto nvp = static_cast<size_t>(wf->getNVP());
+    double vpar[nvp];
     // apply the parameters to the wf
-    for (int i = 0; i < wf->getNVP(); ++i) {
+    for (size_t i = 0; i < nvp; ++i) {
         vpar[i] = gsl_vector_get(v, i);
     }
     wf->setVP(vpar);
@@ -58,11 +59,11 @@ double vmc_cost(const gsl_vector * v, void * params)
 
     // compute the normalization
     double norm = 0.;
-    for (int i = 0; i < wf->getNVP(); ++i) {
+    for (size_t i = 0; i < nvp; ++i) {
         const double vi = gsl_vector_get(v, i);
         norm += vi*vi;
     }
-    norm = sqrt(norm)/wf->getNVP();
+    norm = sqrt(norm)/nvp;
 
     // return the cost function
     return iota*energy[0] + kappa*d_energy[0] + lambda*norm;
@@ -82,28 +83,28 @@ void NMSimplexOptimization::optimizeWF()
     w.initFromOptimizer(this);
 
     // Starting point
-    int npar = _wf->getNVP();
-    double vpar[npar];
+    const auto nvp = static_cast<size_t>(_wf->getNVP());
+    double vpar[nvp];
     _wf->getVP(vpar);
 
-    x = gsl_vector_alloc(npar);
-    for (int i = 0; i < npar; ++i) {
+    x = gsl_vector_alloc(nvp);
+    for (size_t i = 0; i < nvp; ++i) {
         gsl_vector_set(x, i, vpar[i]);
     }
 
     // Set initial step sizes to 1
-    ss = gsl_vector_alloc(npar);
+    ss = gsl_vector_alloc(nvp);
     gsl_vector_set_all(ss, _rstart);
 
     // Initialize method and iterate
-    minex_func.n = npar;
+    minex_func.n = nvp;
     minex_func.f = vmc_cost;
     minex_func.params = &w;
 
-    s = gsl_multimin_fminimizer_alloc(T, npar);
+    s = gsl_multimin_fminimizer_alloc(T, nvp);
     gsl_multimin_fminimizer_set(s, &minex_func, x, ss);
 
-    int iter = 0;
+    size_t iter = 0;
     int status;
     do {
         status = gsl_multimin_fminimizer_iterate(s);

@@ -244,32 +244,32 @@ public:
     void setVP(const double * vp) final { _b = vp[0]; }
     void getVP(double * vp) final { vp[0] = _b; }
 
-    double ur(const double &dist) final
+    double ur(const double dist) final
     {
         return _b/pow(dist, 5);
     }
 
-    double urD1(const double &dist) final
+    double urD1(const double dist) final
     {
         return -5.*_b/pow(dist, 6);
     }
 
-    double urD2(const double &dist) final
+    double urD2(const double dist) final
     {
         return 30.*_b/pow(dist, 7);
     }
 
-    void urVD1(const double &dist, double * vd1) final
+    void urVD1(const double dist, double * vd1) final
     {
         vd1[0] = 1./pow(dist, 5);
     }
 
-    void urD1VD1(const double &dist, double * d1vd1) final
+    void urD1VD1(const double dist, double * d1vd1) final
     {
         d1vd1[0] = -5./pow(dist, 6);
     }
 
-    void urD2VD1(const double &dist, double * d1vd1) final
+    void urD2VD1(const double dist, double * d1vd1) final
     {
         d1vd1[0] = 30./pow(dist, 7);
     }
@@ -304,34 +304,34 @@ public:
         vp[1] = _b;
     }
 
-    double ur(const double &r) final
+    double ur(const double r) final
     {
         return _a*pow(r, 2) + _b*pow(r, 3);
     }
 
-    double urD1(const double &r) final
+    double urD1(const double r) final
     {
         return 2.*_a*r + 3.*_b*pow(r, 2);
     }
 
-    double urD2(const double &r) final
+    double urD2(const double r) final
     {
         return 2.*_a + 6.*_b*r;
     }
 
-    void urVD1(const double &r, double * vd1) final
+    void urVD1(const double r, double * vd1) final
     {
         vd1[0] = r*r;
         vd1[1] = r*r*r;
     }
 
-    void urD1VD1(const double &r, double * d1vd1) final
+    void urD1VD1(const double r, double * d1vd1) final
     {
         d1vd1[0] = 2.*r;
         d1vd1[1] = 3.*r*r;
     }
 
-    void urD2VD1(const double &r, double * d2vd1) final
+    void urD2VD1(const double r, double * d2vd1) final
     {
         d2vd1[0] = 2.;
         d2vd1[1] = 6.*r;
@@ -363,32 +363,32 @@ public:
         vp[0] = _K;
     }
 
-    double ur(const double & /*r*/) final
+    double ur(const double /*r*/) final
     {
         return _K;
     }
 
-    double urD1(const double & /*r*/) final
+    double urD1(const double /*r*/) final
     {
         return 0.;
     }
 
-    double urD2(const double & /*r*/) final
+    double urD2(const double /*r*/) final
     {
         return 0.;
     }
 
-    void urVD1(const double & /*r*/, double * vd1) final
+    void urVD1(const double /*r*/, double * vd1) final
     {
         vd1[0] = 1.;
     }
 
-    void urD1VD1(const double & /*r*/, double * d1vd1) final
+    void urD1VD1(const double /*r*/, double * d1vd1) final
     {
         d1vd1[0] = 0.;
     }
 
-    void urD2VD1(const double & /*r*/, double * d2vd1) final
+    void urD2VD1(const double /*r*/, double * d2vd1) final
     {
         d2vd1[0] = 0.;
     }

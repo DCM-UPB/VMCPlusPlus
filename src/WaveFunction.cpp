@@ -3,7 +3,7 @@
 namespace vmc
 {
 
-void WaveFunction::setNVP(const int &nvp)
+void WaveFunction::setNVP(const int nvp)
 {
     _nvp = nvp;
     _allocateVariationalDerivativesMemory();
@@ -46,7 +46,7 @@ void WaveFunction::_allocateVariationalDerivativesMemory()
 }
 
 
-WaveFunction::WaveFunction(const int &nspacedim, const int &npart, const int &ncomp, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1):
+WaveFunction::WaveFunction(const int nspacedim, const int npart, const int ncomp, const int nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1):
         mci::SamplingFunctionInterface(nspacedim*npart, ncomp),
         _nspacedim(nspacedim), _npart(npart), _nvp(nvp), _flag_vd1(flag_vd1), _flag_d1vd1(flag_d1vd1), _flag_d2vd1(flag_d2vd1)
 {

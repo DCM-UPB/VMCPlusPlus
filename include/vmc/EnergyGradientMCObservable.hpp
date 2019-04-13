@@ -2,6 +2,7 @@
 #define VMC_ENERGYGRADIENTMCOBSERVABLE_HPP
 
 #include "mci/ObservableFunctionInterface.hpp"
+#include "mci/SamplingFunctionContainer.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/WaveFunction.hpp"
 
@@ -28,7 +29,7 @@ public:
 
 
     // mci::ObservableFunctionInterface implementation
-    void observableFunction(const double * in, double * out) override
+    void observableFunction(const double * in, const mci::SamplingFunctionContainer &pdfs, double * out) override
     {
         // obs[0 : wf->getNVP()-1] = Variational Derivative of the Wave Function
         // obs[ wf->getNVP() : 2*wf->getNVP()-1] = Local Energy times the Variational Derivative of the Wave Function

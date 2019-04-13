@@ -10,7 +10,7 @@ private:
     const int _nspacedim;
 
 public:
-    explicit Metric(const int &nspacedim): _nspacedim(nspacedim) {}
+    explicit Metric(int nspacedim): _nspacedim(nspacedim) {}
 
     virtual ~Metric() = default;
 

@@ -18,7 +18,7 @@ protected:
     const bool _flag_PBKE;
 
 public:
-    Hamiltonian(const int &nspacedim, const int &npart, WaveFunction * wf, const bool usePBKE = true /* use JF+PB KE or only JF */)
+    Hamiltonian(int nspacedim, int npart, WaveFunction * wf, bool usePBKE = true /* use JF+PB KE or only JF */)
             :
             mci::ObservableFunctionInterface(nspacedim*npart, 4), _nspacedim(nspacedim), _npart(npart), _wf(wf), _flag_PBKE(usePBKE) {}
     ~Hamiltonian() override = default;
@@ -52,7 +52,7 @@ public:
         return (0.5*ekin);
     }
 
-    void observableFunction(const double * in, double * out) override
+    void observableFunction(const double * in, const mci::SamplingFunctionContainer &pdfs, double * out) override
     {
         out[3] = localJFKineticEnergy(in);
         out[2] = _flag_PBKE ? localPBKineticEnergy(in) : 0.;

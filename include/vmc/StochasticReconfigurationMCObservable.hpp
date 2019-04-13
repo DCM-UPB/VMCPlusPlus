@@ -27,7 +27,7 @@ public:
 
 
     // mci::ObservableFunctionInterface implementation
-    void observableFunction(const double * in, double * out) override
+    void observableFunction(const double * in, const mci::SamplingFunctionContainer &pdfs, double * out) override
     {
         // out is made in this way (nvp is the number of variational parameters):
         // out[0:nvp-1] = Oi

@@ -83,16 +83,16 @@ public:
 
 
     // Wave Function Optimization Methods
-    void conjugateGradientOptimization(const int &E_Nmc, const int &grad_E_Nmc);
+    void conjugateGradientOptimization(int E_Nmc, int grad_E_Nmc);
 
-    void stochasticReconfigurationOptimization(const int &Nmc, double stepSize = 1., bool flag_dgrad = false); // calc&use gradient error?
+    void stochasticReconfigurationOptimization(int Nmc, double stepSize = 1., bool flag_dgrad = false); // calc&use gradient error?
 
-    void adamOptimization(const int &Nmc, bool useSR = false, bool useGradientError = false, const size_t &max_n_const_values = 20, bool useAveraging = false,
-                          const double &lambda = 0, const double &alpha = 0.001, const double &beta1 = 0.9, const double &beta2 = 0.999, const double &epsilon = 10e-8);
+    void adamOptimization(int Nmc, bool useSR = false, bool useGradientError = false, int max_n_const_values = 20, bool useAveraging = false,
+                          double lambda = 0, double alpha = 0.001, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 10e-8);
 
-    void simulatedAnnealingOptimization(const int &Nmc, const double &iota, const double &kappa, const double &lambda, gsl_siman_params_t &params);
+    void simulatedAnnealingOptimization(int Nmc, double iota, double kappa, double lambda, gsl_siman_params_t &params);
 
-    void nmsimplexOptimization(const int &Nmc, const double &iota, const double &kappa, const double &lambda, const double &rstart = 1.0, const double &rend = 0.01, const size_t &max_n_iter = 0);
+    void nmsimplexOptimization(int Nmc, double iota, double kappa, double lambda, double rstart = 1.0, double rend = 0.01, size_t max_n_iter = 0);
 };
 } // namespace vmc
 

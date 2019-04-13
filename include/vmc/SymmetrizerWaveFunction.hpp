@@ -29,10 +29,10 @@ protected:
 
     // internal helpers
     unsigned long _npart_factorial();
-    void _swapPositions(double * x, const int &i, const int &j);
-    void _swapIndices(int * ids, const int &i, const int &j);
-    void _computeStandardDerivatives(const double * x, const double &normf);
-    void _addSwapDerivatives(const double * x, const double &normf, const int * ids);
+    void _swapPositions(double * x, int i, int j);
+    void _swapIndices(int * ids, int i, int j);
+    void _computeStandardDerivatives(const double * x, double normf);
+    void _addSwapDerivatives(const double * x, double normf, const int * ids);
 
     mci::SamplingFunctionInterface * _clone() const final
     {
@@ -44,7 +44,7 @@ protected:
     void _oldToNew() override { _wf->oldToNew(); }
 
 public:
-    explicit SymmetrizerWaveFunction(WaveFunction * wf, const bool flag_antisymmetric = false):
+    explicit SymmetrizerWaveFunction(WaveFunction * wf, bool flag_antisymmetric = false):
             WaveFunction(wf->getNSpaceDim(), wf->getNPart(), 1, wf->getNVP(), wf->hasVD1(), wf->hasD1VD1(), wf->hasD2VD1()),
             _wf(wf), _flag_antisymmetric(flag_antisymmetric) {}
 

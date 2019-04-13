@@ -20,20 +20,19 @@ protected:
     mci::MCI * const _mci;
     const int _Nmc;
     const double _lambda_reg;
-    const bool _calcDGrad; // allows to disable calculation of gradient error
 
     void _integrate(const double * vp, double * obs, double * dobs, bool flag_grad = false, bool flag_dgrad = false);
     void _calcObs(const double * vp, double &f, double &df, double * grad_E = nullptr, double * dgrad_E = nullptr);
 public:
-    StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, const int &Nmc, const double &lambda_reg = 0., const bool calcDGrad = false):
-            nfm::NoisyFunctionWithGradient(wf->getNVP()), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg), _calcDGrad(calcDGrad) {}
+    StochasticReconfigurationTargetFunction(WaveFunction * wf, Hamiltonian * H, mci::MCI * mci, int Nmc, double lambda_reg = 0., bool useGradErr = false):
+            nfm::NoisyFunctionWithGradient(wf->getNVP(), useGradErr), _wf(wf), _H(H), _mci(mci), _Nmc(Nmc), _lambda_reg(lambda_reg) {}
 
     ~StochasticReconfigurationTargetFunction() override = default;
 
     // NoisyFunctionWithGradient implementation
-    void f(const double * vp, double &f, double &df) override;
-    void grad(const double * vp, double * grad_E, double * dgrad_E) override;
-    void fgrad(const double * vp, double &f, double &df, double * grad_E, double * dgrad_E) override;
+    nfm::NoisyValue f(const std::vector<double> &vp) override;
+    void grad(const std::vector<double> &vp, nfm::NoisyGradient &grad) override;
+    nfm::NoisyValue fgrad(const std::vector<double> &vp, nfm::NoisyGradient &grad) override;
 };
 } // namespace vmc
 

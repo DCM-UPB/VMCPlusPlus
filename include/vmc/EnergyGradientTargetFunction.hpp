@@ -21,17 +21,16 @@ protected:
     const double _lambda_reg;
 
 public:
-    EnergyGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, const int &E_Nmc, const int &grad_E_Nmc, mci::MCI * mci, const double &lambda_reg = 0.):
-            nfm::NoisyFunctionWithGradient(wf->getNVP(), true),
+    EnergyGradientTargetFunction(WaveFunction * wf, Hamiltonian * H, int E_Nmc, int grad_E_Nmc, mci::MCI * mci, bool useGradErr, double lambda_reg = 0.):
+            nfm::NoisyFunctionWithGradient(wf->getNVP(), useGradErr),
             _wf(wf), _H(H), _mci(mci), _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc), _lambda_reg(lambda_reg) {}
 
     ~EnergyGradientTargetFunction() override = default;
 
-
     // NoisyFunctionWithGradient implementation
     nfm::NoisyValue f(const std::vector<double> &vp) override;
-    void grad(const std::vector<double> &vp, std::vector<nfm::NoisyValue> &grad) override;
-    nfm::NoisyValue fgrad(const std::vector<double> &vp, std::vector<nfm::NoisyValue> &grad) override;
+    void grad(const std::vector<double> &vp, nfm::NoisyGradient &grad) override;
+    nfm::NoisyValue fgrad(const std::vector<double> &vp, nfm::NoisyGradient &grad) override;
 };
 } // namespace vmc
 

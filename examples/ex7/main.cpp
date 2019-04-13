@@ -25,7 +25,7 @@ int main()
     HarmonicOscillator1D1P ham(1., &psi);
 
 
-    const int E_NMC = 20000l; // MC samplings to use for computing the energy
+    const int E_NMC = 100000l; // MC samplings to use for computing the energy
     double energy[4], energy_h[4]; // energy
     double d_energy[4], d_energy_h[4]; // energy error bar
     for (int i = 0; i < 4; ++i) {
@@ -35,11 +35,13 @@ int main()
 
     VMC vmc(&psi, &ham);
 
-    // example of file out with MPI
+    // example of file out with MPI (but we disable it for the test below (100K Steps!!))
     auto obsfile = "obsfile" + std::to_string(myrank);
     auto wlkfile = "wlkfile" + std::to_string(myrank);;
-    vmc.getMCI()->storeObservablesOnFile(obsfile, 1);
-    vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile, 1);
+    vmc.getMCI()->storeObservablesOnFile(obsfile, 1); // would print observables on every step
+    vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile, 1); // would print walker positions on every step
+    vmc.getMCI()->clearObservableFile();
+    vmc.getMCI()->clearWalkerFile();
 
     if (myrank == 0) {
         cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;

@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "nfm/LogNFM.hpp"
+#include "nfm/LogManager.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
@@ -23,8 +23,7 @@ int main()
     const double w = 1.;
     auto * ham = new HarmonicOscillator1D1P(w, psi);
 
-    nfm::NFMLogManager log;
-    log.setLogLevel(1); // use this to enable log printout
+    nfm::LogManager::setLoggingOn(false); // use this to enable log printout (true would mean verbose mode)
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
@@ -54,7 +53,7 @@ int main()
     vmc->getMCI()->setNdecorrelationSteps(1000);
 
     cout << "   Optimization . . ." << endl;
-    vmc->stochasticReconfigurationOptimization(NMC, 0.5, true);
+    vmc->stochasticReconfigurationOptimization(NMC, 0.01, true);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
