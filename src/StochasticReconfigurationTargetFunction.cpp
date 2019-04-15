@@ -1,5 +1,4 @@
 #include "vmc/StochasticReconfigurationTargetFunction.hpp"
-#include "vmc/MPIVMC.hpp"
 #include "vmc/StochasticReconfigurationMCObservable.hpp"
 
 #include <gsl/gsl_blas.h>
@@ -8,14 +7,14 @@
 namespace vmc
 {
 
-void add_norm_f(const double * const vp, const int &nvp, double &f, const double &lambda)
+void add_norm_f(const double * const vp, const int nvp, double &f, const double lambda)
 {
     // compute the normalization term
     const double norm = std::inner_product(vp, vp + nvp, vp, 0.);
     f += lambda*norm/nvp;
 }
 
-void add_norm_grad(const double * const vp, const int &nvp, double * const grad_E, const double &lambda)
+void add_norm_grad(const double * const vp, const int nvp, double * const grad_E, const double lambda)
 {
     const double fac = lambda/nvp;
     // add the normalization gradient
@@ -24,7 +23,7 @@ void add_norm_grad(const double * const vp, const int &nvp, double * const grad_
     }
 }
 
-void add_norm_fgrad(const double * const vp, const int &nvp, double &f, double * const grad_E, const double &lambda)
+void add_norm_fgrad(const double * const vp, const int nvp, double &f, double * const grad_E, const double lambda)
 {
     const double fac = lambda/nvp;
 
@@ -42,24 +41,25 @@ void add_norm_fgrad(const double * const vp, const int &nvp, double &f, double *
 void StochasticReconfigurationTargetFunction::_integrate(const double * const vp, double * const obs, double * const dobs, const bool flag_grad, const bool flag_dgrad)
 {
     // set the variational parameters given as input
-    _wf->setVP(vp);
+    _vmc.setVP(vp);
 
     // set up the MC integrator
     if (flag_grad) { // add gradient obs if necessary
         // skip MC error for grad if flag_dgrad is false
-        _mci->addObservable(StochasticReconfigurationMCObservable(_wf, _H), flag_dgrad ? 1 : 0, 1, false, flag_dgrad);
+        _vmc.getMCI().addObservable(StochasticReconfigurationMCObservable(_vmc.getNTotalDim(), _vmc.getNVP()),
+                                    flag_dgrad ? 1 : 0, 1, false, flag_dgrad);
     }
 
     // perform the integral and store the values (skip extra burning phase on gradient runs (only findMRT2))
-    MPIVMC::Integrate(*_mci, _Nmc, obs, dobs, true, !flag_grad);
+    _vmc.computeEnergy(flag_grad ? _grad_E_Nmc : _E_Nmc, obs, dobs, true, !flag_grad);
 
     // remove gradient obs again
-    if (flag_grad) { _mci->popObservable(); }
+    if (flag_grad) { _vmc.getMCI().popObservable(); }
 }
 
 void StochasticReconfigurationTargetFunction::_calcObs(const double * const vp, double &f, double &df, double * const grad_E, double * const dgrad_E)
 {
-    const auto nvp = static_cast<size_t>(_wf->getNVP());
+    const auto nvp = static_cast<size_t>(_vmc.getNVP());
     const bool flag_grad = (grad_E != nullptr);
     const bool flag_dgrad = (dgrad_E != nullptr);
 
@@ -164,22 +164,22 @@ nfm::NoisyValue StochasticReconfigurationTargetFunction::f(const std::vector<dou
 {
     nfm::NoisyValue f;
     _calcObs(vp.data(), f.val, f.err);
-    if (_lambda_reg > 0) { add_norm_f(vp.data(), _wf->getNVP(), f.val, _lambda_reg); }
+    if (_lambda_reg > 0) { add_norm_f(vp.data(), _vmc.getNVP(), f.val, _lambda_reg); }
     return f;
 }
 
 void StochasticReconfigurationTargetFunction::grad(const std::vector<double> &vp, nfm::NoisyGradient &grad)
 {
-    double f,df; // dummies
+    double f, df; // dummies
     _calcObs(vp.data(), f, df, grad.val.data(), this->hasGradErr() ? grad.err.data() : nullptr);
-    if (_lambda_reg > 0) { add_norm_grad(vp.data(), _wf->getNVP(), grad.val.data(), _lambda_reg); }
+    if (_lambda_reg > 0) { add_norm_grad(vp.data(), _vmc.getNVP(), grad.val.data(), _lambda_reg); }
 }
 
 nfm::NoisyValue StochasticReconfigurationTargetFunction::fgrad(const std::vector<double> &vp, nfm::NoisyGradient &grad)
 {
     nfm::NoisyValue f;
     _calcObs(vp.data(), f.val, f.err, grad.val.data(), this->hasGradErr() ? grad.err.data() : nullptr);
-    if (_lambda_reg > 0) { add_norm_fgrad(vp.data(), _wf->getNVP(), f.val, grad.val.data(), _lambda_reg); }
+    if (_lambda_reg > 0) { add_norm_fgrad(vp.data(), _vmc.getNVP(), f.val, grad.val.data(), _lambda_reg); }
     return f;
 }
 } // namespace vmc

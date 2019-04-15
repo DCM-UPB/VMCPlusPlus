@@ -2,7 +2,6 @@
 #include <iostream>
 #include <memory>
 
-#include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
 
@@ -26,10 +25,10 @@ int main()
 
     // Hamiltonian for each wave function (keep in mind that the kinetic energy is strictly bound to it)
     // We use the harmonic oscillator with w=1
-    auto ham1 = make_unique<HarmonicOscillator1D1P>(1., psi1.get());
-    auto ham2 = make_unique<HarmonicOscillator1D1P>(1., psi2.get());
-    auto ham3 = make_unique<HarmonicOscillator1D1P>(1., psi3.get());
-    auto ham4 = make_unique<HarmonicOscillator1D1P>(1., psi4.get());
+    auto ham1 = make_unique<HarmonicOscillator1D1P>(1.);
+    auto ham2 = make_unique<HarmonicOscillator1D1P>(1.);
+    auto ham3 = make_unique<HarmonicOscillator1D1P>(1.);
+    auto ham4 = make_unique<HarmonicOscillator1D1P>(1.);
 
 
     // --- Create the VMC objects

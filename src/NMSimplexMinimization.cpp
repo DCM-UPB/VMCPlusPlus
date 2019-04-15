@@ -1,4 +1,4 @@
-#include "vmc/NMSimplexOptimization.hpp"
+#include "vmc/NMSimplexMinimization.hpp"
 #include "vmc/MPIVMC.hpp"
 
 #include <gsl/gsl_multimin.h>
@@ -8,9 +8,7 @@ namespace vmc
 
 struct vmc_nms
 {
-    WaveFunction * wf;
-    Hamiltonian * H;
-    mci::MCI * mci;
+    VMC &vmc;
     int Nmc;
     double iota;
     double kappa;
@@ -19,43 +17,38 @@ struct vmc_nms
     double rend;
     size_t max_n_iter;
 
-    void initFromOptimizer(NMSimplexOptimization * wfopt)
+    vmc_nms(VMC &vmc, NMSimplexMinimization &nms): vmc(vmc)
     {
-        wf = wfopt->getWF();
-        H = wfopt->getH();
-        mci = wfopt->getMCI();
-        Nmc = wfopt->getNmc();
-        iota = wfopt->getIota();
-        kappa = wfopt->getKappa();
-        lambda = wfopt->getLambda();
-        rstart = wfopt->getRStart();
-        rend = wfopt->getREnd();
-        max_n_iter = wfopt->getMaxNIter();
+        Nmc = nms.getNmc();
+        iota = nms.getIota();
+        kappa = nms.getKappa();
+        lambda = nms.getLambda();
+        rstart = nms.getRStart();
+        rend = nms.getREnd();
+        max_n_iter = nms.getMaxNIter();
     }
 };
 
 double vmc_cost(const gsl_vector * v, void * params)
 {
-    WaveFunction * const wf = (static_cast<struct vmc_nms *>(params))->wf;
-    Hamiltonian * const H = (static_cast<struct vmc_nms *>(params))->H;
-    mci::MCI * const mci = (static_cast<struct vmc_nms *>(params))->mci;
+    VMC &vmc = (static_cast<struct vmc_nms *>(params))->vmc;
     const int Nmc = (static_cast<struct vmc_nms *>(params))->Nmc;
     const double iota = (static_cast<struct vmc_nms *>(params))->iota;
     const double kappa = (static_cast<struct vmc_nms *>(params))->kappa;
     const double lambda = (static_cast<struct vmc_nms *>(params))->lambda;
 
-    const auto nvp = static_cast<size_t>(wf->getNVP());
+    const auto nvp = static_cast<size_t>(vmc.getNVP());
     double vpar[nvp];
     // apply the parameters to the wf
     for (size_t i = 0; i < nvp; ++i) {
         vpar[i] = gsl_vector_get(v, i);
     }
-    wf->setVP(vpar);
+    vmc.setVP(vpar);
 
     // compute the energy and its standard deviation
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    MPIVMC::Integrate(*mci, Nmc, energy, d_energy, true, true);
+    vmc.computeEnergy(Nmc, energy, d_energy, true, true);
 
     // compute the normalization
     double norm = 0.;
@@ -70,7 +63,7 @@ double vmc_cost(const gsl_vector * v, void * params)
 };
 
 
-void NMSimplexOptimization::optimizeWF()
+void NMSimplexMinimization::minimizeEnergy(VMC &vmc)
 {
     const gsl_multimin_fminimizer_type * T = gsl_multimin_fminimizer_nmsimplex2;
     gsl_multimin_fminimizer * s = nullptr;
@@ -79,13 +72,12 @@ void NMSimplexOptimization::optimizeWF()
 
     int myrank = MPIVMC::MyRank();
 
-    vmc_nms w{};
-    w.initFromOptimizer(this);
+    vmc_nms w(vmc, *this);
 
     // Starting point
-    const auto nvp = static_cast<size_t>(_wf->getNVP());
+    const auto nvp = static_cast<size_t>(vmc.getNVP());
     double vpar[nvp];
-    _wf->getVP(vpar);
+    vmc.getVP(vpar);
 
     x = gsl_vector_alloc(nvp);
     for (size_t i = 0; i < nvp; ++i) {

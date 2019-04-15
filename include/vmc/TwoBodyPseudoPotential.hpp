@@ -8,7 +8,7 @@ namespace vmc
 
 class TwoBodyPseudoPotential
 {
-private:
+protected:
     Metric * _metric;
     int _ndim2;
     int _nvp;
@@ -31,8 +31,9 @@ private:
     double * _vfoo1;
     double * _vfoo2;
 
-public:
     TwoBodyPseudoPotential(Metric * metric, int nvp, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false);
+
+public:
     virtual ~TwoBodyPseudoPotential();
 
     int getNSpaceDim() const { return _metric->getNSpaceDim(); }

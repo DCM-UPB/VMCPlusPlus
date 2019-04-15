@@ -214,11 +214,11 @@ protected:
 
     mci::ObservableFunctionInterface * _clone() const final
     {
-        return new HarmonicOscillator1D1P(_w, _wf);
+        return new HarmonicOscillator1D1P(_w);
     }
 
 public:
-    HarmonicOscillator1D1P(const double w, vmc::WaveFunction * wf): vmc::Hamiltonian(1, 1, wf) { _w = w; }
+    explicit HarmonicOscillator1D1P(const double w): vmc::Hamiltonian(1, 1) { _w = w; }
     double localPotentialEnergy(const double * r) final
     {
         return (0.5*_w*_w*(*r)*(*r));

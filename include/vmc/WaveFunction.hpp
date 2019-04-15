@@ -47,6 +47,8 @@ protected:
     double ** _d1vd1_divbywf;
     double ** _d2vd1_divbywf;
 
+    // derived may manipulate nvp
+    void setNVP(int nvp);
 
     void _allocateVariationalDerivativesMemory();
 
@@ -67,9 +69,10 @@ protected:
     void _setD2VD1DivByWF(int id2, int ivd1, double d2vd1_divbywf) { _d2vd1_divbywf[id2][ivd1] = d2vd1_divbywf; }
     double ** _getD2VD1DivByWF() const { return _d2vd1_divbywf; }
 
-public:
     WaveFunction(int nspacedim, int npart, int ncomp/*defines number of proto values*/,
                  int nvp, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false);
+
+public:
     ~WaveFunction() override;
 
     int getNSpaceDim() const { return _nspacedim; }
@@ -79,7 +82,6 @@ public:
 
 
     // --- interface for manipulating the variational parameters
-    void setNVP(int nvp);
     virtual void setVP(const double * vp) = 0;    // --- MUST BE IMPLEMENTED
     virtual void getVP(double * vp) const = 0;    // --- MUST BE IMPLEMENTED
 

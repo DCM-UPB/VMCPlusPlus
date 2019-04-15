@@ -2,9 +2,9 @@
 #include <gsl/gsl_siman.h>
 #include <iostream>
 
-#include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
+#include "vmc/SimulatedAnnealingMinimization.hpp"
 
 #include "../common/ExampleFunctions.hpp"
 
@@ -18,7 +18,7 @@ int main()
     // Setup VMC
     auto psi = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.0, true); // enable variational deriv
     const double w = 1.; // We use the harmonic oscillator with w=1
-    auto ham = make_unique<HarmonicOscillator1D1P>(1., psi.get());
+    auto ham = make_unique<HarmonicOscillator1D1P>(1.);
     VMC vmc(move(psi), move(ham));
 
 
@@ -27,13 +27,13 @@ int main()
     const int NMC = 10000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    double vp[vmc.getWF().getNVP()];
+    double vp[vmc.getNVP()];
 
 
     cout << "-> ham:    w = " << w << endl << endl;
 
     cout << "   Initial Wave Function parameters:" << endl;
-    vmc.getWF().getVP(vp);
+    vmc.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 
@@ -60,12 +60,13 @@ int main()
     double T_MIN = 0.01;
     gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL, MU_T, T_MIN};
 
-    vmc.simulatedAnnealingOptimization(NMC, 1., 0.1, 0., params);
+    SimulatedAnnealingMinimization siman(NMC, 1., 0.1, 0., params);
+    siman.minimizeEnergy(vmc);
 
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
-    vmc.getWF().getVP(vp);
+    vmc.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 

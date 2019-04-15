@@ -1,10 +1,12 @@
 #include <cmath>
 #include <iostream>
 
+#include "nfm/DynamicDescent.hpp"
 #include "nfm/LogManager.hpp"
-#include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
+#include "vmc/EnergyMinimization.hpp"
+#include "vmc/StochasticReconfigurationTargetFunction.hpp"
 
 #include "../common/ExampleFunctions.hpp"
 
@@ -18,7 +20,7 @@ int main()
     // Setup VMC
     auto psi = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.0, true); // enable variational deriv
     const double w = 1.; // We use the harmonic oscillator with w=1
-    auto ham = make_unique<HarmonicOscillator1D1P>(1., psi.get());
+    auto ham = make_unique<HarmonicOscillator1D1P>(1.);
     VMC vmc(move(psi), move(ham));
 
     if (MPIVMC::MyRank() == 0) {
@@ -29,12 +31,12 @@ int main()
     const int NMC = 10000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    double vp[vmc.getWF().getNVP()];
+    double vp[vmc.getNVP()];
 
     cout << "-> ham:    w = " << w << endl << endl;
 
     cout << "   Initial Wave Function parameters:" << endl;
-    vmc.getWF().getVP(vp);
+    vmc.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 
@@ -50,7 +52,8 @@ int main()
     vmc.getMCI().setNdecorrelationSteps(1000);
 
     cout << "   Optimization . . ." << endl;
-    vmc.stochasticReconfigurationOptimization(NMC, 0.01, true);
+    nfm::DynamicDescent dd(vmc.getNVP());
+    minimizeEnergy<StochasticReconfigurationTargetFunction>(vmc, dd, NMC, NMC, true, 0.01);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;

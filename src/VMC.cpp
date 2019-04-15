@@ -4,6 +4,39 @@
 namespace vmc
 {
 
+
+// --- Constructors
+
+VMC::VMC(std::unique_ptr<WaveFunction> wf, std::unique_ptr<Hamiltonian> H):
+        _wf(wf.get()/*remains valid (until destruct)*/), _H(H.get()), _mci(H->getTotalNDim())
+{
+    if (_wf->getTotalNDim() != _H->getTotalNDim()) {
+        throw std::invalid_argument("[VMC] ndim different between wf and H");
+    }
+    _mci.addSamplingFunction(std::move(wf));
+    _mci.addObservable(std::move(H));
+    _mci.addCallBack(std::make_unique<DerivativeCallback>(_wf));
+}
+
+VMC::VMC(const WaveFunction &wf, const Hamiltonian &H):
+        _wf(dynamic_cast<WaveFunction *>(wf.clone().release())), /*clone returns SamplingFunction ptr*/
+        _H(dynamic_cast<Hamiltonian *>(H.clone().release())), /*clone returns ObservableFunction ptr*/
+        _mci(H.getTotalNDim())
+{
+    if (_wf == nullptr) {
+        throw std::runtime_error("[VMC] WaveFunction's clone() did not produce a type derived from WaveFunction."); // check for potential mistakes in implementation
+    }
+    if (_H == nullptr) {
+        throw std::runtime_error("[VMC] Hamiltonian's clone() did not produce a type derived from Hamiltonian."); // check for potential mistakes in implementation
+    }
+    if (_wf->getTotalNDim() != _H->getTotalNDim()) {
+        throw std::invalid_argument("Error VMC: ndim different between wf and H");
+    }
+    _mci.addSamplingFunction(std::unique_ptr<mci::SamplingFunctionInterface>(_wf));
+    _mci.addObservable(std::unique_ptr<mci::ObservableFunctionInterface>(_H));
+    _mci.addCallBack(std::make_unique<DerivativeCallback>(_wf));
+}
+
 // --- derivative callback
 
 VMC::DerivativeCallback::DerivativeCallback(WaveFunction * wf):
@@ -19,14 +52,13 @@ void VMC::DerivativeCallback::callBackFunction(const mci::WalkerState &wlk)
 
 // --- compute quantities
 
-void VMC::computeEnergy(const int Nmc, double E[], double dE[], const bool doFindMRT2step, const bool doDecorrelation)
+void VMC::computeEnergy(int Nmc, double * E, double * dE, bool doFindMRT2step, bool doDecorrelation)
 {
     MPIVMC::Integrate(_mci, Nmc, E, dE, doFindMRT2step, doDecorrelation);
 }
 
-
 // --- Optimization methods
-
+/*
 void VMC::conjugateGradientOptimization(const int E_Nmc, const int grad_E_Nmc)
 {
     ConjugateGradientOptimization opt(_wf, _H, E_Nmc, grad_E_Nmc, &_mci);
@@ -49,13 +81,13 @@ void VMC::adamOptimization(const int Nmc, const bool useSR, const bool useGradie
 
 void VMC::simulatedAnnealingOptimization(const int Nmc, const double iota, const double kappa, const double lambda, gsl_siman_params_t &params)
 {
-    SimulatedAnnealingOptimization opt(_wf, _H, Nmc, &_mci, iota, kappa, lambda, params);
+    SimulatedAnnealingMinimization opt(_wf, _H, Nmc, &_mci, iota, kappa, lambda, params);
     opt.optimizeWF();
 };
 
 void VMC::nmsimplexOptimization(const int Nmc, const double iota, const double kappa, const double lambda, const double rstart, const double rend, const size_t max_n_iter)
 {
-    NMSimplexOptimization opt(_wf, _H, &_mci, Nmc, iota, kappa, lambda, rstart, rend, max_n_iter);
+    NMSimplexMinimization opt(_wf, _H, &_mci, Nmc, iota, kappa, lambda, rstart, rend, max_n_iter);
     opt.optimizeWF();
-};
+};*/
 } // namespace vmc

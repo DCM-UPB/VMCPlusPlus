@@ -2,10 +2,7 @@
 #define VMC_EXAMPLEFUNCTIONS_HPP
 
 #include <cmath>
-#include <iostream>
-#include <stdexcept>
 
-#include "nfm/ConjGrad.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
@@ -23,12 +20,12 @@ protected:
 
     mci::ObservableFunctionInterface * _clone() const final
     {
-        return new HarmonicOscillator1D1P(_w, _wf);
+        return new HarmonicOscillator1D1P(_w);
     }
 
 public:
-    HarmonicOscillator1D1P(double w, vmc::WaveFunction * wf):
-            vmc::Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) { _w = w; }
+    HarmonicOscillator1D1P(double w):
+            vmc::Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/) { _w = w; }
 
     // potential energy
     double localPotentialEnergy(const double * r) final

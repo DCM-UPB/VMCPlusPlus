@@ -1,18 +1,10 @@
 #ifndef VMC_VMC_HPP
 #define VMC_VMC_HPP
 
-#include "vmc/AdamOptimization.hpp"
-#include "vmc/ConjugateGradientOptimization.hpp"
 #include "vmc/Hamiltonian.hpp"
-#include "vmc/NMSimplexOptimization.hpp"
-#include "vmc/SimulatedAnnealingOptimization.hpp"
-#include "vmc/StochasticReconfigurationOptimization.hpp"
-#include "vmc/StochasticReconfigurationOptimization.hpp"
 #include "vmc/WaveFunction.hpp"
-
 #include "mci/MCIntegrator.hpp"
 
-#include <gsl/gsl_siman.h>
 #include <stdexcept>
 #include <memory>
 
@@ -45,53 +37,9 @@ protected:
     mci::MCI _mci;
 
 public:
-    VMC(std::unique_ptr<WaveFunction> wf, std::unique_ptr<Hamiltonian> H): // move unique pointers into VMC
-            _wf(wf.get()/*remains valid (until destruct)*/), _H(H.get()), _mci(H->getTotalNDim())
-    {
-        if (_wf->getTotalNDim() != _H->getTotalNDim()) {
-            throw std::invalid_argument("[VMC] ndim different between wf and H");
-        }
-        _mci.addSamplingFunction(std::move(wf));
-        _mci.addObservable(std::move(H));
-        //_mci.addSamplingFunction(std::unique_ptr<mci::SamplingFunctionInterface>(wf));
-        //_mci.addObservable(std::unique_ptr<mci::ObservableFunctionInterface>(H));
-        _mci.addCallBack(std::make_unique<DerivativeCallback>(_wf));
-    }
-
-    VMC(const WaveFunction &wf, const Hamiltonian &H):
-            _wf(dynamic_cast<WaveFunction *>(wf.clone().release())), /*clone returns SamplingFunction ptr*/
-            _H(dynamic_cast<Hamiltonian *>(H.clone().release())), /*clone returns ObservableFunction ptr*/
-            _mci(H.getTotalNDim())
-    {
-        if (_wf == nullptr) {
-            throw std::runtime_error("[VMC] WaveFunction's clone() did not produce a type derived from WaveFunction.");
-        }
-        if (_H == nullptr) {
-            throw std::runtime_error("[VMC] Hamiltonian's clone() did not produce a type derived from Hamiltonian.");
-        }
-        if (_wf->getTotalNDim() != _H->getTotalNDim()) {
-            throw std::invalid_argument("Error VMC: ndim different between wf and H");
-        }
-        _mci.addSamplingFunction(std::unique_ptr<mci::SamplingFunctionInterface>(_wf));
-        _mci.addObservable(std::unique_ptr<mci::ObservableFunctionInterface>(_H));
-        _mci.addCallBack(std::make_unique<DerivativeCallback>(_wf));
-    }
-
-    /*~VMC()
-    {
-        while (_mci.getNPDF() > 1) {
-            // in case more pfs than _wf were added (e.g. via getMCI())
-            _mci.popSamplingFunction();
-        }
-        auto wf = _mci.popSamplingFunction(); // reacquire unique pointer
-
-        while (_mci.getNObs() > 1) {
-            // in case something more than _wf was added (e.g. via getMCI())
-            _mci.popObservable();
-        }
-        auto obs = _mci.popObservable(); // reacquire unique pointer
-    }*/
-
+    // Constructors
+    VMC(std::unique_ptr<WaveFunction> wf, std::unique_ptr<Hamiltonian> H);  // move unique pointers into VMC
+    VMC(const WaveFunction &wf, const Hamiltonian &H); // clone provided wf and H
 
     // You may directly access and edit the MCI object
     // NOTE: This allows for some unsafe operations. In particular. adding extra
@@ -103,21 +51,32 @@ public:
     WaveFunction &getWF() const { return *_wf; }
     Hamiltonian &getH() const { return *_H; }
 
-    // Computation of the energy
-    void computeEnergy(int Nmc, double E[], double dE[], bool doFindMRT2step = true, bool doDecorrelation = true);
+    // Other accessors
+    int getNSpaceDim() const { return _H->getNSpaceDim(); }
+    int getNParticles() const { return _H->getNPart(); }
+    int getNTotalDim() const { return _H->getTotalNDim(); }
+    int getNVP() const { return _wf->getNVP(); }
+
+    void setVP(const double * vp) { _wf->setVP(vp); }
+    void getVP(double * vp) const { _wf->getVP(vp); }
+
+
+    // Computation of the energy according to contained Hamiltonian and WaveFunction
+    // Other contained observables will be calculated as well and stored behind the energy values
+    void computeEnergy(int Nmc, double * E, double * dE, bool doFindMRT2step = true, bool doDecorrelation = true);
 
 
     // Wave Function Optimization Methods
-    void conjugateGradientOptimization(int E_Nmc, int grad_E_Nmc);
+    /*  void conjugateGradientOptimization(int E_Nmc, int grad_E_Nmc);
 
-    void stochasticReconfigurationOptimization(int Nmc, double stepSize = 1., bool flag_dgrad = false); // calc&use gradient error?
+      void stochasticReconfigurationOptimization(int Nmc, double stepSize = 1., bool flag_dgrad = false); // calc&use gradient error?
 
-    void adamOptimization(int Nmc, bool useSR = false, bool useGradientError = false, int max_n_const_values = 20, bool useAveraging = false,
-                          double lambda = 0, double alpha = 0.001, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 10e-8);
+      void adamOptimization(int Nmc, bool useSR = false, bool useGradientError = false, int max_n_const_values = 20, bool useAveraging = false,
+                            double lambda = 0, double alpha = 0.001, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 10e-8);
 
-    void simulatedAnnealingOptimization(int Nmc, double iota, double kappa, double lambda, gsl_siman_params_t &params);
+      void simulatedAnnealingOptimization(int Nmc, double iota, double kappa, double lambda, gsl_siman_params_t &params);
 
-    void nmsimplexOptimization(int Nmc, double iota, double kappa, double lambda, double rstart = 1.0, double rend = 0.01, size_t max_n_iter = 0);
+      void nmsimplexOptimization(int Nmc, double iota, double kappa, double lambda, double rstart = 1.0, double rend = 0.01, size_t max_n_iter = 0);*/
 };
 } // namespace vmc
 

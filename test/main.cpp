@@ -5,6 +5,8 @@
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
+#include "vmc/EnergyMinimization.hpp"
+#include "nfm/ConjGrad.hpp"
 
 #include "TestVMCFunctions.hpp"
 
@@ -19,12 +21,12 @@ int main()
     const int NMC = 4000l;
 
     auto gauss = std::make_unique<Gaussian1D1POrbital>(1.2); // will be moved from
-    auto harm_osc = std::make_unique<HarmonicOscillator1D1P>(1., gauss.get()); // will be moved from
+    auto harm_osc = std::make_unique<HarmonicOscillator1D1P>(1.); // will be moved from
     VMC vmc(std::move(gauss), std::move(harm_osc));
 
     cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
     double b1;
-    vmc.getWF().getVP(&b1);
+    vmc.getVP(&b1);
     cout << "Wave Function b     = " << b1 << endl;
     vmc.getMCI().setIRange(-10., 10.);
     double energy[4];
@@ -37,11 +39,12 @@ int main()
 
     cout << endl << " - - - ONE-DIMENSIONAL MINIMIZATION - - - " << endl << endl;
     double b;
-    vmc.getWF().getVP(&b);
+    vmc.getVP(&b);
     cout << "Wave Function b     = " << b << endl;
     cout << "Conjugate Gradient Minimization ... " << endl;
-    vmc.conjugateGradientOptimization(NMC, 4*NMC);
-    vmc.getWF().getVP(&b);
+    nfm::ConjGrad cg(vmc.getNVP());
+    minimizeEnergy<EnergyGradientTargetFunction>(vmc, cg, NMC, 4*NMC);
+    vmc.getVP(&b);
     cout << "Wave Function b     = " << b << endl << endl;
     vmc.computeEnergy(NMC, energy, d_energy);
     cout << "Total Energy        = " << energy[0] << " +- " << d_energy[0] << endl;

@@ -20,7 +20,7 @@ int main()
     // Setup VMC
     auto psi = make_unique<Gaussian1D1POrbital>(0.6); // we use a simple gaussian, but not with ground state parametrization
     const double w = 1.; // We use the harmonic oscillator with w=1
-    auto ham = make_unique<HarmonicOscillator1D1P>(1., psi.get());
+    auto ham = make_unique<HarmonicOscillator1D1P>(1.);
     VMC vmc(move(psi), move(ham));
 
 
@@ -34,7 +34,7 @@ int main()
 
     // example of file out with MPI (but we disable it for the test below (100K Steps!!))
     auto obsfile = "obsfile" + std::to_string(myrank);
-    auto wlkfile = "wlkfile" + std::to_string(myrank);;
+    auto wlkfile = "wlkfile" + std::to_string(myrank);
     vmc.getMCI().storeObservablesOnFile(obsfile, 1); // would print observables on every step
     vmc.getMCI().storeWalkerPositionsOnFile(wlkfile, 1); // would print walker positions on every step
     vmc.getMCI().clearObservableFile();

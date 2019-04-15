@@ -1,9 +1,9 @@
 #include <cmath>
 #include <iostream>
 
-#include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
+#include "vmc/NMSimplexMinimization.hpp"
 
 #include "../common/ExampleFunctions.hpp"
 
@@ -23,9 +23,9 @@ int main()
     // Create corresponding Hamiltonians
     // We use the harmonic oscillator with w=1 and w=2
     const double w1 = 1.;
-    auto ham1 = make_unique<HarmonicOscillator1D1P>(w1, psi1.get());
+    auto ham1 = make_unique<HarmonicOscillator1D1P>(w1);
     const double w2 = 2.;
-    auto ham2 = make_unique<HarmonicOscillator1D1P>(w2, psi2.get());
+    auto ham2 = make_unique<HarmonicOscillator1D1P>(w2);
 
     // --- Create the VMC objects
 
@@ -38,14 +38,14 @@ int main()
     const int E_NMC = 10000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    double vp[vmc1.getWF().getNVP()];
+    double vp[vmc1.getNVP()];
 
 
     // Case 1
     cout << "-> ham1:    w = " << w1 << endl << endl;
 
     cout << "   Initial Wave Function parameters:" << endl;
-    vmc1.getWF().getVP(vp);
+    vmc1.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 
@@ -62,11 +62,12 @@ int main()
     vmc1.getMCI().setNfindMRT2Iterations(10);
     vmc1.getMCI().setNdecorrelationSteps(1000);
 
-    vmc1.nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
+    NMSimplexMinimization nms(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
+    nms.minimizeEnergy(vmc1);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
-    vmc1.getWF().getVP(vp);
+    vmc1.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 
@@ -83,7 +84,7 @@ int main()
     cout << "-> ham2:    w = " << w2 << endl << endl;
 
     cout << "   Initial Wave Function parameters:" << endl;
-    vmc2.getWF().getVP(vp);
+    vmc2.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 
@@ -100,11 +101,11 @@ int main()
     vmc2.getMCI().setNfindMRT2Iterations(10);
     vmc2.getMCI().setNdecorrelationSteps(1000);
 
-    vmc2.nmsimplexOptimization(E_NMC, 1.0 /* weight for energy cost*/, 0.1 /* weight for energy error cost*/, 0.005 /* weight for regularization cost */, 0.1 /* initial simplex size */);
+    nms.minimizeEnergy(vmc2);
     cout << "   . . . Done!" << endl << endl;
 
     cout << "   Optimized Wave Function parameters:" << endl;
-    vmc2.getWF().getVP(vp);
+    vmc2.getVP(vp);
     cout << "       a = " << vp[0] << endl;
     cout << "       b = " << vp[1] << endl;
 
@@ -114,7 +115,6 @@ int main()
     cout << "       Potential Energy    = " << energy[1] << " +- " << d_energy[1] << endl;
     cout << "       Kinetic (PB) Energy = " << energy[2] << " +- " << d_energy[2] << endl;
     cout << "       Kinetic (JF) Energy = " << energy[3] << " +- " << d_energy[3] << endl << endl;
-
 
 
     MPIVMC::Finalize();
