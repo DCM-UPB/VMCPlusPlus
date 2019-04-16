@@ -2,10 +2,7 @@
 #define VMC_EXAMPLEFUNCTIONS_HPP
 
 #include <cmath>
-#include <iostream>
-#include <stdexcept>
 
-#include "nfm/ConjGrad.hpp"
 #include "vmc/Hamiltonian.hpp"
 #include "vmc/MPIVMC.hpp"
 #include "vmc/VMC.hpp"
@@ -23,12 +20,12 @@ protected:
 
     mci::ObservableFunctionInterface * _clone() const final
     {
-        return new HarmonicOscillator1D1P(_w, _wf);
+        return new HarmonicOscillator1D1P(_w);
     }
 
 public:
-    HarmonicOscillator1D1P(double w, vmc::WaveFunction * wf):
-            vmc::Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/, wf) { _w = w; }
+    explicit HarmonicOscillator1D1P(double w):
+            vmc::Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/) { _w = w; }
 
     // potential energy
     double localPotentialEnergy(const double * r) final
@@ -50,7 +47,7 @@ protected:
 
     mci::SamplingFunctionInterface * _clone() const final
     {
-        return new QuadrExponential1D1POrbital(_a, _b, _flag_vd1);
+        return new QuadrExponential1D1POrbital(_a, _b, this->hasVD1());
     }
 
 public:
@@ -67,7 +64,7 @@ public:
         _b = in[1];
     }
 
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         out[0] = _a;
         out[1] = _b;
@@ -135,7 +132,7 @@ public:
         using namespace std;
         //cout << "change b! " << _b << endl;
     }
-    void getVP(double * out) final
+    void getVP(double * out) const final
     {
         *out = _b;
     }

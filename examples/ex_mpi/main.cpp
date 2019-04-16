@@ -17,15 +17,14 @@ int main()
     int myrank = MPIVMC::Init();
     cout << "Hello from rank " << myrank << endl;
 
-    // Declare some trial wave functions
-    Gaussian1D1POrbital psi(0.6);
+    // Setup VMC
+    auto psi = make_unique<Gaussian1D1POrbital>(0.6); // we use a simple gaussian, but not with ground state parametrization
+    const double w = 1.; // We use the harmonic oscillator with w=1
+    auto ham = make_unique<HarmonicOscillator1D1P>(w);
+    VMC vmc(move(psi), move(ham));
 
-    // Declare an Hamiltonian for each wave function
-    // We use the harmonic oscillator with w=1
-    HarmonicOscillator1D1P ham(1., &psi);
 
-
-    const int E_NMC = 20000l; // MC samplings to use for computing the energy
+    const int E_NMC = 100000l; // MC samplings to use for computing the energy
     double energy[4], energy_h[4]; // energy
     double d_energy[4], d_energy_h[4]; // energy error bar
     for (int i = 0; i < 4; ++i) {
@@ -33,13 +32,13 @@ int main()
         d_energy[i] = 0.;
     }
 
-    VMC vmc(&psi, &ham);
-
-    // example of file out with MPI
+    // example of file out with MPI (but we disable it for the test below (100K Steps!!))
     auto obsfile = "obsfile" + std::to_string(myrank);
-    auto wlkfile = "wlkfile" + std::to_string(myrank);;
-    vmc.getMCI()->storeObservablesOnFile(obsfile, 1);
-    vmc.getMCI()->storeWalkerPositionsOnFile(wlkfile, 1);
+    auto wlkfile = "wlkfile" + std::to_string(myrank);
+    vmc.getMCI().storeObservablesOnFile(obsfile, 1); // would print observables on every step
+    vmc.getMCI().storeWalkerPositionsOnFile(wlkfile, 1); // would print walker positions on every step
+    vmc.getMCI().clearObservableFile();
+    vmc.getMCI().clearWalkerFile();
 
     if (myrank == 0) {
         cout << endl << " - - - EVALUATION OF ENERGY - - - " << endl << endl;
@@ -74,8 +73,8 @@ int main()
 
     // Now fix the number of steps for findMRT2step/initialDecorr
     // we use a generous total amount of 10000 equilibration steps
-    vmc.getMCI()->setNfindMRT2Iterations(50);
-    vmc.getMCI()->setNdecorrelationSteps(5000);
+    vmc.getMCI().setNfindMRT2Iterations(50);
+    vmc.getMCI().setNdecorrelationSteps(5000);
 
     if (myrank == 0) {
         cout << "Computing the energy " << neval << " times, with fixed-mode findMRT2step/initialDecorr (consistent time per CPU)." << endl;

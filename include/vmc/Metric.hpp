@@ -6,17 +6,15 @@ namespace vmc
 
 class Metric
 {
-private:
+protected:
     const int _nspacedim;
 
-public:
-    explicit Metric(const int &nspacedim): _nspacedim(nspacedim) {}
+    explicit Metric(int nspacedim): _nspacedim(nspacedim) {}
 
+public:
     virtual ~Metric() = default;
 
-
-    int getNSpaceDim() { return _nspacedim; }
-
+    int getNSpaceDim() const { return _nspacedim; }
 
     // --- Methods that must be implemented
     virtual double dist(const double * r1, const double * r2) = 0;

@@ -5,7 +5,7 @@
 namespace vmc
 {
 
-unsigned long SymmetrizerWaveFunction::_npart_factorial()
+unsigned long SymmetrizerWaveFunction::_npart_factorial() const
 {
     unsigned long fac = 1;
     const auto npart = static_cast<unsigned long>(_npart);
@@ -14,19 +14,19 @@ unsigned long SymmetrizerWaveFunction::_npart_factorial()
     return fac;
 }
 
-void SymmetrizerWaveFunction::_swapPositions(double * x, const int &i, const int &j)
+void SymmetrizerWaveFunction::_swapPositions(double * x, const int i, const int j)
 {
     // particle swap (of positions)
     std::swap_ranges(x + i*_nspacedim, x + (i + 1)*_nspacedim, x + j*_nspacedim);
 }
 
-void SymmetrizerWaveFunction::_swapIndices(int * ids, const int &i, const int &j)
+void SymmetrizerWaveFunction::_swapIndices(int * ids, const int i, const int j)
 {
     // particle swap (of indices)
     std::swap_ranges(ids + i*_nspacedim, ids + (i + 1)*_nspacedim, ids + j*_nspacedim);
 }
 
-void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, const double &normf)
+void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, const double normf)
 {
     double protov[_wf->getNProto()];
     _wf->protoFunction(x, protov);
@@ -64,7 +64,7 @@ void SymmetrizerWaveFunction::_computeStandardDerivatives(const double * x, cons
     }
 }
 
-void SymmetrizerWaveFunction::_addSwapDerivatives(const double * x, const double &normf, const int * ids)
+void SymmetrizerWaveFunction::_addSwapDerivatives(const double * x, const double normf, const int * ids)
 {
     double protov[_wf->getNProto()];
     _wf->protoFunction(x, protov);
@@ -225,7 +225,7 @@ void SymmetrizerWaveFunction::protoFunction(const double * in, double * out)
 }
 
 
-void SymmetrizerWaveFunction::getVP(double * vp)
+void SymmetrizerWaveFunction::getVP(double * vp) const
 {
     _wf->getVP(vp);
 }

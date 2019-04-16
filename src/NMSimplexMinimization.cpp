@@ -1,4 +1,4 @@
-#include "vmc/NMSimplexOptimization.hpp"
+#include "vmc/NMSimplexMinimization.hpp"
 #include "vmc/MPIVMC.hpp"
 
 #include <gsl/gsl_multimin.h>
@@ -8,68 +8,62 @@ namespace vmc
 
 struct vmc_nms
 {
-    WaveFunction * wf;
-    Hamiltonian * H;
-    mci::MCI * mci;
+    VMC &vmc;
     int Nmc;
     double iota;
     double kappa;
     double lambda;
     double rstart;
     double rend;
-    int max_n_iter;
+    size_t max_n_iter;
 
-    void initFromOptimizer(NMSimplexOptimization * wfopt)
+    vmc_nms(VMC &vmc, NMSimplexMinimization &nms): vmc(vmc)
     {
-        wf = wfopt->getWF();
-        H = wfopt->getH();
-        mci = wfopt->getMCI();
-        Nmc = wfopt->getNmc();
-        iota = wfopt->getIota();
-        kappa = wfopt->getKappa();
-        lambda = wfopt->getLambda();
-        rstart = wfopt->getRStart();
-        rend = wfopt->getREnd();
-        max_n_iter = wfopt->getMaxNIter();
+        Nmc = nms.getNmc();
+        iota = nms.getIota();
+        kappa = nms.getKappa();
+        lambda = nms.getLambda();
+        rstart = nms.getRStart();
+        rend = nms.getREnd();
+        max_n_iter = nms.getMaxNIter();
     }
 };
 
 double vmc_cost(const gsl_vector * v, void * params)
 {
-    WaveFunction * const wf = (static_cast<struct vmc_nms *>(params))->wf;
-    Hamiltonian * const H = (static_cast<struct vmc_nms *>(params))->H;
-    mci::MCI * const mci = (static_cast<struct vmc_nms *>(params))->mci;
+    VMC &vmc = (static_cast<struct vmc_nms *>(params))->vmc;
     const int Nmc = (static_cast<struct vmc_nms *>(params))->Nmc;
     const double iota = (static_cast<struct vmc_nms *>(params))->iota;
     const double kappa = (static_cast<struct vmc_nms *>(params))->kappa;
     const double lambda = (static_cast<struct vmc_nms *>(params))->lambda;
 
-    double vpar[wf->getNVP()];
+    const auto nvp = static_cast<size_t>(vmc.getNVP());
+    double vpar[nvp];
     // apply the parameters to the wf
-    for (int i = 0; i < wf->getNVP(); ++i) {
+    for (size_t i = 0; i < nvp; ++i) {
         vpar[i] = gsl_vector_get(v, i);
     }
-    wf->setVP(vpar);
+    vmc.setVP(vpar);
 
     // compute the energy and its standard deviation
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
-    MPIVMC::Integrate(mci, Nmc, energy, d_energy, true, true);
+    vmc.computeEnergy(Nmc, energy, d_energy, true, true);
 
     // compute the normalization
     double norm = 0.;
-    for (int i = 0; i < wf->getNVP(); ++i) {
+    for (size_t i = 0; i < nvp; ++i) {
         const double vi = gsl_vector_get(v, i);
         norm += vi*vi;
     }
-    norm = sqrt(norm)/wf->getNVP();
+    norm = sqrt(norm)/nvp;
 
     // return the cost function
     return iota*energy[0] + kappa*d_energy[0] + lambda*norm;
 };
 
 
-void NMSimplexOptimization::optimizeWF()
+void NMSimplexMinimization::minimizeEnergy(VMC &vmc)
 {
     const gsl_multimin_fminimizer_type * T = gsl_multimin_fminimizer_nmsimplex2;
     gsl_multimin_fminimizer * s = nullptr;
@@ -78,32 +72,31 @@ void NMSimplexOptimization::optimizeWF()
 
     int myrank = MPIVMC::MyRank();
 
-    vmc_nms w{};
-    w.initFromOptimizer(this);
+    vmc_nms w(vmc, *this);
 
     // Starting point
-    int npar = _wf->getNVP();
-    double vpar[npar];
-    _wf->getVP(vpar);
+    const auto nvp = static_cast<size_t>(vmc.getNVP());
+    double vpar[nvp];
+    vmc.getVP(vpar);
 
-    x = gsl_vector_alloc(npar);
-    for (int i = 0; i < npar; ++i) {
+    x = gsl_vector_alloc(nvp);
+    for (size_t i = 0; i < nvp; ++i) {
         gsl_vector_set(x, i, vpar[i]);
     }
 
     // Set initial step sizes to 1
-    ss = gsl_vector_alloc(npar);
+    ss = gsl_vector_alloc(nvp);
     gsl_vector_set_all(ss, _rstart);
 
     // Initialize method and iterate
-    minex_func.n = npar;
+    minex_func.n = nvp;
     minex_func.f = vmc_cost;
     minex_func.params = &w;
 
-    s = gsl_multimin_fminimizer_alloc(T, npar);
+    s = gsl_multimin_fminimizer_alloc(T, nvp);
     gsl_multimin_fminimizer_set(s, &minex_func, x, ss);
 
-    int iter = 0;
+    size_t iter = 0;
     int status;
     do {
         status = gsl_multimin_fminimizer_iterate(s);

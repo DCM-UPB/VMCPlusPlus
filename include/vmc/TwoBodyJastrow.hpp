@@ -28,7 +28,7 @@ private:
         return new TwoBodyJastrow(_npart, _u2);
     }
 public:
-    TwoBodyJastrow(const int &npart, TwoBodyPseudoPotential * u2):
+    TwoBodyJastrow(int npart, TwoBodyPseudoPotential * u2):
             WaveFunction(u2->getNSpaceDim(), npart, 1, u2->getNVP(), u2->hasVD1(), u2->hasD1VD1(), u2->hasD2VD1()),
             _u2(u2)
     {
@@ -47,7 +47,7 @@ public:
 
 
     void setVP(const double * vp) override { _u2->setVP(vp); }
-    void getVP(double * vp) override { _u2->getVP(vp); }
+    void getVP(double * vp) const override { _u2->getVP(vp); }
 
 
     void protoFunction(const double * x, double * protov) override;

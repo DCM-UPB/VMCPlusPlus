@@ -28,7 +28,7 @@ private:
     void _oldToNew() override;
 
 public:
-    MultiComponentWaveFunction(const int &nspacedim, const int &npart, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false):
+    MultiComponentWaveFunction(int nspacedim, int npart, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false):
             WaveFunction(nspacedim, npart, 0, 0, flag_vd1, flag_d1vd1, flag_d2vd1) {}
     ~MultiComponentWaveFunction() override
     {
@@ -40,7 +40,7 @@ public:
 
     void setVP(const double * vp) override;
 
-    void getVP(double * vp) override;
+    void getVP(double * vp) const override;
 
     void protoFunction(const double * in, double * out) override;
 

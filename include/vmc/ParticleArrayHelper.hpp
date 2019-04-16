@@ -22,14 +22,14 @@ private:
     const int _nspacedim;
 
 public:
-    explicit ParticleArrayHelper(const int &nspacedim): _nspacedim(nspacedim) {}
+    explicit ParticleArrayHelper(int nspacedim): _nspacedim(nspacedim) {}
 
-    double * getParticleArray(double * x, const int &i);
-    const double * getParticleArray(const double * x, const int &i);
+    double * getParticleArray(double * x, int i);
+    const double * getParticleArray(const double * x, int i);
 
-    void setParticleArray(double * x, const int &i, const double * newx);
+    void setParticleArray(double * x, int i, const double * newx);
 
-    void addArrayToParticleArray(double * x, const int &i, const double * toadd);
+    void addArrayToParticleArray(double * x, int i, const double * toadd);
 };
 } // namespace vmc
 

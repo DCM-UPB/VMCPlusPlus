@@ -53,7 +53,7 @@ void TwoBodyPseudoPotential::computeAllDerivatives(const double * r1, const doub
 }
 
 
-TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int &nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1)
+TwoBodyPseudoPotential::TwoBodyPseudoPotential(Metric * metric, const int nvp, bool flag_vd1, bool flag_d1vd1, bool flag_d2vd1)
 {
     _metric = metric;
     _ndim2 = 2*_metric->getNSpaceDim();

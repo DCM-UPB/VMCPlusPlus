@@ -10,42 +10,31 @@ In the folder `common/` you will find a file named `ExampleFunctions.hpp` that c
 and Hamiltonian implementations that are shared between the examples.
 
 
-## Example 1
+## Basic Energy Evaluation
 
-`ex1/`: Evaluation of the variational energy for a 1-particle 1-dimension harmonic oscillator using four different trial wave functions.
-
-
-
-## Example 2
-
-`ex2/`: Optimize a trial wave functions for 1-particle 1-dimension harmonic oscillator using the Conjugate Gradient method, setting the potential parameter w=1 and w=2.
+`ex_basic/`: Evaluation of the variational energy for a 1-particle 1-dimension harmonic oscillator using four different trial wave functions.
 
 
+## Conjugate Gradient Optimization
 
-## Example 3
-
-`ex3/`: as `ex2`, but using the SR optimization method instead of the conjugate gradient
-
+`ex_cgopt/`: Optimize a trial wave functions for 1-particle 1-dimension harmonic oscillator using the Conjugate Gradient method.
 
 
-## Example 4
+## Stochastic Reconfiguration Optimization
 
-`ex4/`: as `ex2`, but using the Simulated Annealing method
-
-
-
-## Example 5
-
-`ex5/`: as `ex2`, but using the Nelder-Mead Simplex algorithm.
+`ex_sropt/`: as `ex_cgopt`, but using the SR gradient for Stochastic Gradient Descent optimization.
 
 
+## Nelder-Mead Simplex Optimization
 
-## Example 6
-
-`ex6/`: as `ex2`, but using the Adam algorithm.
-
+`ex_nmsopt/`: as `ex_cgopt`, but using the Nelder-Mead Simplex algorithm.
 
 
-## Example 7
+## Adam Optimization
 
-`ex7/`: Simple example of MPI-VMC usage.
+`ex_adamopt/`: as `ex_cgopt`, but using the Adam algorithm.
+
+
+## Basic Usage with MPI
+
+`ex_mpi/`: Simple example of MPI-VMC usage. This example will only be compiled if USE_MPI=1 in config.sh (and MPI library found)!
