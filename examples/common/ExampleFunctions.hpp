@@ -24,7 +24,7 @@ protected:
     }
 
 public:
-    HarmonicOscillator1D1P(double w):
+    explicit HarmonicOscillator1D1P(double w):
             vmc::Hamiltonian(1 /*num space dimensions*/, 1 /*num particles*/) { _w = w; }
 
     // potential energy

@@ -1,7 +1,6 @@
 #ifndef VMC_WAVEFUNCTION_HPP
 #define VMC_WAVEFUNCTION_HPP
 
-#include "mci/CallBackOnMoveInterface.hpp"
 #include "mci/SamplingFunctionInterface.hpp"
 
 #include <iostream>
