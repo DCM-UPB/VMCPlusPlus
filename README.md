@@ -9,7 +9,7 @@ C++ Library for Variational Monte Carlo simulations.
 It is built upon the MCI++ (https://github.com/DCM-UPB/MCIntegratorPlusPlus) and NoisyFunMin (https://github.com/DCM-UPB/NoisyFunMin) libraries.
 It also uses the GSL (GNU Scientific Library).
 
-In `doc/` there is a user manual in pdf and a config for doxygen.
+In `doc/` there is a user manual in pdf (not accurate for current master!) and a config for doxygen.
 
 In `examples/` and `test/` there are examples and tests for the library.
 
