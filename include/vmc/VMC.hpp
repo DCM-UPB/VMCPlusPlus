@@ -13,28 +13,12 @@ namespace vmc
 
 class VMC
 {
-    class DerivativeCallback: public mci::CallBackOnMoveInterface
-        // Small internal helper (MCI CallBack Function)
-        // Triggers WF derivative computation after MC move is accepted
-    {
-    protected:
-        WaveFunction * const _wf;
-
-        mci::CallBackOnMoveInterface * _clone() const final
-        {
-            return new DerivativeCallback(_wf);
-        }
-
-    public:
-        explicit DerivativeCallback(WaveFunction * wf);
-
-        void callBackFunction(const mci::WalkerState &wlk) final;
-    };
-
 protected:
+    mci::MCI _mci; // the contained MC integrator
+
+    // Internal pointers to wf and H inside MCI
     WaveFunction * const _wf;
     Hamiltonian * const _H;
-    mci::MCI _mci;
 
 public:
     // Constructors
@@ -64,19 +48,6 @@ public:
     // Computation of the energy according to contained Hamiltonian and WaveFunction
     // Other contained observables will be calculated as well and stored behind the energy values
     void computeEnergy(int Nmc, double * E, double * dE, bool doFindMRT2step = true, bool doDecorrelation = true);
-
-
-    // Wave Function Optimization Methods
-    /*  void conjugateGradientOptimization(int E_Nmc, int grad_E_Nmc);
-
-      void stochasticReconfigurationOptimization(int Nmc, double stepSize = 1., bool flag_dgrad = false); // calc&use gradient error?
-
-      void adamOptimization(int Nmc, bool useSR = false, bool useGradientError = false, int max_n_const_values = 20, bool useAveraging = false,
-                            double lambda = 0, double alpha = 0.001, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 10e-8);
-
-      void simulatedAnnealingOptimization(int Nmc, double iota, double kappa, double lambda, gsl_siman_params_t &params);
-
-      void nmsimplexOptimization(int Nmc, double iota, double kappa, double lambda, double rstart = 1.0, double rend = 0.01, size_t max_n_iter = 0);*/
 };
 } // namespace vmc
 

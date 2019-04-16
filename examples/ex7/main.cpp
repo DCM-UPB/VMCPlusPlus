@@ -20,7 +20,7 @@ int main()
     // Setup VMC
     auto psi = make_unique<Gaussian1D1POrbital>(0.6); // we use a simple gaussian, but not with ground state parametrization
     const double w = 1.; // We use the harmonic oscillator with w=1
-    auto ham = make_unique<HarmonicOscillator1D1P>(1.);
+    auto ham = make_unique<HarmonicOscillator1D1P>(w);
     VMC vmc(move(psi), move(ham));
 
 

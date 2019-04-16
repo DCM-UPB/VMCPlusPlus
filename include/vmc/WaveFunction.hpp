@@ -106,6 +106,11 @@ public:
         return wfval*wfval; // the sampling function is Psi^2
     }
 
+    void observationCallback(const mci::WalkerState &wlk, const double /*protoold*/[], const double /*protonew*/[]) override
+    {
+        this->computeAllDerivatives(wlk.xnew);
+    }
+
     // --- getters and setters for the derivatives
     // first derivative divided by the wf
     double getD1DivByWF(int id1) const { return _d1_divbywf[id1]; }
