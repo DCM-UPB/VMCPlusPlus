@@ -1,3 +1,3 @@
 #!/bin/sh
 cd ../../build/examples
-./ex3.exe
+./ex_adamopt.exe
