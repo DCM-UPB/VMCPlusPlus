@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.com/DCM-UPB/VMCPlusPlus.svg?branch=master)](https://travis-ci.com/DCM-UPB/VMCPlusPlus)
 [![Coverage Status](https://coveralls.io/repos/github/DCM-UPB/VMCPlusPlus/badge.svg?branch=master)](https://coveralls.io/github/DCM-UPB/VMCPlusPlus?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e4e5ff4974e24a4faffff3d6c7010852)](https://www.codacy.com/app/NNVMC/VMCPlusPlus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DCM-UPB/VMCPlusPlus&amp;utm_campaign=Badge_Grade)
-[![CodeFactor](https://www.codefactor.io/repository/github/dcm-upb/vmcplusplus/badge)](https://www.codefactor.io/repository/github/dcm-upb/vmcplusplus)
 
 # VMC++
 
