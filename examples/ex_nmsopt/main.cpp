@@ -17,8 +17,8 @@ int main()
     // --- Create objects to move into VMC (don't use afterwards!)
 
     // Create some trial wave functions
-    auto psi1 = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.0, true); // enable variational derivatives
-    auto psi2 = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.0, true); // we create an equivalent psi2
+    auto psi1 = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.5, true); // enable variational derivatives
+    auto psi2 = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.5, true); // we create an equivalent psi2
 
     // Create corresponding Hamiltonians
     // We use the harmonic oscillator with w=1 and w=2
@@ -35,7 +35,7 @@ int main()
 
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const int E_NMC = 10000l; // MC samplings to use for computing the energy
+    const int E_NMC = 20000l; // MC samplings to use for computing the energy
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
     double vp[vmc1.getNVP()];

@@ -95,6 +95,7 @@ int main()
         cout << "Potential Energy    = " << energy[1]/neval << " +- " << sqrt(d_energy[1])/neval << endl;
         cout << "Kinetic (PB) Energy = " << energy[2]/neval << " +- " << sqrt(d_energy[2])/neval << endl;
         cout << "Kinetic (JF) Energy = " << energy[3]/neval << " +- " << sqrt(d_energy[3])/neval << endl << endl;
+        cout << "Note that the wave function was not the exact ground state, i.e. E > E_0 = 0.5." << endl;
     }
 
     MPIVMC::Finalize();

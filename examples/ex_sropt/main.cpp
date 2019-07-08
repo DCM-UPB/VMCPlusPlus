@@ -18,7 +18,7 @@ int main()
     MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // Setup VMC
-    auto psi = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.0, true); // enable variational deriv
+    auto psi = make_unique<QuadrExponential1D1POrbital>(-0.5, 1.5, true); // enable variational deriv
     const double w = 1.; // We use the harmonic oscillator with w=1
     auto ham = make_unique<HarmonicOscillator1D1P>(1.);
     VMC vmc(move(psi), move(ham));
@@ -28,7 +28,7 @@ int main()
     }
     cout << endl << " - - - WAVE FUNCTION OPTIMIZATION - - - " << endl << endl;
 
-    const int NMC = 10000l; // MC samplings to use for computing the energy
+    const int NMC = 20000l; // MC samplings to use for computing the energy&gradient
     double energy[4]; // energy
     double d_energy[4]; // energy error bar
     double vp[vmc.getNVP()];
