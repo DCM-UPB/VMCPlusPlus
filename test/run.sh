@@ -1,6 +1,10 @@
 #!/bin/sh
 
-VALGRIND="valgrind --leak-check=full --track-origins=yes"
+if [ -x "$(command -v valgrind)" ]; then
+    VALGRIND="valgrind --leak-check=full --track-origins=yes"
+else
+    VALGRIND=""
+fi;
 
 cd ../build/test/
 ${VALGRIND} ./check
