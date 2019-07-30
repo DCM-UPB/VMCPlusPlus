@@ -59,8 +59,8 @@ nfm::NoisyValue EnergyGradientTargetFunction::fgrad(const std::vector<double> &v
         grad.val[i] = -2.*(HOi[i] - H[0]*Oi[i]);
     }
     if (this->hasGradErr()) {
-        for (int i = 0; i < nvp; ++i) {
-            grad.err[i] = 2.*(dHOi[i] + fabs(H[0]*Oi[i])*(dH[0]/H[0] + dOi[i]/Oi[i]));
+        for (int i = 0; i < nvp; ++i) { // error propagation
+            grad.err[i] = 2.*sqrt(dHOi[i]*dHOi[i] + dH[0]*dH[0]*Oi[i]*Oi[i] + H[0]*H[0]*dOi[i]*dOi[i]);
         }
     }
 
