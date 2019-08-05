@@ -68,7 +68,7 @@ nfm::NoisyValue EnergyGradientTargetFunction::fgrad(const std::vector<double> &v
         const double norm = std::inner_product(vp.begin(), vp.end(), vp.begin(), 0.);
         const double fac = _lambda_reg/nvp;
         f.val += fac*norm;
-        for (int i = 0; i < nvp; ++i) { grad.val[i] += 2.*fac*vp[i]; }
+        for (int i = 0; i < nvp; ++i) { grad.val[i] -= 2.*fac*vp[i]; }
     }
 
     return f;

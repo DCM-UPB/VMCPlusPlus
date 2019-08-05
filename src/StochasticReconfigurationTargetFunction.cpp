@@ -19,7 +19,7 @@ void add_norm_grad(const double * const vp, const int nvp, double * const grad_E
     const double fac = lambda/nvp;
     // add the normalization gradient
     for (int i = 0; i < nvp; ++i) {
-        grad_E[i] += 2.*vp[i]*fac;
+        grad_E[i] -= 2.*vp[i]*fac;
     }
 }
 
@@ -33,7 +33,7 @@ void add_norm_fgrad(const double * const vp, const int nvp, double &f, double * 
     // add the normalization value and gradient
     f += norm*fac;
     for (int i = 0; i < nvp; ++i) {
-        grad_E[i] += 2.*vp[i]*fac;
+        grad_E[i] -= 2.*vp[i]*fac;
     }
 }
 
