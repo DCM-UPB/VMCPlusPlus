@@ -20,10 +20,13 @@ protected:
     WaveFunction * const _wf;
     Hamiltonian * const _H;
 
+    // Number of steps to skip per energy/gradient evaluation
+    const int _nskip_eg;
+
 public:
     // Constructors
-    VMC(std::unique_ptr<WaveFunction> wf, std::unique_ptr<Hamiltonian> H);  // move unique pointers into VMC
-    VMC(const WaveFunction &wf, const Hamiltonian &H); // clone provided wf and H
+    VMC(std::unique_ptr<WaveFunction> wf, std::unique_ptr<Hamiltonian> H, int nskip_eg = 1);  // move unique pointers into VMC
+    VMC(const WaveFunction &wf, const Hamiltonian &H, int nskip_eg = 1); // clone provided wf and H
 
     // You may directly access and edit the MCI object
     // NOTE: This allows for some unsafe operations. In particular. adding extra
@@ -40,6 +43,7 @@ public:
     int getNParticles() const { return _H->getNPart(); }
     int getNTotalDim() const { return _H->getTotalNDim(); }
     int getNVP() const { return _wf->getNVP(); }
+    int getNSkipEG() const { return _nskip_eg; }
 
     void setVP(const double * vp) { _wf->setVP(vp); }
     void getVP(double * vp) const { _wf->getVP(vp); }

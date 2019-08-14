@@ -47,7 +47,7 @@ void StochasticReconfigurationTargetFunction::_integrate(const double * const vp
     if (flag_grad) { // add gradient obs if necessary
         // skip MC error for grad if flag_dgrad is false
         _vmc.getMCI().addObservable(StochasticReconfigurationMCObservable(_vmc.getNTotalDim(), _vmc.getNVP()),
-                                    flag_dgrad ? 1 : 0, 1, false, flag_dgrad);
+                                    flag_dgrad ? 1 : 0, _vmc.getNSkipEG(), false, flag_dgrad);
     }
 
     // perform the integral and store the values (skip extra burning phase on gradient runs (only findMRT2))
