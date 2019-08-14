@@ -9,7 +9,7 @@
 namespace vmc
 {
 
-class MultiComponentWaveFunction: public WaveFunction
+class MultiComponentWaveFunction final: public WaveFunction
 {
 private:
     std::vector<WaveFunction *> _wfs;
@@ -24,13 +24,13 @@ private:
     }
 
     // we contain ProtoFunctionInterfaces as members, so we need to implement these:
-    void _newToOld() override;
-    void _oldToNew() override;
+    void _newToOld() final;
+    void _oldToNew() final;
 
 public:
     MultiComponentWaveFunction(int nspacedim, int npart, bool flag_vd1 = false, bool flag_d1vd1 = false, bool flag_d2vd1 = false):
             WaveFunction(nspacedim, npart, 0, 0, flag_vd1, flag_d1vd1, flag_d2vd1) {}
-    ~MultiComponentWaveFunction() override
+    ~MultiComponentWaveFunction() final
     {
         _wfs.clear();
     }
@@ -38,17 +38,19 @@ public:
 
     void addWaveFunction(WaveFunction * wf);
 
-    void setVP(const double * vp) override;
+    void setVP(const double vp[]) final;
 
-    void getVP(double * vp) const override;
+    void getVP(double vp[]) const final;
 
-    void protoFunction(const double * in, double * out) override;
+    void protoFunction(const double in[], double out[]) final;
 
-    double acceptanceFunction(const double * protoold, const double * protonew) const override;
+    double acceptanceFunction(const double protoold[], const double protonew[]) const final;
 
-    void computeAllDerivatives(const double * x) override;
+    double updatedAcceptance(const mci::WalkerState &wlk, const double protoold[], double protonew[]) final;
 
-    double computeWFValue(const double * protovalues) const override;
+    void computeAllDerivatives(const double x[]) final;
+
+    double computeWFValue(const double protovalues[]) const final;
 };
 } // namespace vmc
 
