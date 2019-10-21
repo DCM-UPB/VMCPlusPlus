@@ -53,14 +53,15 @@ nfm::NoisyValue EnergyGradientTargetFunction::fgrad(const std::vector<double> &v
     const double * const dOi = dobs + 4;
     const double * const HOi = obs + 4 + nvp;
     const double * const dHOi = dobs + 4 + nvp;
-    nfm::NoisyValue f{H[0], dH[0]};
+    const auto i_etot = ElocID::ETot;
+    nfm::NoisyValue f{H[i_etot], dH[i_etot]};
     // compute direction (or gradient) to follow
     for (int i = 0; i < nvp; ++i) {
-        grad.val[i] = -2.*(HOi[i] - H[0]*Oi[i]);
+        grad.val[i] = -2.*(HOi[i] - H[i_etot]*Oi[i]);
     }
     if (this->hasGradErr()) {
         for (int i = 0; i < nvp; ++i) { // error propagation
-            grad.err[i] = 2.*sqrt(dHOi[i]*dHOi[i] + dH[0]*dH[0]*Oi[i]*Oi[i] + H[0]*H[0]*dOi[i]*dOi[i]);
+            grad.err[i] = 2.*sqrt(dHOi[i]*dHOi[i] + dH[i_etot]*dH[i_etot]*Oi[i]*Oi[i] + H[i_etot]*H[i_etot]*dOi[i]*dOi[i]);
         }
     }
 
