@@ -45,7 +45,6 @@ public:
     void protoFunction(const double * in, double * out) final
     {
         *out = -2.*(_b*(in[0] - _a)*(in[0] - _a));
-        std::cout << "out " << *out << std::endl;
     }
 
     double acceptanceFunction(const double * protoold, const double * protonew) const final
@@ -203,6 +202,60 @@ public:
     double computeWFValue(const double * protovalues) const final
     {
         return exp(0.5*protovalues[0]);
+    }
+};
+
+/*
+  Normalized Gaussian around origin
+  f(r) = a*exp(-0.5 * a^2 * x^2)
+*/
+class NormalizedGaussian1D1POrbital: public vmc::WaveFunction
+{
+protected:
+    double _a;
+    double _asq;
+    double _asqsq;
+
+    mci::SamplingFunctionInterface * _clone() const final
+    {
+        return new NormalizedGaussian1D1POrbital(_a, this->hasVD1());
+    }
+
+public:
+    explicit NormalizedGaussian1D1POrbital(double a, bool flag_vd1 = true):
+            WaveFunction(1, 1, 1, 1, flag_vd1, false, false),
+            _a(a), _asq(a*a), _asqsq((a*a)*(a*a)) {}
+
+    void setVP(const double in[]) final
+    {
+        _a = in[0];
+        _asq = _a*_a;
+        _asqsq = _asq*_asq;
+    }
+    void getVP(double out[]) const final { out[0] = _a; }
+
+    void protoFunction(const double in[], double out[]) final
+    {
+        out[0] = _asq*in[0]*in[0];
+    }
+
+    double acceptanceFunction(const double protoold[], const double protonew[]) const final
+    {
+        const double diff = protoold[0] - protonew[0];
+        return exp(diff);
+    }
+
+    void computeAllDerivatives(const double in[]) final
+    {
+        const double xsq = in[0]*in[0];
+        _setD1DivByWF(0, -_asq*in[0]);
+        _setD2DivByWF(0, _asqsq*xsq - _asq);
+        if (this->hasVD1()) { _setVD1DivByWF(0, (1. - _asq*xsq)/_a); }
+    }
+
+    double computeWFValue(const double protovalues[]) const final
+    {
+        return _a*exp(-0.5*protovalues[0]);
     }
 };
 
