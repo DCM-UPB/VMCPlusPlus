@@ -39,7 +39,7 @@ nfm::NoisyValue EnergyGradientTargetFunction::fgrad(const std::vector<double> &v
     // set the variational parameters given as input
     _vmc.setVP(vp.data());
     // add gradient obs to MCI
-    const int blocksize = this->hasGradErr() ? 1 : 0;
+    const int blocksize = this->hasGradErr() ? _vmc.getBlockSizeEG() : 0;
     _vmc.getMCI().addObservable(EnergyGradientMCObservable(_vmc.getNTotalDim(), nvp), blocksize, _vmc.getNSkipEG(), false, blocksize > 0); // skipping equlibiration for gradients
     // perform the integral and store the values
     double obs[4 + 2*nvp];
