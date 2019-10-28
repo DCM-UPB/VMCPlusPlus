@@ -206,29 +206,31 @@ public:
 };
 
 /*
-  Normalized Gaussian around origin
-  f(r) = a*exp(-0.5 * a^2 * x^2)
+  Gaussian around origin with constant norm <Psi(p)|Psi(p)>
+  f(r) = sqrt(a)*exp(-0.5 * a^2 * x^2)
 */
-class NormalizedGaussian1D1POrbital: public vmc::WaveFunction
+class ConstNormGaussian1D1POrbital: public vmc::WaveFunction
 {
 protected:
-    double _a;
-    double _asq;
-    double _asqsq;
+    double _a; // the vp
+    double _sqa; // sqrt(a)
+    double _asq; // a^2
+    double _asqsq; // a^2*a^2
 
     mci::SamplingFunctionInterface * _clone() const final
     {
-        return new NormalizedGaussian1D1POrbital(_a, this->hasVD1());
+        return new ConstNormGaussian1D1POrbital(_a, this->hasVD1());
     }
 
 public:
-    explicit NormalizedGaussian1D1POrbital(double a, bool flag_vd1 = true):
+    explicit ConstNormGaussian1D1POrbital(double a, bool flag_vd1 = true):
             WaveFunction(1, 1, 1, 1, flag_vd1, false, false),
-            _a(a), _asq(a*a), _asqsq((a*a)*(a*a)) {}
+            _a(a), _sqa(sqrt(a)), _asq(a*a), _asqsq((a*a)*(a*a)) {}
 
     void setVP(const double in[]) final
     {
         _a = in[0];
+        _sqa = sqrt(_a);
         _asq = _a*_a;
         _asqsq = _asq*_asq;
     }
@@ -250,12 +252,12 @@ public:
         const double xsq = in[0]*in[0];
         _setD1DivByWF(0, -_asq*in[0]);
         _setD2DivByWF(0, _asqsq*xsq - _asq);
-        if (this->hasVD1()) { _setVD1DivByWF(0, (1. - _asq*xsq)/_a); }
+        if (this->hasVD1()) { _setVD1DivByWF(0, (0.5/_a - _a*xsq)); }
     }
 
     double computeWFValue(const double protovalues[]) const final
     {
-        return _a*exp(-0.5*protovalues[0]);
+        return _sqa*exp(-0.5*protovalues[0]);
     }
 };
 

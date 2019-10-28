@@ -17,12 +17,12 @@ int main()
     const int myrank = MPIVMC::Init(); // make this usable with a MPI-compiled library
 
     // uncomment to check a range
-    const std::vector<double> p0s{0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9,
-                                  0.925, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0, 1.01, 1.02, 1.03, 1.04, 1.05, 1.075,
-                                  1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0};
+    //const std::vector<double> p0s{0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9,
+    //                              0.925, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0, 1.01, 1.02, 1.03, 1.04, 1.05, 1.075,
+    //                              1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0};
 
     // uncomment to check only one position
-    //const std::vector<double> p0s{1.01};
+    const std::vector<double> p0s{1.01};
 
     std::vector<double> reldiffs_num;
     std::vector<double> enls;
@@ -36,9 +36,9 @@ int main()
         const double dp = 0.005; // change for numerical gradient calculation
         const int nskip = 2; // compute energy/grad only every second MC step
         const int blocksize = 8; // we use fixed block size for performance and memory
-        VMC vmc_l(make_unique<NormalizedGaussian1D1POrbital>(p0), make_unique<HarmonicOscillator1D1P>(w), nskip, blocksize);
-        VMC vmc_m(make_unique<NormalizedGaussian1D1POrbital>(p0 + dp), make_unique<HarmonicOscillator1D1P>(w), nskip, blocksize);
-        VMC vmc_r(make_unique<NormalizedGaussian1D1POrbital>(p0 + dp + dp), make_unique<HarmonicOscillator1D1P>(w), nskip, blocksize);
+        VMC vmc_l(make_unique<ConstNormGaussian1D1POrbital>(p0), make_unique<HarmonicOscillator1D1P>(w), nskip, blocksize);
+        VMC vmc_m(make_unique<ConstNormGaussian1D1POrbital>(p0 + dp), make_unique<HarmonicOscillator1D1P>(w), nskip, blocksize);
+        VMC vmc_r(make_unique<ConstNormGaussian1D1POrbital>(p0 + dp + dp), make_unique<HarmonicOscillator1D1P>(w), nskip, blocksize);
         vmc_l.getMCI().setTrialMove(mci::SRRDType::Gaussian);
         vmc_m.getMCI().setTrialMove(mci::SRRDType::Gaussian);
         vmc_r.getMCI().setTrialMove(mci::SRRDType::Gaussian);
@@ -95,7 +95,7 @@ int main()
     // Test should better compare MC-sampled to true analytical gradients,
     // instead of relying on biased and noisy finite difference gradients.
     // For w=1 harmonic oscillator and a normalized gaussian wave function
-    // Psi(x) = pi^(-1/4)*sqrt(p) e(-0.5*p^2*x^2) ,
+    // Psi(x) ~ sqrt(p) e(-0.5*p^2*x^2) , i.e. <Psi(p)|Psi(p)> is constant for all p
     // the energy should be E(p) = (1 + p^4)/(4 p^2)
     // and the gradient d/dp E(p) = (-1 + b^4)/(2 b^3)
 
