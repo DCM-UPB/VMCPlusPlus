@@ -10,19 +10,19 @@ addons:
       - libgsl-dev
 
   homebrew:
+    update: true
     packages:
-      - valgrind
       - gsl
 
 matrix:
   include:
-    - os: linux // travis ubuntu xenial
+    - os: linux # travis ubuntu xenial
       env:
         - MYCXX="g++"
         - USE_DOCKER="FALSE"
         - USE_GCOV="TRUE"
 
-    - os: linux // arch linux docker
+    - os: linux # arch linux docker
       env:
         - MYCXX="g++"
         - USE_DOCKER="TRUE"
