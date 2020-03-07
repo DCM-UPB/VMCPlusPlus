@@ -76,9 +76,11 @@ int main()
 
 
         // initial wave function
-        double f, fdx, fmdx, fdp, fdxdp, fmdxdp;
-        J->protoFunction(x, &f);
-        f = exp(f);
+        double u, f, fdx, fmdx, fdp, fdxdp, fmdxdp;
+        J->protoFunction(x, &u);
+        // cout << "u = " << u << endl;
+        f = J->computeWFValue(&u);
+        assert(f == exp(u)); // check computeWFValue
         // cout << "f = " << f << endl;
 
 

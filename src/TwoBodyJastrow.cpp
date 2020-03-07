@@ -121,6 +121,6 @@ void TwoBodyJastrow::computeAllDerivatives(const double * x)
 
 double TwoBodyJastrow::computeWFValue(const double * protovalues) const
 {
-    return exp(2.0*protovalues[0]);
+    return exp(protovalues[0]);
 }
 } // namespace vmc

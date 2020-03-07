@@ -119,15 +119,23 @@ int main()
     // --- check the sampling function
     double protov[4];
     Psi->protoFunction(x, protov);
-    double * protovJ[4];
-    for (auto &pv : protovJ) { pv = new double; }
+    double protovJ[4];
 
     for (int iJ = 0; iJ < 4; ++iJ) {
-        J[iJ]->protoFunction(x, protovJ[iJ]);
-        // cout << "Psi protovalue = " << protov[iJ] << "    J_" << iJ+1 << " protovalue = " << protovJ[iJ][0] << endl;
-        assert(protov[iJ] == protovJ[iJ][0]);
+        J[iJ]->protoFunction(x, &protovJ[iJ]);
+        // cout << "Psi protovalue = " << protov[iJ] << "    J_" << iJ+1 << " protovalue = " << protovJ[iJ] << endl;
+        assert(protov[iJ] == protovJ[iJ]);
     }
 
+
+    // --- check the wf value computation
+    const double wfvPsi = Psi->computeWFValue(protov);
+    const double wfvJ1 = J_1->computeWFValue(&protovJ[0]);
+    const double wfvJ2 = J_2->computeWFValue(&protovJ[1]);
+    const double wfvJ3 = J_3->computeWFValue(&protovJ[2]);
+    const double wfvJ4 = J_4->computeWFValue(&protovJ[3]);
+    // cout << "WF values:    Psi = " << wfvPsi << "    J_1 = " << wfvJ1 << "    J_2 = " << wfvJ2 << "    J_3 = " << wfvJ3 << "    J_4 = " << wfvJ4 << "    J_1*J_2*J_3*J_4 = " << wfvJ1*wfvJ2*wfvJ3*wfvJ4 << endl;
+    assert(wfvPsi == wfvJ1*wfvJ2*wfvJ3*wfvJ4);
 
 
     // --- check the acceptance function
@@ -140,20 +148,19 @@ int main()
     // compute the new protovalues
     double protovnew[4];
     Psi->protoFunction(x, protovnew);
-    double * protovJnew[4];
-    for (auto &pv : protovJnew) { pv = new double; }
+    double protovJnew[4];
 
-    J_1->protoFunction(x, protovJnew[0]);
-    J_2->protoFunction(x, protovJnew[1]);
-    J_3->protoFunction(x, protovJnew[2]);
-    J_4->protoFunction(x, protovJnew[3]);
+    J_1->protoFunction(x, &protovJnew[0]);
+    J_2->protoFunction(x, &protovJnew[1]);
+    J_3->protoFunction(x, &protovJnew[2]);
+    J_4->protoFunction(x, &protovJnew[3]);
 
     // compute and compare the acceptance values
     const double accPsi = Psi->acceptanceFunction(protov, protovnew);
-    const double accJ1 = J_1->acceptanceFunction(protovJ[0], protovJnew[0]);
-    const double accJ2 = J_2->acceptanceFunction(protovJ[1], protovJnew[1]);
-    const double accJ3 = J_3->acceptanceFunction(protovJ[2], protovJnew[2]);
-    const double accJ4 = J_4->acceptanceFunction(protovJ[3], protovJnew[3]);
+    const double accJ1 = J_1->acceptanceFunction(&protovJ[0], &protovJnew[0]);
+    const double accJ2 = J_2->acceptanceFunction(&protovJ[1], &protovJnew[1]);
+    const double accJ3 = J_3->acceptanceFunction(&protovJ[2], &protovJnew[2]);
+    const double accJ4 = J_4->acceptanceFunction(&protovJ[3], &protovJnew[3]);
     // cout << "acceptance values:    Psi = " << accPsi << "    J_1 = " << accJ1 << "    J_2 = " << accJ2 << "    J_3 = " << accJ3 << "    J_4 = " << accJ4 << "    J_1*J_2*J_3*J_4 = " << accJ1*accJ2*accJ3*accJ4 << endl;
     assert(accPsi == accJ1*accJ2*accJ3*accJ4);
 
@@ -300,12 +307,6 @@ int main()
     }
 
 
-    for (auto &pv : protovJnew) {
-        delete pv;
-    }
-    for (auto &pv : protovJ) {
-        delete pv;
-    }
     delete Psi;
     delete[] J;
     delete J_4;
