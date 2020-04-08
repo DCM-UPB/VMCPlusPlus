@@ -46,7 +46,7 @@ inline void SetSeed(mci::MCI &mci, const std::string &filename, int offset = 0)
 #endif
 }
 
-inline void Integrate(mci::MCI &mci, int Nmc, double * average, double * error, bool findMRT2step = true, bool initialdecorrelation = true, bool randomizeWalkers = false)
+inline void Integrate(mci::MCI &mci, int64_t Nmc, double * average, double * error, bool findMRT2step = true, bool initialdecorrelation = true, bool randomizeWalkers = false)
 {
     if (randomizeWalkers) { mci.newRandomX(); }
 #if USE_MPI == 1

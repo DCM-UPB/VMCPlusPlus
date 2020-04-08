@@ -9,7 +9,7 @@ namespace vmc
 struct vmc_nms
 {
     VMC &vmc;
-    int Nmc;
+    int64_t Nmc;
     double iota;
     double kappa;
     double lambda;
@@ -32,7 +32,7 @@ struct vmc_nms
 double vmc_cost(const gsl_vector * v, void * params)
 {
     VMC &vmc = (static_cast<struct vmc_nms *>(params))->vmc;
-    const int Nmc = (static_cast<struct vmc_nms *>(params))->Nmc;
+    const int64_t Nmc = (static_cast<struct vmc_nms *>(params))->Nmc;
     const double iota = (static_cast<struct vmc_nms *>(params))->iota;
     const double kappa = (static_cast<struct vmc_nms *>(params))->kappa;
     const double lambda = (static_cast<struct vmc_nms *>(params))->lambda;

@@ -39,7 +39,7 @@ VMC::VMC(const WaveFunction &wf, const Hamiltonian &H, const int nskip_eg, const
 
 // --- compute quantities
 
-void VMC::computeEnergy(int Nmc, double * E, double * dE, bool doFindMRT2step, bool doDecorrelation)
+void VMC::computeEnergy(int64_t Nmc, double * E, double * dE, bool doFindMRT2step, bool doDecorrelation)
 {
     MPIVMC::Integrate(_mci, Nmc, E, dE, doFindMRT2step, doDecorrelation);
 }

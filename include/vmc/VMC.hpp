@@ -54,7 +54,7 @@ public:
 
     // Computation of the energy according to contained Hamiltonian and WaveFunction
     // Other contained observables will be calculated as well and stored behind the energy values
-    void computeEnergy(int Nmc, double * E, double * dE, bool doFindMRT2step = true, bool doDecorrelation = true);
+    void computeEnergy(int64_t Nmc, double * E, double * dE, bool doFindMRT2step = true, bool doDecorrelation = true);
 };
 } // namespace vmc
 

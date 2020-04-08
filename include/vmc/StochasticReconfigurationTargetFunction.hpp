@@ -11,14 +11,14 @@ class StochasticReconfigurationTargetFunction: public nfm::NoisyFunctionWithGrad
 {
 protected:
     VMC &_vmc; // the VMC object containing WaveFunction, Hamiltonian and MCI
-    const int _E_Nmc; // number of MC steps for energy calculation
-    const int _grad_E_Nmc; // number of MC steps for gradient calculation
+    const int64_t _E_Nmc; // number of MC steps for energy calculation
+    const int64_t _grad_E_Nmc; // number of MC steps for gradient calculation
     const double _lambda_reg; // vp regularization factor
 
     void _integrate(const double * vp, double * obs, double * dobs, bool flag_grad = false, bool flag_dgrad = false);
     void _calcObs(const double * vp, double &f, double &df, double * grad_E = nullptr, double * dgrad_E = nullptr);
 public:
-    StochasticReconfigurationTargetFunction(VMC &vmc, int E_Nmc, int grad_E_Nmc, bool useGradErr, double lambda_reg = 0.):
+    StochasticReconfigurationTargetFunction(VMC &vmc, int64_t E_Nmc, int64_t grad_E_Nmc, bool useGradErr, double lambda_reg = 0.):
             nfm::NoisyFunctionWithGradient(vmc.getNVP(), useGradErr), _vmc(vmc),
             _E_Nmc(E_Nmc), _grad_E_Nmc(grad_E_Nmc), _lambda_reg(lambda_reg) {}
 
